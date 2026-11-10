@@ -2,5 +2,5 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 export default defineConfig({
     plugins: [react()],
-    base: '/Interview_Preparation_Guide/',
+    base: '/Interview_preparation_guide/',
  });

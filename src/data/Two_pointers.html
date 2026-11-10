@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Two Pointers — Visual Masterclass</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Nunito:wght@400;700;900&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #525659; --text: #2d3748;
+  --blue: #4299e1; --blue-light: #ebf8ff;
+  --green: #48bb78; --green-light: #f0fff4;
+  --yellow: #ecc94b; --yellow-light: #fefcbf;
+  --pink: #ed64a6; --pink-light: #fff5f7;
+  --purple: #9f7aea; --purple-light: #faf5ff;
+  --red: #e53e3e; --red-light: #fff5f5;
+  --orange: #ed8936; --orange-light: #fffaf0;
+  --border: #e2e8f0;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); font-family: 'Nunito', sans-serif; color: var(--text); line-height: 1.4;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page { width: 210mm; height: 297mm; background: #fff; margin: 15px auto; padding: 8mm 10mm;
+  border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); page-break-after: always;
+  position: relative; overflow: hidden; display: flex; flex-direction: column; }
+.page:last-child { page-break-after: auto; }
+h1 { font-family: 'Caveat', cursive; font-size: 2.4rem; color: var(--blue); text-align: center;
+  margin-top: -8px; margin-bottom: 0px; line-height: 1; }
+h2 { font-size: 0.92rem; color: var(--text); margin: 6px 0 4px 0;
+  border-bottom: 3px solid var(--yellow); padding-bottom: 1px; display: inline-block; }
+h3 { font-size: 0.78rem; font-weight: 900; margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
+h4 { font-size: 0.72rem; font-weight: 900; margin: 2px 0 2px 0; color: #4a5568; }
+.subtitle { text-align: center; font-weight: 700; color: #718096; margin-bottom: 6px; font-size: 0.82rem; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 6px; }
+.card { border-radius: 8px; padding: 7px 8px; border: 2px solid; page-break-inside: avoid; margin-bottom: 5px; }
+.card:last-child { margin-bottom: 0; }
+.card-blue { background: var(--blue-light); border-color: #90cdf4; }
+.card-green { background: var(--green-light); border-color: #9ae6b4; }
+.card-yellow { background: var(--yellow-light); border-color: #f6e05e; }
+.card-pink { background: var(--pink-light); border-color: #fbb6ce; }
+.card-purple { background: var(--purple-light); border-color: #d6bcfa; }
+.card-red { background: var(--red-light); border-color: #feb2b2; }
+.card-orange { background: var(--orange-light); border-color: #fbd38d; }
+pre { background: #1a202c; color: #e2e8f0; padding: 5px 7px; border-radius: 6px;
+  font-family: 'Fira Code', monospace; font-size: 0.6rem; overflow-x: hidden; white-space: pre-wrap;
+  line-height: 1.3; page-break-inside: avoid; }
+.code-keyword { color: #f472b6; } .code-string { color: #a3e635; } .code-comment { color: #718096; font-style: italic; }
+.array-container { display: flex; justify-content: center; gap: 3px; margin: 5px 0 16px 0; font-family: 'Fira Code', monospace; }
+.array-box { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  border: 2px solid #cbd5e0; border-radius: 4px; font-weight: 700; background: #fff;
+  position: relative; font-size: 0.68rem; }
+.array-box.active { background: var(--yellow); border-color: #d69e2e; }
+.array-box.window { background: var(--green-light); border-color: var(--green); }
+.array-box.target { background: var(--blue); color: #fff; border-color: #2b6cb0; }
+.array-box.discarded { background: #edf2f7; color: #a0aec0; border-color: #e2e8f0; text-decoration: line-through; }
+.array-box.pivot { background: var(--orange); color: #fff; border-color: #c05621; }
+.step-row { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; page-break-inside: avoid; }
+.step-label { font-weight: 900; width: 48px; font-size: 0.64rem; flex-shrink: 0; }
+.step-desc { font-weight: 700; font-size: 0.63rem; flex: 1; }
+table { width: 100%; border-collapse: collapse; margin-top: 3px; font-size: 0.66rem; background: #fff;
+  border-radius: 4px; overflow: hidden; page-break-inside: avoid; }
+th, td { padding: 3px 5px; text-align: left; border-bottom: 1px solid var(--border); }
+th { background: #f7fafc; font-weight: 900; color: #4a5568; }
+td code { font-family: 'Fira Code'; font-size: 0.58rem; background: #f7fafc; padding: 1px 3px; border-radius: 2px; }
+.side-note { background: var(--yellow); color: #744210; padding: 5px 7px; border-radius: 8px;
+  font-weight: 700; font-size: 0.66rem; box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+  margin-top: auto; text-align: center; border: 2px dashed #d69e2e; page-break-inside: avoid; }
+.callout { padding: 5px 7px; border-radius: 6px; font-size: 0.66rem; margin: 3px 0; border-left: 4px solid; }
+.callout p { margin: 1px 0; } .callout strong { font-weight: 900; }
+.callout-info { background: #ebf8ff; border-color: var(--blue); }
+.callout-warn { background: #fffaf0; border-color: var(--yellow); }
+.callout-danger { background: #fff5f5; border-color: var(--red); }
+.callout-success { background: #f0fff4; border-color: var(--green); }
+.formula { font-family: 'Fira Code'; background: #f7fafc; padding: 1px 5px; border-radius: 4px;
+  display: inline-block; font-size: 0.62rem; border-left: 3px solid var(--blue); }
+.kv-list { font-size: 0.66rem; margin: 2px 0 2px 13px; } .kv-list li { margin-bottom: 1px; }
+.ascii { font-family: 'Fira Code'; font-size: 0.58rem; background: #1a202c; color: #e2e8f0;
+  padding: 5px 7px; border-radius: 6px; white-space: pre; line-height: 1.28; margin: 4px 0; overflow-x: hidden; }
+.ascii-light { background: #f7fafc; color: #1a202c; border: 1px solid var(--border); }
+.footer { position: absolute; bottom: 3mm; left: 0; width: 100%; text-align: center;
+  font-size: 0.52rem; color: #a0aec0; font-weight: 700; }
+.big-num { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px;
+  background: var(--blue); color: #fff; border-radius: 50%; font-size: 0.55rem; font-weight: 900;
+  margin-right: 4px; flex-shrink: 0; }
+.tag { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 0.55rem; font-weight: 900;
+  text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 1px; }
+.tag-cond { background: #bee3f8; color: #2c5282; }
+.tag-inv { background: #fefcbf; color: #744210; }
+.tag-flow { background: #c6f6d5; color: #22543d; }
+.tag-tpl { background: #fed7e2; color: #702459; }
+.tag-cx { background: #e9d8fd; color: #44337a; }
+.tag-ex { background: #feebc8; color: #7b341e; }
+.arrow-row { display: flex; justify-content: center; gap: 3px; font-family: 'Fira Code'; font-size: 0.65rem;
+  color: var(--pink); font-weight: 900; }
+.pointer-marker { display: inline-block; color: var(--pink); font-weight: 900; font-size: 0.62rem; }
+.matrix-cell { display: inline-block; width: 16px; height: 16px; text-align: center; line-height: 14px;
+  font-family: 'Fira Code'; font-size: 0.55rem; border-radius: 2px; }
+.kill-x { background: var(--red-light); color: var(--red); font-weight: 900; }
+.kill-ok { background: var(--green-light); color: var(--green); }
+.kill-empty { background: #edf2f7; color: #a0aec0; }
+.kill-live { background: #fff; color: var(--text); border: 1px solid var(--border); }
+@page { size: A4; margin: 0; }
+@media print {
+  body { background: #fff; } .page { box-shadow: none; margin: 0; border-radius: 0; }
+  .side-note { background: #fff !important; border: 2px solid #d69e2e; }
+  pre { background: #f7fafc; border: 1px solid #e2e8f0; color: #1a202c; }
+  .ascii { background: #f7fafc; color: #1a202c; border: 1px solid #e2e8f0; }
+  .code-keyword { color: #b83280; } .code-string { color: #276749; } .code-comment { color: #718096; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PAGE 1 — WHY THIS PATTERN EXISTS · INTUITION (VISUAL)          -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <h1>Two Pointers</h1>
+  <div class="subtitle">Why It Exists · Intuition</div>
+
+  <h2>🎯 Why This Pattern Exists</h2>
+  <div class="card card-yellow">
+    <p style="font-size:0.72rem; text-align:center;">With <b>one</b> index, you only know <b>one</b> element at a time:</p>
+    <div class="ascii" style="text-align:center;">nums:  [ 3 ]  [ 7 ]  [ 2 ]  [ 9 ]  [ 5 ]
+              ↑
+         only this is visible</div>
+    <p style="font-size:0.72rem; text-align:center; margin-top:2px;">Ask a <b>pair</b> question and the search space explodes to N × N:</p>
+    <div class="ascii">                j →   0     1     2     3     4
+                     ┌─────┬─────┬─────┬─────┬─────┐
+              i  0   │  ·  │  ×  │  ×  │  ×  │  ×  │
+              ↓  1   │     │  ·  │  ×  │  ×  │  ×  │
+                 2   │     │     │  ·  │  ×  │  ×  │
+                 3   │     │     │     │  ·  │  ×  │
+                 4   │     │     │     │     │  ·  │
+                     └─────┴─────┴─────┴─────┴─────┘
+
+     × = a candidate pair you must check   →   N(N-1)/2 ≈ N²/2</div>
+  </div>
+
+  <div class="card card-pink">
+    <h4>📈 Cost of Checking All Pairs</h4>
+    <table>
+      <tr><th>N</th><th>N² pairs</th><th>Time @ 10⁸ ops/s</th><th>Verdict</th></tr>
+      <tr><td>1,000</td><td>1,000,000</td><td>0.01 s</td><td>✅ fine</td></tr>
+      <tr><td>100,000</td><td>10,000,000,000</td><td>~100 s</td><td>❌ TLE</td></tr>
+      <tr><td>1,000,000</td><td>10¹²</td><td>~3 hours</td><td>💀</td></tr>
+    </table>
+    <p style="font-size:0.66rem; margin-top:2px;">Real interviews use N up to 10⁵. <b>O(N²) pair enumeration does not survive.</b></p>
+  </div>
+
+  <h2>⚖️ Three Candidate Approaches</h2>
+  <div class="grid-3">
+    <div class="card card-red" style="margin-bottom:0;">
+      <h4>Nested Loops</h4>
+      <p style="font-size:0.64rem;"><b>Time:</b> O(N²)<br><b>Space:</b> O(1)</p>
+      <p style="font-size:0.6rem; color:#718096;">Correct, universal, too slow.</p>
+    </div>
+    <div class="card card-green" style="margin-bottom:0;">
+      <h4>Hash Map</h4>
+      <p style="font-size:0.64rem;"><b>Time:</b> O(N)<br><b>Space:</b> O(N)</p>
+      <p style="font-size:0.6rem; color:#718096;">Fast, but burns memory.</p>
+    </div>
+    <div class="card card-blue" style="margin-bottom:0;">
+      <h4>Two Pointers ⭐</h4>
+      <p style="font-size:0.64rem;"><b>Time:</b> O(N)<br><b>Space:</b> O(1)</p>
+      <p style="font-size:0.6rem; color:#718096;">Fast AND memory-free.</p>
+    </div>
+  </div>
+
+  <h2>🧠 Intuition — Two Scouts, One Mission</h2>
+  <div class="card card-blue">
+    <div class="ascii-light ascii" style="font-size:0.62rem;">SORTED INPUT:   [ 2 ]  [ 7 ]  [ 11 ]  [ 15 ]
+                  ↑                       ↑
+                  L                       R
+               
+               "I see 2"               "I see 15"
+               
+         ───── L moves right →            ← R moves left ─────
+                (into the array)          (into the array)</div>
+    <p style="font-size:0.7rem; margin-top:3px;">
+      Two scouts at opposite ends can only <b>see one element each</b>. They compare what they see,
+      take <b>one deterministic step</b> inward, and repeat. Sortedness guarantees the answer can
+      never hide outside the shrinking interval — so this tiny local decision is enough.
+    </p>
+  </div>
+
+  <div class="grid-2" style="margin-top:4px;">
+    <div class="card card-green" style="margin-bottom:0;">
+      <h4>📉 Interval Shrinks Every Step</h4>
+      <div class="ascii" style="font-size:0.55rem;">Step 0:  [2] [7] [11] [15]    size 4
+Step 1:  [2] [7] [11]  ~~15~~  size 3  (15 discarded)
+Step 2:  [2] [7]  ~~11~~ ~~15~~ size 2  (11 discarded)
+Step 3:  MATCH → return</div>
+      <p style="font-size:0.63rem; margin-top:2px;">Every comparison <b>kills a whole family</b> of pairs, not just one.</p>
+    </div>
+    <div class="card card-purple" style="margin-bottom:0;">
+      <h4>📏 Termination Proof</h4>
+      <div class="ascii" style="font-size:0.55rem;">Φ = R − L
+Start:  Φ = N − 1
+Each step: Φ decreases by ≥ 1
+End:    Φ ≤ 0
+
+→ at most N−1 iterations
+→ O(1) work per iteration
+→ O(N) total time</div>
+    </div>
+  </div>
+
+  <div class="side-note">
+    <b>Motivation in one line:</b> Sorting makes pair relationships <i>local</i> — and locality is what enables linear algorithms.
+  </div>
+  <div class="footer">Two Pointers Masterclass · Why · Intuition</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PAGE 2 — RECOGNITION + BRUTE FORCE → OPTIMIZATION (VISUAL)     -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <h1>Recognition → Optimization</h1>
+  <div class="subtitle">Signals · Brute Force · The Kill Matrix</div>
+
+  <h2>🔍 Recognition Signals</h2>
+  <div class="grid-2">
+    <div class="card card-green" style="margin-bottom:0;">
+      <h4>✓ Structural (check any 2)</h4>
+      <table style="font-size:0.62rem; margin:0;">
+        <tr><td>☐</td><td>Input is <b>sorted</b> / monotonic</td></tr>
+        <tr><td>☐</td><td>Problem mentions <b>pairs / triplets</b></td></tr>
+        <tr><td>☐</td><td>Relationship: sum / diff / product / ratio</td></tr>
+        <tr><td>☐</td><td>Must modify <b>in place</b>, O(1) space</td></tr>
+        <tr><td>☐</td><td>Palindrome / reverse equality</td></tr>
+      </table>
+    </div>
+    <div class="card card-purple" style="margin-bottom:0;">
+      <h4>✓ Behavioral (check any 2)</h4>
+      <table style="font-size:0.62rem; margin:0;">
+        <tr><td>☐</td><td>"Two elements whose <b>sum</b> …"</td></tr>
+        <tr><td>☐</td><td>"Remove <b>duplicates / zeros</b> …"</td></tr>
+        <tr><td>☐</td><td>"Partition into <b>three groups</b>"</td></tr>
+        <tr><td>☐</td><td>"Max <b>area / water</b> between two lines"</td></tr>
+        <tr><td>☐</td><td>"k elements summing to target" (k ≥ 3)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card card-red" style="margin-top:5px;">
+    <h4>⚠️ Red Herrings — Do NOT Reach for Two Pointers</h4>
+    <div class="grid-2">
+      <p style="font-size:0.64rem;">✗ Unsorted + must preserve original indices</p>
+      <p style="font-size:0.64rem;">✗ Must enumerate ALL O(N²) pairs</p>
+      <p style="font-size:0.64rem;">✗ Non-monotonic (XOR, parity-only)</p>
+      <p style="font-size:0.64rem;">✗ Stream input (can't re-read)</p>
+    </div>
+  </div>
+
+  <h2>💥 Brute Force — The Blind Triangle</h2>
+  <div class="grid-2">
+    <div class="card card-pink" style="margin-bottom:0;">
+      <pre style="margin:0; font-size:0.58rem;"><span class="code-keyword">for</span> i = <span class="code-string">0</span> .. n-<span class="code-string">1</span>:
+    <span class="code-keyword">for</span> j = i+<span class="code-string">1</span> .. n-<span class="code-string">1</span>:
+        <span class="code-keyword">if</span> nums[i] + nums[j] == target:
+            <span class="code-keyword">return</span> {i, j}</pre>
+      <p style="font-size:0.63rem; margin-top:2px;">No state carried between <code>j</code> values → each check is <b>isolated</b>.</p>
+    </div>
+    <div class="card card-red" style="margin-bottom:0;">
+      <h4>Why It's Wasteful</h4>
+      <div class="ascii" style="font-size:0.55rem;">✓  ✓  ✓  ✓  ✓
+   ✓  ✓  ✓  ✓
+      ✓  ✓  ✓
+         ✓  ✓
+            ✓
+Each ✓ = one comparison
+No comparison learns from the last</div>
+    </div>
+  </div>
+
+  <h2>⚡ The Optimization — The Kill Matrix</h2>
+  <div class="card card-yellow">
+    <p style="font-size:0.68rem;">Sorted: <code>[2, 7, 11, 15]</code>, target = <b>9</b>. Current state: <code>L=0 (2), R=3 (15)</code>, sum = <b>17 &gt; 9</b>.</p>
+    <div class="ascii" style="font-size:0.55rem;">BEFORE:                  AFTER ONE COMPARISON:
+       2   7  11  15            2   7  11  15
+  2  ·   9  13  17        2  ✗  ✗   ✗   ✗   ← ROW 0 DEAD
+  7     ·  18  22        7     ·  18  22
+ 11        ·   26       11        ·   26
+ 15            ·        15            ·
+
+Because 15 is the LARGEST value, if 2+15 > target,
+then 2+k > target for ALL k ≤ 3.
+→ every pair using "2" is dead. Kill the entire row.
+→ L++ (never look at 2 again)</div>
+    <p style="font-size:0.68rem; margin-top:3px;"><b>Key insight:</b> each comparison kills a whole <b>row</b> or <b>column</b> of the pair matrix — not just one cell.</p>
+  </div>
+
+  <div class="card card-purple" style="margin-top:5px;">
+    <h4>🎬 Full Walkthrough with Matrix Elimination</h4>
+    <div class="ascii" style="font-size:0.54rem;">      2   7  11  15      L=0,R=3  sum=17 > 9   → row 0 dead, L++
+  2  ✗   ✗   ✗   ✗
+  7     ·  18  22
+ 11        ·   26
+ 15            ·
+
+      2   7  11  15      L=1,R=3  sum=22 > 9   → col 3 dead, R--
+  2  ✗   ✗   ✗   ✗
+  7     ·  18   ✗
+ 11        ·   ✗
+ 15            ✗
+
+      2   7  11  15      L=1,R=2  sum=18 > 9   → col 2 dead, R--
+  2  ✗   ✗   ✗   ✗
+  7     ·   ✗   ✗
+ 11        ✗   ✗
+ 15            ✗
+
+      2   7  11  15      L=1,R=1  — L≥R, but wait…
+  
+Wait — we had sum 2+7=9 earlier! Let me redo:
+
+  L=0,R=3  sum=17 > 9   → R--
+  L=0,R=2  sum=13 > 9   → R--
+  L=0,R=1  sum=9  == 9  → FOUND (0,1)</div>
+    <p style="font-size:0.63rem; margin-top:2px; color:var(--green);">Total: <b>3 comparisons</b> vs <b>6</b> in brute force (and O(N) vs O(N²) at scale).</p>
+  </div>
+
+  <div class="callout callout-success">
+    <p><b>Before:</b> <span class="formula">N²/2</span> cells to visit · <b>After:</b> ≤ <span class="formula">N−1</span> cells · <b>Elimination is permanent and provable.</b></p>
+  </div>
+
+  <div class="side-note">
+    <b>One sentence:</b> Sorting makes pairs local. Locality lets one comparison kill an entire row or column of the N² pair matrix.
+  </div>
+  <div class="footer">Two Pointers Masterclass · Recognition → Optimization</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PAGE 3 — SUB-PATTERN 1: OPPOSITE ENDS (SPEC, VISUAL)           -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <h1>Sub-pattern 1 — Opposite Ends</h1>
+  <div class="subtitle">Converging Pointers · Spec Sheet</div>
+
+  <div class="card card-blue" style="text-align:center;">
+    <h3 style="justify-content:center;">📐 What It Looks Like</h3>
+    <div class="ascii-light ascii" style="font-size:0.65rem;">  [ . ] [ . ] [ . ] [ . ] [ . ] [ . ]
+    ↑                           ↑
+    L                           R
+    └──────────→   ←────────────┘
+       (both move inward, meeting in the middle)</div>
+  </div>
+
+  <div class="grid-2" style="margin-top:4px;">
+    <div class="card card-blue" style="margin-bottom:0;">
+      <span class="tag tag-cond">🎯 Condition</span>
+      <ul class="kv-list">
+        <li>Input is <b>sorted</b> or monotonic on the comparison.</li>
+        <li>Question involves a <b>pair relationship</b>.</li>
+        <li>One comparison tells you <b>which pointer to move</b>.</li>
+      </ul>
+    </div>
+    <div class="card card-yellow" style="margin-bottom:0;">
+      <span class="tag tag-inv">📌 Invariant</span>
+      <p style="font-size:0.66rem;"><b>“If a valid answer exists, at least one valid answer uses indices from <code>[L, R]</code>.”</b></p>
+      <div class="ascii" style="font-size:0.53rem; margin-top:2px;">Start: [0 .. N−1]   ✓ answer inside
+L++:   [1 .. N−1]   ✓ (only proven-dead pairs removed)
+R--:   [1 .. N−2]   ✓ (same reason)
+End:   L ≥ R        → no answer existed</div>
+    </div>
+  </div>
+
+  <div class="card card-green" style="margin-top:5px;">
+    <span class="tag tag-flow">🔄 Step-by-Step Flow</span>
+    <div class="ascii-light ascii" style="font-size:0.6rem;">① Sort (if not already)                    ─→ O(N log N)
+         ↓
+② L = 0, R = N−1                           ─→ setup
+         ↓
+   ┌──→ ③ Compute s = f(L, R)
+   │     ↓
+   │   s == target?  ──✓─→ record / return  ← one-pair: exit
+   │     │                                 ← all-pairs: move both
+   │     ✗
+   │     ↓
+   │   s < target?   ──✓─→ L++              (need larger)
+   │     │
+   │     ✗
+   │     ↓
+   │   R--                                 (need smaller)
+   │     │
+   └─────┘
+         ↓
+④ L ≥ R → return recorded result</div>
+  </div>
+
+  <div class="grid-2" style="margin-top:5px;">
+    <div class="card card-pink" style="margin-bottom:0;">
+      <span class="tag tag-tpl">💻 Template</span>
+      <pre style="margin:0; font-size:0.58rem;"><span class="code-keyword">int</span> L = <span class="code-string">0</span>, R = n - <span class="code-string">1</span>;
+<span class="code-keyword">while</span> (L &lt; R) {
+    <span class="code-keyword">int</span> s = f(nums[L], nums[R]);
+    <span class="code-keyword">if</span> (s == target) {
+        <span class="code-comment">// record/return</span>
+        L++; R--;   <span class="code-comment">// or return</span>
+    } <span class="code-keyword">else if</span> (s &lt; target) {
+        L++;        <span class="code-comment">// need larger</span>
+    } <span class="code-keyword">else</span> {
+        R--;        <span class="code-comment">// need smaller</span>
+    }
+}</pre>
+    </div>
+    <div class="card card-purple" style="margin-bottom:0;">
+      <span class="tag tag-cx">⏱️ Complexity</span>
+      <table style="margin:0;">
+        <tr><th>Setup</th><th>Time</th><th>Space</th></tr>
+        <tr><td>Already sorted</td><td>O(N)</td><td>O(1)</td></tr>
+        <tr><td>Must sort</td><td>O(N log N)</td><td>O(log N)/O(N)</td></tr>
+        <tr><td>Palindrome check</td><td>O(N)</td><td>O(1)</td></tr>
+      </table>
+      <p style="font-size:0.6rem; margin-top:2px;"><b>Proof:</b> Φ = R−L decreases ≥1 per iteration → ≤ N−1 iterations.</p>
+    </div>
+  </div>
+
+  <div class="card card-orange" style="margin-top:5px;">
+    <span class="tag tag-ex">🎬 Visual Dry Run — Two Sum II, target = 9</span>
+    <div class="step-row" style="margin-top:3px;">
+      <div class="step-label">Start:</div>
+      <div class="array-container" style="margin:0;">
+        <div class="array-box target">2</div><div class="array-box">7</div><div class="array-box">11</div><div class="array-box target">15</div>
+      </div>
+      <div class="step-desc">L=0 (2), R=3 (15). Sum=17 &gt; 9 → R--</div>
+    </div>
+    <div class="step-row">
+      <div class="step-label">Step 2:</div>
+      <div class="array-container" style="margin:0;">
+        <div class="array-box target">2</div><div class="array-box">7</div><div class="array-box target">11</div><div class="array-box discarded">15</div>
+      </div>
+      <div class="step-desc">Sum=13 &gt; 9 → R--</div>
+    </div>
+    <div class="step-row">
+      <div class="step-label">Step 3:</div>
+      <div class="array-container" style="margin:0;">
+        <div class="array-box target">2</div><div class="array-box target">7</div><div class="array-box discarded">11</div><div class="array-box discarded">15</div>
+      </div>
+      <div class="step-desc" style="color:var(--green);">Sum=9 == 9 → <b>FOUND (1, 2)</b></div>
+    </div>
+    <div class="ascii" style="font-size:0.54rem; margin-top:3px;">Iteration count: 3    |    Max possible: N−1 = 3    |    Proven optimal</div>
+  </div>
+
+  <div class="side-note">
+    <b>Watch out:</b> Loop condition is strict <code>L &lt; R</code>. On a non-match, move <b>exactly one</b> pointer — the one whose value rules out the whole remaining row/column.
+  </div>
+  <div class="footer">Two Pointers Masterclass · Sub-pattern 1 (Spec)</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PAGE 4 — SUB-PATTERN 1: EXAMPLES (VISUAL)                      -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <h1>Sub-pattern 1 — Examples</h1>
+  <div class="subtitle">Two Sum II · Container With Water · Trapping Rain Water</div>
+
+  <h2>📝 Example 1 — Two Sum II (Sorted)</h2>
+  <div class="grid-2">
+    <div class="card card-blue" style="margin-bottom:0;">
+      <p style="font-size:0.66rem;"><b>Problem:</b> 1-indexed sorted array, return positions of two numbers summing to target. O(1) extra space.</p>
+      <p style="font-size:0.66rem; margin-top:2px;"><b>Why:</b> Sorted + pair-sum + memory constraint → direct fit.</p>
+    </div>
+    <div class="card card-pink" style="margin-bottom:0;">
+      <pre style="margin:0; font-size:0.55rem;"><span class="code-keyword">public int</span>[] twoSum(<span class="code-keyword">int</span>[] nums, <span class="code-keyword">int</span> t) {
+  <span class="code-keyword">int</span> L = <span class="code-string">0</span>, R = nums.length - <span class="code-string">1</span>;
+  <span class="code-keyword">while</span> (L &lt; R) {
+    <span class="code-keyword">int</span> s = nums[L] + nums[R];
+    <span class="code-keyword">if</span> (s == t) <span class="code-keyword">return new int</span>[]{L+<span class="code-string">1</span>, R+<span class="code-string">1</span>};
+    <span class="code-keyword">else if</span> (s &lt; t) L++;
+    <span class="code-keyword">else</span> R--;
+  }
+  <span class="code-keyword">return new int</span>[]{-<span class="code-string">1</span>, -<span class="code-string">1</span>};
+}</pre>
+    </div>
+  </div>
+
+  <h2 style="margin-top:5px;">📝 Example 2 — Container With Most Water</h2>
+  <div class="card card-blue">
+    <p style="font-size:0.66rem;"><b>Problem:</b> Given heights, find two lines forming a container with max <code>min(h[L], h[R]) × (R−L)</code>.</p>
+    <div class="ascii" style="font-size:0.52rem;">height = [ 1, 8, 6, 2, 5, 4, 8, 3, 7 ]
+
+       8 |        █               █
+       7 |        █           █   █
+       6 |        █   █       █   █
+       5 |        █   █   █   █   █
+       4 |        █   █   █   █   █
+       3 |        █   █   █   █   █   █
+       2 |        █   █   █   █   █   █
+       1 |  █     █   █   █   █   █   █   █
+       0 └──█─────█───█───█───█───█───█───█───
+           0     1   2   3   4   5   6   7   8
+
+Greedy rule: always move the SHORTER wall inward.
+Why? The shorter wall is the bottleneck.
+Moving it might find a taller wall → could win.
+Moving the TALLER wall only shrinks width and can't help.</div>
+  </div>
+  <div class="card card-pink">
+    <pre style="margin:0; font-size:0.56rem;"><span class="code-keyword">public int</span> maxArea(<span class="code-keyword">int</span>[] h) {
+  <span class="code-keyword">int</span> L = <span class="code-string">0</span>, R = h.length - <span class="code-string">1</span>, best = <span class="code-string">0</span>;
+  <span class="code-keyword">while</span> (L &lt; R) {
+    best = Math.max(best, Math.min(h[L], h[R]) * (R - L));
+    <span class="code-keyword">if</span> (h[L] &lt; h[R]) L++; <span class="code-keyword">else</span> R--;
+  }
+  <span class="code-keyword">return</span> best;
+}</pre>
+  </div>
+
+  <h2 style="margin-top:5px;">📝 Example 3 — Trapping Rain Water <i>(Opposite Ends + State)</i></h2>
+  <div class="card card-blue">
+    <p style="font-size:0.66rem;"><b>Problem:</b> Water above bar i = <code>min(leftMax, rightMax) − height[i]</code>.</p>
+    <div class="ascii" style="font-size:0.52rem;">Key insight visualised:
+
+        L                        R
+        ↓                        ↓
+   ┌────█─────────────────────█────┐
+   │ ~~~~ WATER above L         ~~~~│
+   │ ═══════                   ═════│
+   └────────────────────────────────┘
+
+If h[L] < h[R]:                        (and symmetrically for R)
+   the right side is ≥ h[R] > h[L]
+   → leftMax is the ONLY bottleneck for L
+   → water above L = max(0, leftMax − h[L])
+   → update leftMax, add, then L++</div>
+  </div>
+  <div class="card card-pink">
+    <pre style="margin:0; font-size:0.55rem;"><span class="code-keyword">public int</span> trap(<span class="code-keyword">int</span>[] h) {
+  <span class="code-keyword">int</span> L = <span class="code-string">0</span>, R = h.length - <span class="code-string">1</span>;
+  <span class="code-keyword">int</span> lMax = <span class="code-string">0</span>, rMax = <span class="code-string">0</span>, water = <span class="code-string">0</span>;
+  <span class="code-keyword">while</span> (L &lt; R) {
+    <span class="code-keyword">if</span> (h[L] &lt; h[R]) {
+      <span class="code-keyword">if</span> (h[L] &gt;= lMax) lMax = h[L];
+      <span class="code-keyword">else</span> water += lMax - h[L];
+      L++;
+    } <span class="code-keyword">else</span> {
+      <span class="code-keyword">if</span> (h[R] &gt;= rMax) rMax = h[R];
+      <span class="code-keyword">else</span> water += rMax - h[R];
+      R--;
+    }
+  }
+  <span class="code-keyword">return</span> water;
+}</pre>
+  </div>
+
+  <div class="callout callout-warn" style="margin-top:4px;">
+    <p><b>Pitfall:</b> Update <code>lMax</code>/<code>rMax</code> <i>before</i> accumulating water, otherwise you can accumulate negatives.</p>
+  </div>
+
+  <div class="side-note">
+    <b>Three takeaways:</b> (1) Pre-sorted → no sort cost, pure O(N). (2) Width monotonicity can substitute for value monotonicity. (3) A few extra ints extend opposite ends to harder invariants.
+  </div>
+  <div class="footer">Two Pointers Masterclass · Sub-pattern 1 (Examples)</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PAGE 5 — SUB-PATTERN 2: SAME DIRECTION (SPEC + EXAMPLE)        -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <h1>Sub-pattern 2 — Same Direction</h1>
+  <div class="subtitle">Fast &amp; Slow · In-Place Modification</div>
+
+  <div class="card card-blue" style="text-align:center;">
+    <h3 style="justify-content:center;">📐 What It Looks Like</h3>
+    <div class="ascii-light ascii" style="font-size:0.62rem;">  [ ✓ ] [ ✓ ] [ ✓ ] [ ? ] [ ? ] [ ? ] [ ? ]
+          ↑                 ↑
+         slow              fast
+         (write head)      (read head)
+         
+         slow ≤ fast at ALL times — writing to slow never corrupts unread data</div>
+  </div>
+
+  <div class="grid-2" style="margin-top:4px;">
+    <div class="card card-blue" style="margin-bottom:0;">
+      <span class="tag tag-cond">🎯 Condition</span>
+      <ul class="kv-list">
+        <li>Must modify array <b>in place</b>, O(1) space.</li>
+        <li>Task: <b>filter / compact / dedup / reorder</b>.</li>
+        <li>Kept elements preserve their relative order.</li>
+      </ul>
+    </div>
+    <div class="card card-yellow" style="margin-bottom:0;">
+      <span class="tag tag-inv">📌 Invariant</span>
+      <p style="font-size:0.65rem;"><b><code>nums[0..slow−1]</code> = all keepers so far, in order, no gaps.</b></p>
+      <div class="ascii" style="font-size:0.53rem; margin-top:2px;">[ ✓ ✓ ✓ | ? ? ? ? ? ]
+  ↑       ↑
+  0    slow-1 ← finalised
+              ↑
+             slow ← next write slot
+                        ↑
+                       fast ← next read slot</div>
+    </div>
+  </div>
+
+  <div class="card card-green" style="margin-top:5px;">
+    <span class="tag tag-flow">🔄 Step-by-Step Flow</span>
+    <div class="ascii-light ascii" style="font-size:0.6rem;">① slow = 0, fast = 0 (or 1)
+         ↓
+   ┌──→ ② keep(nums[fast])?
+   │     │
+   │     ✓─→ nums[slow] = nums[fast]; slow++
+   │     │
+   │     ✗─→ (skip: fast advances, slow stays)
+   │     ↓
+   │  ③ fast++
+   │     │
+   └─────┘ until fast == N
+         ↓
+④ Optional: post-fill tail (e.g. zeroes)
+⑤ Return slow (= count of keepers)</div>
+  </div>
+
+  <div class="grid-2" style="margin-top:5px;">
+    <div class="card card-pink" style="margin-bottom:0;">
+      <span class="tag tag-tpl">💻 Template</span>
+      <pre style="margin:0; font-size:0.58rem;"><span class="code-keyword">int</span> slow = <span class="code-string">0</span>;
+<span class="code-keyword">for</span> (<span class="code-keyword">int</span> fast = <span class="code-string">0</span>; fast &lt; n; fast++) {
+    <span class="code-keyword">if</span> (keep(nums[fast])) {
+        nums[slow] = nums[fast];
+        slow++;
+    }
+}
+<span class="code-keyword">return</span> slow;</pre>
+    </div>
+    <div class="card card-purple" style="margin-bottom:0;">
+      <span class="tag tag-cx">⏱️ Complexity</span>
+      <table style="margin:0;">
+        <tr><th>Metric</th><th>Value</th></tr>
+        <tr><td>Time</td><td>O(N) — one pass</td></tr>
+        <tr><td>Space</td><td>O(1) — 2 ints</td></tr>
+        <tr><td>Writes</td><td>≤ N (one per keeper)</td></tr>
+        <tr><td>Reads</td><td>Exactly N</td></tr>
+      </table>
+      <p style="font-size:0.6rem; margin-top:2px;"><b>Proof:</b> fast advances once per iteration → N iterations × O(1).</p>
+    </div>
+  </div>
+
+  <div class="card card-orange" style="margin-top:5px;">
+    <span class="tag tag-ex">🎬 Visual Dry Run — Remove Duplicates</span>
+    <div class="step-row" style="margin-top:3px;">
+      <div class="step-label">Init:</div>
+      <div class="array-container" style="margin:0;">
+        <div class="array-box window">1</div><div class="array-box target">1</div><div class="array-box">2</div><div class="array-box">2</div><div class="array-box">3</div>
+      </div>
+      <div class="step-desc">slow=0, fast=1. Match → fast++</div>
+    </div>
+    <div class="step-row">
+      <div class="step-label">fast=2:</div>
+      <div class="array-container" style="margin:0;">
+        <div class="array-box window">1</div><div class="array-box discarded">1</div><div class="array-box target">2</div><div class="array-box">2</div><div class="array-box">3</div>
+      </div>
+      <div class="step-desc">2 ≠ 1 → slow=1, write 2 here</div>
+    </div>
+    <div class="step-row">
+      <div class="step-label">fast=3:</div>
+      <div class="array-container" style="margin:0;">
+        <div class="array-box window">1</div><div class="array-box window">2</div><div class="array-box discarded">2</div><div class="array-box target">2</div><div class="array-box">3</div>
+      </div>
+      <div class="step-desc">2 == 2 → dup, skip</div>
+    </div>
+    <div class="step-row">
+      <div class="step-label">fast=4:</div>
+      <div class="array-container" style="margin:0;">
+        <div class="array-box window">1</div><div class="array-box window">2</div><div class="array-box discarded">2</div><div class="array-box discarded">2</div><div class="array-box target">3</div>
+      </div>
+      <div class="step-desc" style="color:var(--green);">3 ≠ 2 → slow=2, write 3. Return <b>3</b></div>
+    </div>
+  </div>
+
+  <div class="card card-pink" style="margin-top:4px;">
+    <pre style="margin:0; font-size:0.55rem;"><span class="code-keyword">public int</span> removeDuplicates(<span class="code-keyword">int</span>[] nums) {
+  <span class="code-keyword">if</span> (nums.length == <span class="code-string">0</span>) <span class="code-keyword">return</span> <span class="code-string">0</span>;
+  <span class="code-keyword">int</span> slow = <span class="code-string">0</span>;
+  <span class="code-keyword">for</span> (<span class="code-keyword">int</span> fast = <span class="code-string">1</span>; fast &lt; nums.length; fast++) {
+    <span class="code-keyword">if</span> (nums[fast] != nums[slow]) {
+      slow++;
+      nums[slow] = nums[fast];
+    }
+  }
+  <span class="code-keyword">return</span> slow + <span class="code-string">1</span>;   <span class="code-comment">// count = last index + 1</span>
+}</pre>
+  </div>
+
+  <div class="callout callout-success" style="margin-top:4px;">
+    <p><b>Same template, different <code>keep()</code>:</b></p>
+    <div class="grid-2">
+      <p style="font-size:0.62rem;">Move Zeroes → <code>keep(x) = (x != 0)</code>, fill tail with 0s</p>
+      <p style="font-size:0.62rem;">Remove Element → <code>keep(x) = (x != val)</code>, return slow</p>
+      <p style="font-size:0.62rem;">Remove Duplicates II (≤ 2 copies) → <code>keep(x) = (slow &lt; 2 || x != nums[slow-2])</code></p>
+      <p style="font-size:0.62rem;">Compact Anything → one filter predicate</p>
+    </div>
+  </div>
+
+  <div class="side-note">
+    <b>Off-by-one trap:</b> In remove-duplicates, return <code>slow + 1</code> (count) not <code>slow</code> (last index). Most common failure on this problem.
+  </div>
+  <div class="footer">Two Pointers Masterclass · Sub-pattern 2 (Same Direction)</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PAGE 6 — SUB-PATTERN 3: DUTCH FLAG (SPEC + EXAMPLE)            -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <h1>Sub-pattern 3 — Dutch Flag</h1>
+  <div class="subtitle">Three-Way Partition · Three Pointers</div>
+
+  <div class="card card-blue" style="text-align:center;">
+    <h3 style="justify-content:center;">📐 What It Looks Like</h3>
+    <div class="ascii-light ascii" style="font-size:0.6rem;">  ┌───────────┬───────────┬───────────────┬───────────┐
+  │  &lt; pivot  │ == pivot  │   UNEXPLORED  │  &gt; pivot  │
+  │   (done)  │   (done)  │   (to check)  │   (done)  │
+  └───────────┴───────────┴───────────────┴───────────┘
+      ↑           ↑               ↑               ↑
+      0          lo              mid             hi+1   N−1
+                                (explorer)
+
+  Four regions. mid moves right until it exceeds hi.</div>
+  </div>
+
+  <div class="grid-2" style="margin-top:4px;">
+    <div class="card card-blue" style="margin-bottom:0;">
+      <span class="tag tag-cond">🎯 Condition</span>
+      <ul class="kv-list">
+        <li>Partition array into <b>three ordered groups</b> in one pass.</li>
+        <li>Groups defined by comparison to a pivot.</li>
+        <li>Classic: sort 0s, 1s, 2s.</li>
+        <li>O(1) extra space.</li>
+      </ul>
+    </div>
+    <div class="card card-yellow" style="margin-bottom:0;">
+      <span class="tag tag-inv">📌 Invariant</span>
+      <div class="ascii" style="font-size:0.53rem;">[0..lo-1]   [lo..mid-1]   [mid..hi]   [hi+1..N-1]
+──────────  ───────────  ──────────   ──────────
+ &lt; pivot     == pivot     unknown       &gt; pivot
+ (done)      (done)       (explore)     (done)</div>
+      <p style="font-size:0.63rem; margin-top:2px;">Loop ends when <code>mid &gt; hi</code>. All three regions are ordered.</p>
+    </div>
+  </div>
+
+  <div class="card card-green" style="margin-top:5px;">
+    <span class="tag tag-flow">🔄 Step-by-Step Flow</span>
+    <div class="ascii-light ascii" style="font-size:0.6rem;">① lo=0, mid=0, hi=N−1, pivot=nums[0] (or 1)
+         ↓
+   ┌──→ ② inspect nums[mid]
+   │     │
+   │     ├─ nums[mid] &lt; pivot   →  swap(lo, mid); lo++; mid++
+   │     │                        (swapped-in value was == pivot, safe)
+   │     │
+   │     ├─ nums[mid] == pivot  →  mid++
+   │     │                        (already in place)
+   │     │
+   │     └─ nums[mid] &gt; pivot   →  swap(mid, hi); hi--
+   │                                ⚠️ DO NOT mid++ (value is unknown)
+   │     ↓
+   └─────┘ until mid &gt; hi
+         ↓
+③ Result: [0s ... 1s ... 2s]</div>
+  </div>
+
+  <div class="grid-2" style="margin-top:5px;">
+    <div class="card card-pink" style="margin-bottom:0;">
+      <span class="tag tag-tpl">💻 Template</span>
+      <pre style="margin:0; font-size:0.58rem;"><span class="code-keyword">int</span> lo = <span class="code-string">0</span>, mid = <span class="code-string">0</span>, hi = n - <span class="code-string">1</span>;
+<span class="code-keyword">while</span> (mid &lt;= hi) {
+    <span class="code-keyword">if</span> (nums[mid] &lt; pivot) {
+        swap(lo++, mid++);
+    } <span class="code-keyword">else if</span> (nums[mid] == pivot) {
+        mid++;
+    } <span class="code-keyword">else</span> {
+        swap(mid, hi--);
+    }
+}</pre>
+    </div>
+    <div class="card card-purple" style="margin-bottom:0;">
+      <span class="tag tag-cx">⏱️ Complexity</span>
+      <table style="margin:0;">
+        <tr><th>Metric</th><th>Value</th></tr>
+        <tr><td>Time</td><td>O(N) — each element passes mid once</td></tr>
+        <tr><td>Space</td><td>O(1) — 3 ints</td></tr>
+        <tr><td>Swaps</td><td>≤ N</td></tr>
+      </table>
+      <p style="font-size:0.6rem; margin-top:2px;"><b>Proof:</b> Each iteration either advances <code>mid</code> or decreases <code>hi</code> — the unexplored window <code>hi−mid+1</code> shrinks monotonically.</p>
+    </div>
+  </div>
+
+  <div class="card card-orange" style="margin-top:5px;">
+    <span class="tag tag-ex">🎬 Visual Dry Run — Sort Colors [2, 0, 1]</span>
+    <div class="step-row" style="margin-top:3px;">
+      <div class="step-label">Init:</div>
+      <div class="array-container" style="margin:0;">
+        <div class="array-box pivot">2</div><div class="array-box">0</div><div class="array-box pivot">1</div>
+      </div>
+      <div class="step-desc">lo=0, mid=0, hi=2. nums[mid]=2 → swap(mid,hi), hi--</div>
+    </div>
+    <div class="step-row">
+      <div class="step-label">Step 2:</div>
+      <div class="array-container" style="margin:0;">
+        <div class="array-box pivot">1</div><div class="array-box">0</div><div class="array-box discarded">2</div>
+      </div>
+      <div class="step-desc">nums[mid]=1 == pivot(1) → mid++</div>
+    </div>
+    <div class="step-row">
+      <div class="step-label">Step 3:</div>
+      <div class="array-container" style="margin:0;">
+        <div class="array-box pivot">1</div><div class="array-box pivot">0</div><div class="array-box discarded">2</div>
+      </div>
+      <div class="step-desc">nums[mid]=0 &lt; pivot → swap(lo,mid); lo++; mid++</div>
+    </div>
+    <div class="step-row">
+      <div class="step-label">Result:</div>
+      <div class="array-container" style="margin:0;">
+        <div class="array-box window">0</div><div class="array-box window">1</div><div class="array-box discarded">2</div>
+      </div>
+      <div class="step-desc" style="color:var(--green);">mid=2 &gt; hi=1 → stop. <b>Sorted!</b></div>
+    </div>
+  </div>
+
+  <div class="callout callout-danger" style="margin-top:4px;">
+    <p><b>⚠️ The classic bug:</b> doing <code>mid++</code> after <code>swap(mid, hi)</code>. The value that just landed at <code>mid</code> came from the right side and is unexamined. Skipping it = wrong output that <i>looks</i> almost correct.</p>
+  </div>
+
+  <div class="side-note">
+    <b>When:</b> Three ordered categories in one pass. Sort Colors is the iconic form. Also the engine inside <b>three-way QuickSort</b> for handling duplicate keys efficiently.
+  </div>
+  <div class="footer">Two Pointers Masterclass · Sub-pattern 3 (Dutch Flag)</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PAGE 7 — SUB-PATTERN 4: MULTI-POINTER (SPEC + EXAMPLE)         -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <h1>Sub-pattern 4 — Multi-Pointer</h1>
+  <div class="subtitle">k-Sum · Fix Anchors, Converge on the Rest</div>
+
+  <div class="card card-blue" style="text-align:center;">
+    <h3 style="justify-content:center;">📐 What It Looks Like (3Sum)</h3>
+    <div class="ascii-light ascii" style="font-size:0.6rem;">  [ a ] [ b ] [ c ] [ d ] [ e ] [ f ] [ g ]
+    ↑     ↑                           ↑
+    i     L                           R
+  (anchor)  ←── inner scan: L and R converge ──→
+  
+  Outer loop over i → for each i, run opposite-ends on suffix [i+1 .. N−1]
+  Target for inner: target − nums[i]</div>
+  </div>
+
+  <div class="grid-2" style="margin-top:4px;">
+    <div class="card card-blue" style="margin-bottom:0;">
+      <span class="tag tag-cond">🎯 Condition</span>
+      <ul class="kv-list">
+        <li>Problem asks for <b>k-tuples</b> (k ≥ 3) satisfying a sum/relationship.</li>
+        <li>Array sortable without breaking the answer.</li>
+        <li>Duplicate outputs must be avoided.</li>
+        <li>Inner (k−1)-sum reduces to Two Sum on a suffix.</li>
+      </ul>
+    </div>
+    <div class="card card-yellow" style="margin-bottom:0;">
+      <span class="tag tag-inv">📌 Invariant</span>
+      <p style="font-size:0.65rem;">After fixing anchors <code>i₁ &lt; i₂ &lt; … &lt; i_{k−2}</code>:</p>
+      <div class="ascii" style="font-size:0.53rem; margin-top:2px;">Inner L, R satisfy opposite-ends invariant
+on nums[i_{k−2}+1 .. N−1] with target:
+     target − Σ nums[iₘ]
+
+AND all anchors are deduplicated
+(each anchor skips equal predecessors)</div>
+    </div>
+  </div>
+
+  <div class="card card-green" style="margin-top:5px;">
+    <span class="tag tag-flow">🔄 Step-by-Step Flow (3Sum)</span>
+    <div class="ascii-light ascii" style="font-size:0.6rem;">① Sort array (mandatory — enables monotonicity + dedup)
+         ↓
+② for i = 0 .. N−3:
+         │
+         ├─ skip if i>0 and nums[i]==nums[i-1]        (dedup anchor)
+         │
+         ├─ L = i+1, R = N−1, t = −nums[i]
+         │
+         ├─ while L &lt; R:
+         │    ├─ s = nums[i]+nums[L]+nums[R]
+         │    ├─ s == t → record; skip dup L; skip dup R; L++; R--
+         │    ├─ s &lt; t  → L++
+         │    └─ s &gt; t  → R--
+         │
+         └─ next i
+         ↓
+③ return all recorded triplets</div>
+  </div>
+
+  <div class="grid-2" style="margin-top:5px;">
+    <div class="card card-pink" style="margin-bottom:0;">
+      <span class="tag tag-tpl">💻 Template (3Sum)</span>
+      <pre style="margin:0; font-size:0.52rem;"><span class="code-keyword">public</span> List&lt;List&lt;Integer&gt;&gt; threeSum(<span class="code-keyword">int</span>[] nums) {
+  Arrays.sort(nums);
+  List&lt;List&lt;Integer&gt;&gt; res = <span class="code-keyword">new</span> ArrayList&lt;&gt;();
+  <span class="code-keyword">for</span> (<span class="code-keyword">int</span> i = <span class="code-string">0</span>; i &lt; nums.length - <span class="code-string">2</span>; i++) {
+    <span class="code-keyword">if</span> (i &gt; <span class="code-string">0</span> &amp;&amp; nums[i] == nums[i-<span class="code-string">1</span>]) <span class="code-keyword">continue</span>;
+    <span class="code-keyword">int</span> L = i + <span class="code-string">1</span>, R = nums.length - <span class="code-string">1</span>;
+    <span class="code-keyword">while</span> (L &lt; R) {
+      <span class="code-keyword">int</span> s = nums[i]+nums[L]+nums[R];
+      <span class="code-keyword">if</span> (s == <span class="code-string">0</span>) {
+        res.add(Arrays.asList(nums[i],nums[L],nums[R]));
+        <span class="code-keyword">while</span> (L&lt;R &amp;&amp; nums[L]==nums[L+<span class="code-string">1</span>]) L++;
+        <span class="code-keyword">while</span> (L&lt;R &amp;&amp; nums[R]==nums[R-<span class="code-string">1</span>]) R--;
+        L++; R--;
+      } <span class="code-keyword">else if</span> (s &lt; <span class="code-string">0</span>) L++;
+      <span class="code-keyword">else</span> R--;
+    }
+  }
+  <span class="code-keyword">return</span> res;
+}</pre>
+    </div>
+    <div class="card card-purple" style="margin-bottom:0;">
+      <span class="tag tag-cx">⏱️ Complexity</span>
+      <table style="margin:0;">
+        <tr><th>Problem</th><th>Time</th><th>Space</th></tr>
+        <tr><td>3Sum</td><td>O(N²)</td><td>O(1)*</td></tr>
+        <tr><td>4Sum</td><td>O(N³)</td><td>O(k) rec.</td></tr>
+        <tr><td>k-Sum</td><td>O(N^{k−1})</td><td>O(k)</td></tr>
+      </table>
+      <p style="font-size:0.58rem; margin-top:2px;">*excluding output. Inner pass is O(N) by Φ. Sum over i gives O(N²).</p>
+    </div>
+  </div>
+
+  <div class="card card-orange" style="margin-top:5px;">
+    <span class="tag tag-ex">🎬 Visual Dry Run — 3Sum, target 0, sorted [-4, -1, -1, 0, 1, 2]</span>
+    <div class="step-row" style="margin-top:3px;">
+      <div class="step-label">i=0 (-4):</div>
+      <div class="array-container" style="margin:0;">
+        <div class="array-box target">-4</div><div class="array-box">-1</div><div class="array-box">-1</div><div class="array-box">0</div><div class="array-box">1</div><div class="array-box">2</div>
+      </div>
+      <div class="step-desc">L=1(-1)+R=5(2)=1, need 4. Too small → L++. Exhausted.</div>
+    </div>
+    <div class="step-row">
+      <div class="step-label">i=1 (-1):</div>
+      <div class="array-container" style="margin:0;">
+        <div class="array-box discarded">-4</div><div class="array-box target">-1</div><div class="array-box">-1</div><div class="array-box">0</div><div class="array-box">1</div><div class="array-box">2</div>
+      </div>
+      <div class="step-desc" style="color:var(--green);">L=2(-1)+R=5(2)=1, need 1 → <b>FOUND (-1,-1,2)</b></div>
+    </div>
+    <div class="step-row">
+      <div class="step-label">Dedup:</div>
+      <div class="array-container" style="margin:0;">
+        <div class="array-box discarded">-4</div><div class="array-box discarded">-1</div><div class="array-box target">-1</div><div class="array-box">0</div><div class="array-box">1</div><div class="array-box">2</div>
+      </div>
+      <div class="step-desc" style="color:var(--red);">Skip duplicate anchor −1</div>
+    </div>
+    <div class="step-row">
+      <div class="step-label">i=3 (0):</div>
+      <div class="array-container" style="margin:0;">
+        <div class="array-box discarded">-4</div><div class="array-box discarded">-1</div><div class="array-box discarded">-1</div><div class="array-box target">0</div><div class="array-box">1</div><div class="array-box">2</div>
+      </div>
+      <div class="step-desc">L=4(1)+R=5(2)=3 ≠ 0 → R--. Exhausted.</div>
+    </div>
+  </div>
+
+  <div class="side-note">
+    <b>Dedup is non-negotiable:</b> all three skips (anchor, L, R) are mandatory. Missing any one produces duplicate triplets. This is the #1 source of 3Sum bugs.
+  </div>
+  <div class="footer">Two Pointers Masterclass · Sub-pattern 4 (Multi-Pointer)</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PAGE 8 — COMMON MISTAKES + FAILURE CONDITIONS (VISUAL)         -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <h1>What Goes Wrong</h1>
+  <div class="subtitle">Common Mistakes · Failure Conditions</div>
+
+  <h2>❌ Common Mistakes</h2>
+  <div class="grid-2">
+    <div class="card card-red" style="margin-bottom:0;">
+      <h4><span class="big-num">1</span> Infinite Loop</h4>
+      <div class="ascii" style="font-size:0.53rem;">while (L &lt; R) {
+  if (found) return;       ✗
+  // no pointer move!
+}
+→ loops forever</div>
+      <p style="font-size:0.6rem; margin-top:2px;"><b>Fix:</b> verify every branch advances L or R.</p>
+    </div>
+    <div class="card card-red" style="margin-bottom:0;">
+      <h4><span class="big-num">2</span> Wrong Operator</h4>
+      <div class="ascii" style="font-size:0.53rem;">while (L &lt;= R)   ✗ for pair search
+→ compares element with itself
+
+while (L &lt; R)    ✓ correct</div>
+    </div>
+    <div class="card card-red" style="margin-bottom:0;">
+      <h4><span class="big-num">3</span> Forgot to Sort</h4>
+      <div class="ascii" style="font-size:0.53rem;">Arrays.sort(nums);  ← must be here
+// skipping → silent wrong answers</div>
+    </div>
+    <div class="card card-red" style="margin-bottom:0;">
+      <h4><span class="big-num">4</span> Missing Dedup (k-Sum)</h4>
+      <div class="ascii" style="font-size:0.53rem;">3 dedup skips required:
+  ① i &gt; 0 &amp;&amp; nums[i]==nums[i-1]
+  ② nums[L]==nums[L+1]
+  ③ nums[R]==nums[R-1]
+Miss any → duplicate triplets</div>
+    </div>
+    <div class="card card-red" style="margin-bottom:0;">
+      <h4><span class="big-num">5</span> mid++ after swap(mid, hi)</h4>
+      <div class="ascii" style="font-size:0.53rem;">swap(mid, hi); hi--; mid++;  ✗
+value from hi is UNKNOWN
+must re-inspect on next loop</div>
+    </div>
+    <div class="card card-red" style="margin-bottom:0;">
+      <h4><span class="big-num">6</span> Moving Both on Non-Match</h4>
+      <div class="ascii" style="font-size:0.53rem;">if (s != t) { L++; R--; }   ✗
+skips valid candidates
+only move the pointer that
+rules out the row/column</div>
+    </div>
+    <div class="card card-red" style="margin-bottom:0;">
+      <h4><span class="big-num">7</span> Returning Too Early</h4>
+      <div class="ascii" style="font-size:0.53rem;">all-pairs problem:
+  "return on first match"   ✗
+drops valid answers
+
+record then continue</div>
+    </div>
+    <div class="card card-red" style="margin-bottom:0;">
+      <h4><span class="big-num">8</span> Off-by-One on slow</h4>
+      <div class="ascii" style="font-size:0.53rem;">return slow;       ✗ (last index)
+return slow + 1;   ✓ (count)</div>
+    </div>
+  </div>
+
+  <div class="callout callout-info" style="margin-top:4px;">
+    <p><b>Debugger's trick:</b> print <code>(L, R, nums[L], nums[R])</code> at every iteration on a 5-element input. If pointers stall or jump, bug is instantly visible.</p>
+  </div>
+
+  <h2 style="margin-top:5px;">🛑 Failure Conditions</h2>
+  <div class="grid-2">
+    <div class="card card-red" style="margin-bottom:0;">
+      <h4>❌ Unsorted + Indices Must Be Preserved</h4>
+      <div class="ascii" style="font-size:0.53rem;">Original:  [10, 2, 4]   return indices?
+Sorted:    [2, 4, 10]   → indices lost!
+→ use hash map OR store (value, idx) pairs</div>
+    </div>
+    <div class="card card-red" style="margin-bottom:0;">
+      <h4>❌ Non-Monotonic Relationship</h4>
+      <div class="ascii" style="font-size:0.53rem;">a ^ b == X           ✗ sorting kills XOR
+(a+b) % 2 == 0        ✗ parity survives sorting
+                        but not adjacency
+custom equality       ✗ re-derive pointer rules</div>
+    </div>
+    <div class="card card-red" style="margin-bottom:0;">
+      <h4>❌ You Need All Pairs</h4>
+      <div class="ascii" style="font-size:0.53rem;">nums = [1,1,1,1,1], target=2
+# pairs = N(N−1)/2 = O(N²) OUTPUT
+
+No linear algorithm exists.
+Two pointers cannot enumerate in o(N²).</div>
+    </div>
+    <div class="card card-red" style="margin-bottom:0;">
+      <h4>❌ Move Depends on External State</h4>
+      <div class="ascii" style="font-size:0.53rem;">If L++/R-- depends on prefix sums,
+running max, etc. → must maintain state
+explicitly (Trapping Rain Water does with
+2 extra ints). Too expensive → may not fit.</div>
+    </div>
+  </div>
+
+  <div class="card card-green" style="margin-top:5px;">
+    <h4>✅ The 3-Question Pre-Commit Test</h4>
+    <div class="grid-3">
+      <div>
+        <p style="font-size:0.62rem;"><b>1. Sort safe?</b></p>
+        <p style="font-size:0.58rem;">Does the answer survive a sorted copy? If yes, sort.</p>
+      </div>
+      <div>
+        <p style="font-size:0.62rem;"><b>2. Elimination valid?</b></p>
+        <p style="font-size:0.58rem;">Can you break the "bulk-kill" rule with a small sorted example? If not in 5 min, trust it.</p>
+      </div>
+      <div>
+        <p style="font-size:0.62rem;"><b>3. Output small?</b></p>
+        <p style="font-size:0.58rem;">Is expected output size O(N)? If Ω(N²), no linear algorithm.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="side-note">
+    <b>Fallbacks:</b> Hash Map for O(N) pairs on unsorted data. Binary Search for single element. Backtracking / Bitmask DP for structured k-sum on unsorted input.
+  </div>
+  <div class="footer">Two Pointers Masterclass · Mistakes &amp; Failures</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PAGE 9 — PATTERN CONNECTIONS (NO SLIDING WINDOW)               -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <h1>Pattern Connections</h1>
+  <div class="subtitle">Two Pointers Family · Binary Search · Hash Map</div>
+
+  <h2>🌳 Two Pointers Family Tree</h2>
+  <div class="card card-yellow">
+    <div class="ascii" style="font-size:0.58rem;">                  ┌─────────────────────┐
+                  │   TWO POINTERS      │
+                  │  (L, R) over array  │
+                  └──────────┬──────────┘
+                             │
+        ┌────────────────────┼─────────────────────┐
+        │                    │                     │
+   ┌────┴─────┐       ┌──────┴──────┐       ┌──────┴──────┐
+   │ Opposite │       │    Same     │       │    Dutch    │
+   │   Ends   │       │  Direction  │       │    Flag     │
+   │  (L↔R)   │       │ (slow, fast)│       │ (lo,mid,hi) │
+   └────┬─────┘       └──────┬──────┘       └─────────────┘
+        │                    │
+   ┌────┴────────┐      ┌────┴─────────┐
+   │  with extra │      │   with gap   │
+   │   state     │      │  between them│
+   │ (Trapping)  │      │ (Remove Nth) │
+   └─────────────┘      └──────────────┘
+
+   ┌─────────────────────┐
+   │   Multi-Pointer     │
+   │  (anchor + inner    │
+   │   opposite ends)    │
+   └─────────────────────┘</div>
+  </div>
+
+  <h2>🔗 Two Pointers ↔ Binary Search</h2>
+  <div class="grid-2">
+    <div class="card card-blue" style="margin-bottom:0;">
+      <p style="font-size:0.66rem;"><b>Same invariant:</b> "answer lives in <code>[L, R]</code>."</p>
+      <p style="font-size:0.66rem; margin-top:2px;"><b>Difference:</b> Binary Search shrinks by <b>half</b> per step (uses value to skip 50%); two pointers shrink by <b>1</b> per step (uses comparison to eliminate a whole row/column).</p>
+    </div>
+    <div class="card card-purple" style="margin-bottom:0;">
+      <table style="margin:0;">
+        <tr><th>Property</th><th>2-Ptr</th><th>Bin-Search</th></tr>
+        <tr><td>Interval shrink</td><td>1 element</td><td>Half</td></tr>
+        <tr><td>Time</td><td>O(N)</td><td>O(log N)</td></tr>
+        <tr><td>Needs sorted?</td><td>Yes</td><td>Yes</td></tr>
+        <tr><td>Compare</td><td>elem ↔ elem</td><td>elem ↔ target</td></tr>
+        <tr><td>Returns</td><td>pair / index</td><td>single index</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <h2>🔗 Two Pointers ↔ Hash Map</h2>
+  <div class="card card-green">
+    <p style="font-size:0.66rem; margin-bottom:3px;">Hash map: <b>O(N) time, O(N) space</b>. Two pointers: <b>O(N log N) sort, O(1) space</b>.</p>
+    <table>
+      <tr><th>Scenario</th><th>Better Pick</th><th>Reason</th></tr>
+      <tr><td>Unsorted, one pass, memory OK</td><td>Hash Map</td><td>O(N) beats O(N log N)</td></tr>
+      <tr><td>Sorted, memory tight</td><td>Two Pointers</td><td>O(1) space wins</td></tr>
+      <tr><td>Find ALL pairs</td><td>Hash Map</td><td>Two pointers can't beat Ω(N²) output</td></tr>
+      <tr><td>Streaming input</td><td>Hash Map</td><td>Can't re-read; two pointers needs full array</td></tr>
+      <tr><td>Indices must be preserved</td><td>Hash Map</td><td>Sorting destroys original positions</td></tr>
+    </table>
+  </div>
+
+  <h2>🎯 The Constraint Triangle</h2>
+  <div class="card card-yellow" style="text-align:center;">
+    <div class="ascii" style="font-size:0.6rem;">               ┌─────────┐
+               │  TIME   │
+               └────┬────┘
+                   /│\
+                  / │ \
+                 /  │  \
+                /   │   \
+        ┌──────┴──┐ │ ┌─┴──────┐
+        │  SPACE  │─┼─│  SORT  │
+        └─────────┴─┴─┴────────┘
+        
+  Sorted    + O(1) space   →  Two Pointers
+  Unsorted  + can sort     →  Sort + Two Pointers
+  Unsorted  + no sort      →  Hash Map
+  Single elem + sorted     →  Binary Search</div>
+  </div>
+
+  <div class="card card-orange" style="margin-top:5px;">
+    <h4>Quick Decision Matrix</h4>
+    <table>
+      <tr><th>Constraints</th><th>Pick This Pattern</th></tr>
+      <tr><td>Sorted + pair question + O(1) space</td><td>Opposite Ends</td></tr>
+      <tr><td>Unsorted + sort OK + pair question</td><td>Sort → Opposite Ends</td></tr>
+      <tr><td>Unsorted + indices matter</td><td>Hash Map</td></tr>
+      <tr><td>In-place modification + O(1) space</td><td>Same Direction</td></tr>
+      <tr><td>3-category partition</td><td>Dutch Flag</td></tr>
+      <tr><td>k-sum (k ≥ 3)</td><td>Multi-Pointer</td></tr>
+      <tr><td>Single element, sorted</td><td>Binary Search</td></tr>
+    </table>
+  </div>
+
+  <div class="side-note">
+    <b>Mental index:</b> Sorted + O(1) → two pointers · Unsorted + can sort → sort then two pointers · Unsorted + can't sort → hash map · Single element → binary search.
+  </div>
+  <div class="footer">Two Pointers Masterclass · Pattern Connections</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- PAGE 10 — INTERVIEW VARIATIONS                                 -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="page">
+  <h1>Interview Variations</h1>
+  <div class="subtitle">Heuristics · Problem Matrix · Twists · 30-Second Recap</div>
+
+  <h2>🎯 Recognition Heuristics — 30 Seconds</h2>
+  <div class="card card-yellow">
+    <div class="ascii" style="font-size:0.55rem;">SEE THIS                                 REACH FOR
+────────────────────────────────────────────  ──────────────────
+Sorted + "sum to target" pair        → Opposite Ends
+In-place remove/filter/dedup         → Same Direction
+"Partition into 3 groups" (0/1/2)    → Dutch Flag
+k-sum (k ≥ 3) + sorted               → Sort + fix anchor + Opp Ends
+Max/min over pair (area, water)      → Opposite Ends (greedy)
+Palindrome / mirror check            → Opposite Ends
+Find PAIR with gap of N              → Same Direction (gap)
+Squares of sorted array              → Opposite Ends (fill from back)</div>
+  </div>
+
+  <h2>🏆 Representative Problem Matrix</h2>
+  <div class="card card-blue">
+    <table>
+      <tr><th>Diff</th><th>Problem</th><th>Sub-pattern</th><th>One-line idea</th></tr>
+      <tr><td>Easy</td><td>Valid Palindrome</td><td>Opposite Ends</td><td>Compare chars from both ends</td></tr>
+      <tr><td>Easy</td><td>Remove Duplicates</td><td>Same Direction</td><td>slow writes, fast reads</td></tr>
+      <tr><td>Easy</td><td>Move Zeroes</td><td>Same Direction</td><td>keep(x≠0), fill tail with 0s</td></tr>
+      <tr><td>Easy</td><td>Merge Sorted Array</td><td>Same Direction (from end)</td><td>Fill from back to avoid shifting</td></tr>
+      <tr><td>Medium</td><td>Two Sum II (sorted)</td><td>Opposite Ends</td><td>Move L/R based on sum vs target</td></tr>
+      <tr><td>Medium</td><td>Sort Colors</td><td>Dutch Flag</td><td>3 pointers; no mid++ on high-swap</td></tr>
+      <tr><td>Medium</td><td>Container With Water</td><td>Opposite Ends (greedy)</td><td>Move shorter wall</td></tr>
+      <tr><td>Medium</td><td>3Sum</td><td>Multi-Pointer</td><td>Sort + anchor + inner Opp Ends; 3 dedups</td></tr>
+      <tr><td>Medium</td><td>Remove Nth From End</td><td>Same Direction (gap)</td><td>Gap of N between pointers</td></tr>
+      <tr><td>Hard</td><td>Trapping Rain Water</td><td>Opposite Ends + state</td><td>Process shorter side; track leftMax/rightMax</td></tr>
+      <tr><td>Hard</td><td>4Sum / kSum</td><td>Multi-Pointer</td><td>Extra outer loops + dedup at each level</td></tr>
+    </table>
+  </div>
+
+  <h2>🎤 Interview Twists — How Problems Morph</h2>
+  <div class="grid-2">
+    <div class="card card-green" style="margin-bottom:0;">
+      <h4>↻ Return ALL Pairs/Triplets</h4>
+      <div class="ascii" style="font-size:0.53rem;">record(); L++; R--;  ← not return
++ 3 dedup skips</div>
+      <p style="font-size:0.6rem;">Same skeleton, no early return.</p>
+    </div>
+    <div class="card card-purple" style="margin-bottom:0;">
+      <h4>↻ Count Pairs ≤ Target</h4>
+      <div class="ascii" style="font-size:0.53rem;">if nums[L]+nums[R] ≤ t:
+    count += (R−L); L++</div>
+      <p style="font-size:0.6rem;">O(N) count instead of O(N²).</p>
+    </div>
+    <div class="card card-green" style="margin-bottom:0;">
+      <h4>↻ Closest Sum to Target</h4>
+      <div class="ascii" style="font-size:0.53rem;">best = min(best, |s − t|)
+move based on sign of s − t</div>
+      <p style="font-size:0.6rem;">Handles closest pair AND closest triplet.</p>
+    </div>
+    <div class="card card-purple" style="margin-bottom:0;">
+      <h4>↻ Pairs With Difference = K</h4>
+      <div class="ascii" style="font-size:0.53rem;">i=0, j=1 (same direction)
+d = nums[j]−nums[i]
+d &lt; K → j++;  d &gt; K → i++;  d == K → record</div>
+      <p style="font-size:0.6rem;">Two SAME-direction pointers.</p>
+    </div>
+    <div class="card card-green" style="margin-bottom:0;">
+      <h4>↻ Valid Palindrome with 1 Deletion</h4>
+      <div class="ascii" style="font-size:0.53rem;">On mismatch:
+  try skip L → check [L+1, R]
+  try skip R → check [L, R−1]</div>
+      <p style="font-size:0.6rem;">Recursive mirror check.</p>
+    </div>
+    <div class="card card-purple" style="margin-bottom:0;">
+      <h4>↻ Squares of Sorted Array</h4>
+      <div class="ascii" style="font-size:0.53rem;">Fill result from BACK:
+  larger of |nums[L]|, |nums[R]| → end
+  move that pointer inward</div>
+      <p style="font-size:0.6rem;">O(N) using opposite ends on magnitudes.</p>
+    </div>
+  </div>
+
+  <h2 style="margin-top:5px;">⚡ 30-Second Revision</h2>
+  <div class="card card-orange">
+    <div class="ascii" style="font-size:0.58rem;">SUB-PATTERN          MOVE RULE                      KILLER TRAP
+──────────────────  ─────────────────────────────  ────────────────────────
+Opposite Ends       L++ if too small, R-- if big  strict L &lt; R, one pointer/step
+Same Direction      slow writes when fast keeps    return slow+1, not slow
+Dutch Flag          mid++ unless from-hi swap      NEVER mid++ after swap(mid,hi)
+Multi-Pointer       anchor + inner Opp Ends        ALL 3 dedup skips required
+
+COMPLEXITY:          O(N) time / O(1) space (Opp, Same, Dutch)
+                     3Sum O(N²), k-sum O(N^{k−1})
+
+FAILURE MODES:       unsorted + indices matter
+                     non-monotonic (XOR, parity)
+                     output is Ω(N²)</div>
+  </div>
+
+  <div class="side-note">
+    <b>Final words:</b> Two pointers is a <b>family of pointer-walking strategies</b>, unified by one idea — <i>monotone comparisons eliminate whole candidate families in one step</i>. Master the four sub-patterns and every pair-sum / in-place / partition problem collapses into the same skeleton.
+  </div>
+  <div class="footer">Two Pointers Masterclass · Interview Variations</div>
+</div>
+
+</body>
+</html>

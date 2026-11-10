@@ -1,0 +1,178 @@
+import React, { useEffect, useMemo } from 'react';
+import { useStepNavigation } from '../hooks/useStepNavigation';
+import TwoPointerVisualizer from '../components/visualizers/TwoPointerVisualizer';
+import { CheckCircle, Copy, AlertTriangle, RotateCcw, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+
+export default function SubPatternPage({ subPattern, progress, markComplete, markInProgress }) {
+  const steps = subPattern.steps || [];
+  const nav = useStepNavigation(steps.length);
+  const currentState = steps[nav.currentStep]?.state;
+
+  useEffect(() => {
+    markInProgress(subPattern.id);
+  }, [subPattern.id, markInProgress]);
+
+  const [copied, setCopied] = React.useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(subPattern.javaCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
+  const isComplete = progress[subPattern.id] === 'complete';
+
+  return (
+    <div className="sub-pattern-page">
+      <header className="page-hero">
+        <h1 className="page-title">{subPattern.title}</h1>
+        <p className="page-subtitle">{subPattern.subtitle}</p>
+        <span className="difficulty-badge">{subPattern.difficulty}</span>
+      </header>
+
+      {/* 1. CORE CONCEPT */}
+      <section className="content-card card-yellow">
+        <h2>🎯 Core Concept</h2>
+        <p><strong>What:</strong> {subPattern.coreConcept.what}</p>
+        <p><strong>Why:</strong> {subPattern.coreConcept.why}</p>
+        <p><strong>When:</strong> {subPattern.coreConcept.when}</p>
+        <p><strong>Properties:</strong></p>
+        <ul>{subPattern.coreConcept.properties.map((p, i) => <li key={i}>{p}</li>)}</ul>
+      </section>
+
+      {/* 2. PATTERN RECOGNITION */}
+      <section className="content-card card-blue">
+        <h2>🔍 Pattern Recognition</h2>
+        <div className="recognition-row">
+          <div><strong>Clues</strong><ul>{subPattern.patternRecognition.clues.map((c, i) => <li key={i}>{c}</li>)}</ul></div>
+          <div><strong>Inputs</strong><ul>{subPattern.patternRecognition.inputs.map((c, i) => <li key={i}>{c}</li>)}</ul></div>
+          <div><strong>Constraints</strong><ul>{subPattern.patternRecognition.constraints.map((c, i) => <li key={i}>{c}</li>)}</ul></div>
+        </div>
+      </section>
+
+      {/* 3. INTERACTIVE STEP-BY-STEP INTUITION */}
+      <section className="content-card card-green interactive-card">
+        <h2>👣 Step-by-Step Intuition</h2>
+        <div className="step-header">
+          <span>Step {nav.currentStep + 1} of {nav.totalSteps}</span>
+          <div className="step-progress-bar">
+            <div className="step-progress-fill" style={{ width: `${((nav.currentStep + 1) / nav.totalSteps) * 100}%` }} />
+          </div>
+        </div>
+        <div className="step-body">
+          <h3 className="step-title">{steps[nav.currentStep]?.title}</h3>
+          <p className="step-explanation">{steps[nav.currentStep]?.explanation}</p>
+          <TwoPointerVisualizer state={currentState} type={subPattern.type} />
+          {currentState?.action && (
+            <div className={`action-pill ${currentState.found ? 'action-found' : ''}`}>
+              {currentState.action}
+            </div>
+          )}
+        </div>
+        <div className="step-controls">
+          <button className="btn-secondary" onClick={nav.prev} disabled={!nav.canGoPrev}>
+            <ChevronLeft size={14} /> Previous Step
+          </button>
+          <button className="btn-secondary" onClick={nav.reset}>
+            <RotateCcw size={14} /> Reset
+          </button>
+          <button className="btn-primary" onClick={nav.next} disabled={!nav.canGoNext}>
+            Next Step <ChevronRight size={14} />
+          </button>
+        </div>
+      </section>
+
+      {/* 4. JAVA IMPLEMENTATION */}
+      <section className="content-card">
+        <h2>💻 Java Implementation</h2>
+        <div className="code-block-wrapper">
+          <div className="code-block-header">
+            <span className="lang-tag">Java</span>
+            <button className="btn-copy" onClick={handleCopy}>
+              {copied ? <><CheckCircle size={12} /> Copied</> : <><Copy size={12} /> Copy</>}
+            </button>
+          </div>
+          <pre className="java-code"><code>{subPattern.javaCode}</code></pre>
+        </div>
+      </section>
+
+      {/* 5. LINE-BY-LINE */}
+      <section className="content-card card-purple">
+        <h2>📖 Line-by-Line Explanation</h2>
+        <div className="line-explanations">
+          {subPattern.javaExplanation.map((l, i) => (
+            <div key={i} className="line-item">
+              <code>{l.line}</code>
+              <span>{l.note}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 6. COMPLEXITY */}
+      <section className="content-card card-teal">
+        <h2>⏱️ Complexity Analysis</h2>
+        <div className="complexity-grid">
+          <div className="complexity-item"><label>Time</label><strong>{subPattern.complexity.time}</strong></div>
+          <div className="complexity-item"><label>Space</label><strong>{subPattern.complexity.space}</strong></div>
+          <div className="complexity-item"><label>Auxiliary</label><strong>{subPattern.complexity.aux}</strong></div>
+        </div>
+        <p className="complexity-note">{subPattern.complexity.explanation}</p>
+      </section>
+
+      {/* 7. BRUTE FORCE COMPARISON */}
+      <section className="content-card card-orange">
+        <h2>⚖️ Brute Force vs Optimal</h2>
+        <table className="comparison-table">
+          <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Optimal</td><td><code>{subPattern.complexity.time}</code></td><td><code>{subPattern.complexity.space}</code></td><td>Two pointers</td></tr>
+            <tr><td>Brute Force</td><td><code>{subPattern.bruteForce.time}</code></td><td><code>{subPattern.bruteForce.space}</code></td><td>{subPattern.bruteForce.note}</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      {/* 8. COMMON MISTAKES */}
+      <section className="content-card card-red">
+        <h2>⚠️ Common Mistakes</h2>
+        <div className="mistake-list">
+          {subPattern.commonMistakes.map((m, i) => (
+            <div key={i} className="mistake-item">
+              <AlertTriangle size={14} />
+              <div><strong>{m.title}</strong> — {m.detail}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 9. INTERVIEW QUESTIONS */}
+      <section className="content-card">
+        <h2>🎤 Interview Questions</h2>
+        <div className="question-list">
+          {subPattern.interviewQuestions.map((q, i) => (
+            <a key={i} href={q.url} target="_blank" rel="noopener noreferrer" className="question-row">
+              <span className={`level-badge level-${q.level.toLowerCase()}`}>{q.level}</span>
+              <span>{q.title}</span>
+              <ArrowRight size={14} />
+            </a>
+          ))}
+        </div>
+      </section>
+
+      {/* 10. QUICK REVISION */}
+      <section className="content-card card-yellow quick-revision">
+        <h2>⚡ 30-Second Revision</h2>
+        <ul className="revision-list">{subPattern.quickRevision.map((r, i) => <li key={i}>{r}</li>)}</ul>
+      </section>
+
+      <div className="completion-row">
+        <button
+          className={`btn-complete ${isComplete ? 'complete' : ''}`}
+          onClick={() => markComplete(subPattern.id)}
+          disabled={isComplete}
+        >
+          <CheckCircle size={14} /> {isComplete ? 'Completed' : 'Mark as Complete'}
+        </button>
+      </div>
+    </div>
+  );
+}

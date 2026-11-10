@@ -24,11 +24,13 @@ jobs:
 
       - name: Install dependencies
         working-directory: frontend
-        run: npm install
+        run: npm ci
 
       - name: Build
         working-directory: frontend
-        run: npm run build
+        run: |
+          chmod +x node_modules/.bin/vite
+          npm run build
 
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4

@@ -1,7 +1,15 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStepNavigation } from '../hooks/useStepNavigation';
-import TwoPointerVisualizer from '../components/visualizers/TwoPointerVisualizer';
 import { CheckCircle, Copy, AlertTriangle, RotateCcw, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+
+// Import all Visualizers
+import TwoPointerVisualizer from '../components/visualizers/TwoPointerVisualizer';
+import SlidingWindowVisualizer from '../components/visualizers/SlidingWindowVisualizer';
+import FastSlowVisualizer from '../components/visualizers/FastSlowVisualizer';
+import BinarySearchVisualizer from '../components/visualizers/BinarySearchVisualizer';
+import PrefixSumVisualizer from '../components/visualizers/PrefixSumVisualizer';
+import HashingVisualizer from '../components/visualizers/HashingVisualizer';
+import StackVisualizer from '../components/visualizers/StackVisualizer';
 
 export default function SubPatternPage({ subPattern, progress, markComplete, markInProgress }) {
   const steps = subPattern.steps || [];
@@ -12,7 +20,8 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
     markInProgress(subPattern.id);
   }, [subPattern.id, markInProgress]);
 
-  const [copied, setCopied] = React.useState(false);
+  const [copied, setCopied] = useState(false);
+  
   const handleCopy = () => {
     navigator.clipboard.writeText(subPattern.javaCode);
     setCopied(true);
@@ -20,6 +29,27 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
   };
 
   const isComplete = progress[subPattern.id] === 'complete';
+
+  // Dynamically render the correct visualizer based on the patternId
+  const renderVisualizer = () => {
+    switch (subPattern.patternId) {
+      case 'sliding-window':
+        return <SlidingWindowVisualizer state={currentState} type={subPattern.type} />;
+      case 'fast-slow':
+        return <FastSlowVisualizer state={currentState} type={subPattern.type} />;
+      case 'binary-search':
+        return <BinarySearchVisualizer state={currentState} type={subPattern.type} />;
+      case 'prefix-sum':
+        return <PrefixSumVisualizer state={currentState} type={subPattern.type} />;
+      case 'hashing':
+        return <HashingVisualizer state={currentState} type={subPattern.type} />;
+      case 'stack':
+        return <StackVisualizer state={currentState} type={subPattern.type} />;
+      case 'two-pointers':
+      default:
+        return <TwoPointerVisualizer state={currentState} type={subPattern.type} />;
+    }
+  };
 
   return (
     <div className="sub-pattern-page">
@@ -29,27 +59,33 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
         <span className="difficulty-badge">{subPattern.difficulty}</span>
       </header>
 
-      {/* 1. CORE CONCEPT */}
       <section className="content-card card-yellow">
         <h2>🎯 Core Concept</h2>
         <p><strong>What:</strong> {subPattern.coreConcept.what}</p>
         <p><strong>Why:</strong> {subPattern.coreConcept.why}</p>
         <p><strong>When:</strong> {subPattern.coreConcept.when}</p>
         <p><strong>Properties:</strong></p>
-        <ul>{subPattern.coreConcept.properties.map((p, i) => <li key={i}>{p}</li>)}</ul>
+        <ul>{subPattern.coreConcept.properties?.map((p, i) => <li key={i}>{p}</li>)}</ul>
       </section>
 
-      {/* 2. PATTERN RECOGNITION */}
       <section className="content-card card-blue">
         <h2>🔍 Pattern Recognition</h2>
         <div className="recognition-row">
-          <div><strong>Clues</strong><ul>{subPattern.patternRecognition.clues.map((c, i) => <li key={i}>{c}</li>)}</ul></div>
-          <div><strong>Inputs</strong><ul>{subPattern.patternRecognition.inputs.map((c, i) => <li key={i}>{c}</li>)}</ul></div>
-          <div><strong>Constraints</strong><ul>{subPattern.patternRecognition.constraints.map((c, i) => <li key={i}>{c}</li>)}</ul></div>
+          <div>
+            <strong>Clues</strong>
+            <ul>{subPattern.patternRecognition.clues?.map((c, i) => <li key={i}>{c}</li>)}</ul>
+          </div>
+          <div>
+            <strong>Inputs</strong>
+            <ul>{subPattern.patternRecognition.inputs?.map((c, i) => <li key={i}>{c}</li>)}</ul>
+          </div>
+          <div>
+            <strong>Constraints</strong>
+            <ul>{subPattern.patternRecognition.constraints?.map((c, i) => <li key={i}>{c}</li>)}</ul>
+          </div>
         </div>
       </section>
 
-      {/* 3. INTERACTIVE STEP-BY-STEP INTUITION */}
       <section className="content-card card-green interactive-card">
         <h2>👣 Step-by-Step Intuition</h2>
         <div className="step-header">
@@ -61,12 +97,10 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
         <div className="step-body">
           <h3 className="step-title">{steps[nav.currentStep]?.title}</h3>
           <p className="step-explanation">{steps[nav.currentStep]?.explanation}</p>
-          <TwoPointerVisualizer state={currentState} type={subPattern.type} />
-          {currentState?.action && (
-            <div className={`action-pill ${currentState.found ? 'action-found' : ''}`}>
-              {currentState.action}
-            </div>
-          )}
+          
+          {/* Render the appropriate visualizer */}
+          {renderVisualizer()}
+          
         </div>
         <div className="step-controls">
           <button className="btn-secondary" onClick={nav.prev} disabled={!nav.canGoPrev}>
@@ -81,7 +115,6 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
         </div>
       </section>
 
-      {/* 4. JAVA IMPLEMENTATION */}
       <section className="content-card">
         <h2>💻 Java Implementation</h2>
         <div className="code-block-wrapper">
@@ -95,11 +128,10 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
         </div>
       </section>
 
-      {/* 5. LINE-BY-LINE */}
       <section className="content-card card-purple">
         <h2>📖 Line-by-Line Explanation</h2>
         <div className="line-explanations">
-          {subPattern.javaExplanation.map((l, i) => (
+          {subPattern.javaExplanation?.map((l, i) => (
             <div key={i} className="line-item">
               <code>{l.line}</code>
               <span>{l.note}</span>
@@ -108,7 +140,6 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
         </div>
       </section>
 
-      {/* 6. COMPLEXITY */}
       <section className="content-card card-teal">
         <h2>⏱️ Complexity Analysis</h2>
         <div className="complexity-grid">
@@ -119,23 +150,38 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
         <p className="complexity-note">{subPattern.complexity.explanation}</p>
       </section>
 
-      {/* 7. BRUTE FORCE COMPARISON */}
       <section className="content-card card-orange">
         <h2>⚖️ Brute Force vs Optimal</h2>
         <table className="comparison-table">
-          <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Notes</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Approach</th>
+              <th>Time</th>
+              <th>Space</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
           <tbody>
-            <tr><td>Optimal</td><td><code>{subPattern.complexity.time}</code></td><td><code>{subPattern.complexity.space}</code></td><td>Two pointers</td></tr>
-            <tr><td>Brute Force</td><td><code>{subPattern.bruteForce.time}</code></td><td><code>{subPattern.bruteForce.space}</code></td><td>{subPattern.bruteForce.note}</td></tr>
+            <tr>
+              <td>Optimal</td>
+              <td><code>{subPattern.complexity.time}</code></td>
+              <td><code>{subPattern.complexity.space}</code></td>
+              <td>Primary Pattern</td>
+            </tr>
+            <tr>
+              <td>Brute Force</td>
+              <td><code>{subPattern.bruteForce.time}</code></td>
+              <td><code>{subPattern.bruteForce.space}</code></td>
+              <td>{subPattern.bruteForce.note}</td>
+            </tr>
           </tbody>
         </table>
       </section>
 
-      {/* 8. COMMON MISTAKES */}
       <section className="content-card card-red">
         <h2>⚠️ Common Mistakes</h2>
         <div className="mistake-list">
-          {subPattern.commonMistakes.map((m, i) => (
+          {subPattern.commonMistakes?.map((m, i) => (
             <div key={i} className="mistake-item">
               <AlertTriangle size={14} />
               <div><strong>{m.title}</strong> — {m.detail}</div>
@@ -144,11 +190,10 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
         </div>
       </section>
 
-      {/* 9. INTERVIEW QUESTIONS */}
       <section className="content-card">
         <h2>🎤 Interview Questions</h2>
         <div className="question-list">
-          {subPattern.interviewQuestions.map((q, i) => (
+          {subPattern.interviewQuestions?.map((q, i) => (
             <a key={i} href={q.url} target="_blank" rel="noopener noreferrer" className="question-row">
               <span className={`level-badge level-${q.level.toLowerCase()}`}>{q.level}</span>
               <span>{q.title}</span>
@@ -158,10 +203,11 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
         </div>
       </section>
 
-      {/* 10. QUICK REVISION */}
       <section className="content-card card-yellow quick-revision">
         <h2>⚡ 30-Second Revision</h2>
-        <ul className="revision-list">{subPattern.quickRevision.map((r, i) => <li key={i}>{r}</li>)}</ul>
+        <ul className="revision-list">
+          {subPattern.quickRevision?.map((r, i) => <li key={i}>{r}</li>)}
+        </ul>
       </section>
 
       <div className="completion-row">

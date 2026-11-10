@@ -1,14 +1,56 @@
 import React from 'react';
-import { twoPointerOverview, twoPointerSubPatterns } from '../data/twoPointers';
-import { ArrowRight, CheckCircle, AlertTriangle, BookOpen } from 'lucide-react';
+import { ArrowRight, CheckCircle, AlertTriangle } from 'lucide-react';
 
-export default function PatternPage({ navigateTo, progress }) {
-  const overview = twoPointerOverview;
+// Import all data modules
+import { twoPointerOverview, twoPointerSubPatterns } from '../data/twoPointers';
+import { slidingWindowOverview, slidingWindowSubPatterns } from '../data/slidingWindow';
+import { fastSlowOverview, fastSlowSubPatterns } from '../data/fastSlowPointers';
+import { binarySearchOverview, binarySearchSubPatterns } from '../data/binarySearch';
+import { hashingOverview, hashingSubPatterns } from '../data/hashing';
+import { prefixSumOverview, prefixSumSubPatterns } from '../data/prefixSum';
+import { stackOverview, stackSubPatterns } from '../data/stack';
+
+export default function PatternPage({ patternId, navigateTo, progress }) {
+  let overview, subPatterns;
+
+  // Route to the correct data based on the patternId
+  switch (patternId) {
+    case 'two-pointers':
+      overview = twoPointerOverview;
+      subPatterns = twoPointerSubPatterns;
+      break;
+    case 'sliding-window':
+      overview = slidingWindowOverview;
+      subPatterns = slidingWindowSubPatterns;
+      break;
+    case 'fast-slow':
+      overview = fastSlowOverview;
+      subPatterns = fastSlowSubPatterns;
+      break;
+    case 'binary-search':
+      overview = binarySearchOverview;
+      subPatterns = binarySearchSubPatterns;
+      break;
+    case 'hashing':
+      overview = hashingOverview;
+      subPatterns = hashingSubPatterns;
+      break;
+    case 'prefix-sum':
+      overview = prefixSumOverview;
+      subPatterns = prefixSumSubPatterns;
+      break;
+    case 'stack':
+      overview = stackOverview;
+      subPatterns = stackSubPatterns;
+      break;
+    default:
+      return <div style={{ padding: '20px', textAlign: 'center' }}>Pattern not found.</div>;
+  }
 
   return (
     <div className="pattern-page">
       <header className="page-hero">
-        <h1 className="page-title">Two Pointers</h1>
+        <h1 className="page-title">{overview.title}</h1>
         <p className="page-subtitle">{overview.subtitle}</p>
       </header>
 
@@ -27,26 +69,26 @@ export default function PatternPage({ navigateTo, progress }) {
 
         <section className="content-card card-green">
           <h2>✅ When to Use</h2>
-          <ul>{overview.whenToUse.map((w, i) => <li key={i}>{w}</li>)}</ul>
+          <ul>{overview.whenToUse?.map((w, i) => <li key={i}>{w}</li>)}</ul>
         </section>
       </div>
 
       <section className="content-card card-purple">
         <h2>🔍 Recognition Clues</h2>
         <div className="clue-chips">
-          {overview.recognitionClues.map((c, i) => <span key={i} className="chip">{c}</span>)}
+          {overview.recognitionClues?.map((c, i) => <span key={i} className="chip">{c}</span>)}
         </div>
       </section>
 
       <section className="content-card card-teal">
         <h2>📌 Important Properties</h2>
-        <ul>{overview.importantProperties.map((p, i) => <li key={i}>{p}</li>)}</ul>
+        <ul>{overview.importantProperties?.map((p, i) => <li key={i}>{p}</li>)}</ul>
       </section>
 
       <section className="content-card">
         <h2>🧩 Sub-patterns</h2>
         <div className="sub-pattern-grid">
-          {twoPointerSubPatterns.map(sp => {
+          {subPatterns?.map(sp => {
             const status = progress[sp.id] || 'not-started';
             return (
               <div key={sp.id} className="sub-pattern-card" onClick={() => navigateTo(sp.id)}>
@@ -68,9 +110,16 @@ export default function PatternPage({ navigateTo, progress }) {
       <section className="content-card card-pink">
         <h2>⚖️ Pattern Comparison</h2>
         <table className="comparison-table">
-          <thead><tr><th>Sub-pattern</th><th>When</th><th>Time</th><th>Space</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Sub-pattern</th>
+              <th>When</th>
+              <th>Time</th>
+              <th>Space</th>
+            </tr>
+          </thead>
           <tbody>
-            {overview.comparison.map((row, i) => (
+            {overview.comparison?.map((row, i) => (
               <tr key={i}>
                 <td><strong>{row.aspect}</strong></td>
                 <td>{row.when}</td>
@@ -85,7 +134,7 @@ export default function PatternPage({ navigateTo, progress }) {
       <section className="content-card card-red">
         <h2>⚠️ Common Mistakes</h2>
         <div className="mistake-list">
-          {overview.commonMistakes.map((m, i) => (
+          {overview.commonMistakes?.map((m, i) => (
             <div key={i} className="mistake-item">
               <AlertTriangle size={14} />
               <div><strong>{m.title}</strong> — {m.detail}</div>
@@ -97,7 +146,7 @@ export default function PatternPage({ navigateTo, progress }) {
       <section className="content-card">
         <h2>🎤 Interview Questions</h2>
         <div className="question-list">
-          {overview.interviewQuestions.map((q, i) => (
+          {overview.interviewQuestions?.map((q, i) => (
             <a key={i} href={q.url} target="_blank" rel="noopener noreferrer" className="question-row">
               <span className={`level-badge level-${q.level.toLowerCase()}`}>{q.level}</span>
               <span>{q.title}</span>

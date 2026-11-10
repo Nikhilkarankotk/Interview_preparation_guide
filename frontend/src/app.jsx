@@ -13,6 +13,7 @@ import { fastSlowSubPatterns } from './data/fastSlowPointers';
 import { binarySearchSubPatterns } from './data/binarySearch';
 import { hashingSubPatterns } from './data/hashing';
 import { prefixSumSubPatterns } from './data/prefixSum';
+import { stackSubPatterns } from './data/stack';
 
 // The complete sequence of pages for Previous/Next navigation
 const PAGE_SEQUENCE = [
@@ -33,6 +34,9 @@ const PAGE_SEQUENCE = [
 
   { key: 'prefix-sum', type: 'pattern', label: 'Prefix Sum Overview', pattern: 'prefix-sum' },
   ...prefixSumSubPatterns.map(sp => ({ key: sp.id, type: 'sub-pattern', label: sp.title, data: sp })),
+
+  { key: 'stack', type: 'pattern', label: 'Stack Overview', pattern: 'stack' },
+  ...stackSubPatterns.map(sp => ({ key: sp.id, type: 'sub-pattern', label: sp.title, data: sp })),
 ];
 
 export default function App() {

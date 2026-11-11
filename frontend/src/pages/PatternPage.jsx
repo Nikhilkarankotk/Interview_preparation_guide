@@ -10,8 +10,24 @@ import { prefixSumOverview, prefixSumSubPatterns } from '../data/PrefixSum';
 import { stackOverview, stackSubPatterns } from '../data/Stack';
 import { monotonicStackOverview, monotonicStackSubPatterns } from '../data/MonotonicStack';
 import { bfsOverview, bfsSubPatterns } from '../data/Bfs';
-import { dfsOverview, dfsSubPatterns } from '../data/Dfs'; // <-- Added DFS
-import { backtrackingOverview, backtrackingSubPatterns } from '../data/Backtracking'; // <-- New Import
+import { dfsOverview, dfsSubPatterns } from '../data/Dfs';
+import { backtrackingOverview, backtrackingSubPatterns } from '../data/Backtracking'; 
+import { heapOverview, heapSubPatterns } from '../data/Heap'; 
+import { greedyOverview, greedySubPatterns } from '../data/Greedy';
+import { intervalsOverview, intervalsSubPatterns } from '../data/Intervals';
+import { linkedListsOverview, linkedListsSubPatterns } from '../data/LinkedLists'; 
+import { dpOverview, dpSubPatterns } from '../data/DynamicProgramming'; 
+import { graphOverview, graphSubPatterns } from '../data/Graphs';
+import { topologicalSortOverview, topologicalSortSubPatterns } from '../data/TopologicalSort';
+import { unionFindOverview, unionFindSubPatterns } from '../data/UnionFind';
+import { trieOverview, trieSubPatterns } from '../data/Trie';
+import { sortingOverview, sortingSubPatterns } from '../data/Sorting';
+import { recursionOverview, recursionSubPatterns } from '../data/Recursion';
+import { bitManipulationOverview, bitManipulationSubPatterns } from '../data/BitManipulation';
+import { queueDequeOverview, queueDequeSubPatterns } from '../data/QueueDeque';
+import { arraysOverview, arraysSubPatterns } from '../data/Arrays'; // <-- New Import
+import { stringsOverview, stringsSubPatterns } from '../data/Strings';
+import { advancedDSOverview, advancedDSSubPatterns } from '../data/AdvancedDS'; // <-- New Import
 
 export default function PatternPage({ patternId, navigateTo, progress }) {
   let overview, subPatterns;
@@ -45,16 +61,32 @@ export default function PatternPage({ patternId, navigateTo, progress }) {
       overview = stackOverview;
       subPatterns = stackSubPatterns;
       break;
-    case 'monotonic-stack': // <-- New Case
+    case 'monotonic-stack': 
       overview = monotonicStackOverview;
       subPatterns = monotonicStackSubPatterns;
       break;
     case 'bfs':
       overview = bfsOverview; subPatterns = bfsSubPatterns; break;
-    case 'dfs': // <-- Added DFS Case
+    case 'dfs': 
       overview = dfsOverview; subPatterns = dfsSubPatterns; break;
-    case 'backtracking': // <-- New Case
+    case 'backtracking': 
       overview = backtrackingOverview; subPatterns = backtrackingSubPatterns; break;  
+    case 'heap': overview = heapOverview; subPatterns = heapSubPatterns; break;
+    case 'greedy': overview = greedyOverview;subPatterns = greedySubPatterns; break;
+    case 'intervals': overview = intervalsOverview; subPatterns = intervalsSubPatterns; break;
+    case 'linked-lists': overview = linkedListsOverview; subPatterns = linkedListsSubPatterns; break;
+    case 'dynamic-programming': overview = dpOverview; subPatterns = dpSubPatterns; break;
+    case 'graphs': overview = graphOverview; subPatterns = graphSubPatterns; break;
+    case 'topological-sort': overview = topologicalSortOverview; subPatterns = topologicalSortSubPatterns; break;
+    case 'union-find': overview = unionFindOverview; subPatterns = unionFindSubPatterns; break;
+    case 'trie': overview = trieOverview; subPatterns = trieSubPatterns; break;
+    case 'sorting': overview = sortingOverview; subPatterns = sortingSubPatterns; break;
+    case 'recursion': overview = recursionOverview; subPatterns = recursionSubPatterns; break;
+    case 'bit-manipulation': overview = bitManipulationOverview; subPatterns = bitManipulationSubPatterns; break;
+    case 'queue-deque': overview = queueDequeOverview; subPatterns = queueDequeSubPatterns; break;
+    case 'arrays': overview = arraysOverview; subPatterns = arraysSubPatterns; break;
+    case 'strings': overview = stringsOverview; subPatterns = stringsSubPatterns; break;
+    case 'advanced-ds': overview = advancedDSOverview; subPatterns = advancedDSSubPatterns; break;
     default:
       return <div style={{ padding: '20px', textAlign: 'center' }}>Pattern not found.</div>;
   }

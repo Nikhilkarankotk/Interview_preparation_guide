@@ -12,7 +12,23 @@ import StackVisualizer from '../components/visualizers/StackVisualizer';
 import MonotonicStackVisualizer from '../components/visualizers/MonotonicStackVisualizer';
 import BFSVisualizer from '../components/visualizers/BFSVisualizer';
 import DFSVisualizer from '../components/visualizers/DFSVisualizer';
-import BacktrackingVisualizer from '../components/visualizers/BacktrackingVisualizer'; 
+import BacktrackingVisualizer from '../components/visualizers/BacktrackingVisualizer';
+import HeapVisualizer from '../components/visualizers/HeapVisualizer';
+import GreedyVisualizer from '../components/visualizers/GreedyVisualizer'; 
+import IntervalVisualizer from '../components/visualizers/IntervalVisualizer'; 
+import LinkedListVisualizer from '../components/visualizers/LinkedListVisualizer';
+import DPVisualizer from '../components/visualizers/DPVisualizer';
+import GraphVisualizer from '../components/visualizers/GraphVisualizer';
+import TopologicalSortVisualizer from '../components/visualizers/TopologicalSortVisualizer';
+import UnionFindVisualizer from '../components/visualizers/UnionFindVisualizer';
+import TrieVisualizer from '../components/visualizers/TrieVisualizer';
+import SortingVisualizer from '../components/visualizers/SortingVisualizer';
+import RecursionVisualizer from '../components/visualizers/RecursionVisualizer';
+import BitManipulationVisualizer from '../components/visualizers/BitManipulationVisualizer';
+import QueueDequeVisualizer from '../components/visualizers/QueueDequeVisualizer';
+import ArrayVisualizer from '../components/visualizers/ArrayVisualizer';
+import StringsVisualizer from '../components/visualizers/StringsVisualizer';
+import AdvancedDSVisualizer from '../components/visualizers/AdvancedDSVisualizer'; 
 
 export default function SubPatternPage({ subPattern, progress, markComplete, markInProgress }) {
   const steps = subPattern.steps || [];
@@ -46,6 +62,22 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
       case 'bfs': return <BFSVisualizer state={currentState} type={subPattern.type} />;
       case 'dfs': return <DFSVisualizer state={currentState} type={subPattern.type} />; 
       case 'backtracking': return <BacktrackingVisualizer state={currentState} type={subPattern.type} />; 
+      case 'heap': return <HeapVisualizer state={currentState} type={subPattern.type} />;
+      case 'greedy': return <GreedyVisualizer state={currentState} type={subPattern.type} />;
+      case 'intervals': return <IntervalVisualizer state={currentState} type={subPattern.type} />; 
+      case 'linked-lists': return <LinkedListVisualizer state={currentState} type={subPattern.type} />;
+      case 'dynamic-programming': return <DPVisualizer state={currentState} type={subPattern.type} />;
+      case 'graphs': return <GraphVisualizer state={currentState} type={subPattern.type} />;
+      case 'topological-sort': return <TopologicalSortVisualizer state={currentState} type={subPattern.type} />;
+      case 'union-find': return <UnionFindVisualizer state={currentState} type={subPattern.type} />;
+      case 'trie': return <TrieVisualizer state={currentState} type={subPattern.type} />;
+      case 'sorting': return <SortingVisualizer state={currentState} type={subPattern.type} />;
+      case 'recursion': return <RecursionVisualizer state={currentState} type={subPattern.type} />;
+      case 'bit-manipulation': return <BitManipulationVisualizer state={currentState} type={subPattern.type} />;
+      case 'queue-deque': return <QueueDequeVisualizer state={currentState} type={subPattern.type} />;
+      case 'arrays': return <ArrayVisualizer state={currentState} type={subPattern.type} />;
+      case 'strings': return <StringsVisualizer state={currentState} type={subPattern.type} />;
+      case 'advanced-ds': return <AdvancedDSVisualizer state={currentState} type={subPattern.type} />;
       default: return <TwoPointerVisualizer state={currentState} type={subPattern.type} />;
     }
   };

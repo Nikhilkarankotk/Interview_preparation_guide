@@ -2,14 +2,15 @@ import React from 'react';
 import { ArrowRight, CheckCircle, AlertTriangle } from 'lucide-react';
 
 // Import all data modules
-import { twoPointerOverview, twoPointerSubPatterns } from '../data/twoPointers';
-import { slidingWindowOverview, slidingWindowSubPatterns } from '../data/slidingWindow';
-import { fastSlowOverview, fastSlowSubPatterns } from '../data/fastSlowPointers';
-import { binarySearchOverview, binarySearchSubPatterns } from '../data/binarySearch';
-import { hashingOverview, hashingSubPatterns } from '../data/hashing';
-import { prefixSumOverview, prefixSumSubPatterns } from '../data/prefixSum';
-import { stackOverview, stackSubPatterns } from '../data/stack';
-import { monotonicStackOverview, monotonicStackSubPatterns } from '../data/MonotonicStack'; // <-- New Import
+import { twoPointerOverview, twoPointerSubPatterns } from '../data/TwoPointers';
+import { slidingWindowOverview, slidingWindowSubPatterns } from '../data/SlidingWindow';
+import { fastSlowOverview, fastSlowSubPatterns } from '../data/FastSlowPointers';
+import { binarySearchOverview, binarySearchSubPatterns } from '../data/BinarySearch';
+import { hashingOverview, hashingSubPatterns } from '../data/Hashing';
+import { prefixSumOverview, prefixSumSubPatterns } from '../data/PrefixSum';
+import { stackOverview, stackSubPatterns } from '../data/Stack';
+import { monotonicStackOverview, monotonicStackSubPatterns } from '../data/MonotonicStack';
+import { bfsOverview, bfsSubPatterns } from '../data/Bfs';
 
 export default function PatternPage({ patternId, navigateTo, progress }) {
   let overview, subPatterns;
@@ -48,6 +49,10 @@ export default function PatternPage({ patternId, navigateTo, progress }) {
       overview = monotonicStackOverview;
       subPatterns = monotonicStackSubPatterns;
       break;
+    case 'bfs':
+      overview = bfsOverview;
+      subPatterns = bfsSubPatterns;
+      break;  
     default:
       return <div style={{ padding: '20px', textAlign: 'center' }}>Pattern not found.</div>;
   }

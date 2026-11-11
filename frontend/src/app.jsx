@@ -6,15 +6,15 @@ import Header from './components/layout/Header';
 import PageNavigation from './components/layout/PageNavigation';
 import { useProgress } from './hooks/useProgress';
 
-import { twoPointerSubPatterns } from './data/twoPointers';
-import { slidingWindowSubPatterns } from './data/slidingWindow';
-import { fastSlowSubPatterns } from './data/fastSlowPointers';
-import { binarySearchSubPatterns } from './data/binarySearch';
-import { hashingSubPatterns } from './data/hashing';
-import { prefixSumSubPatterns } from './data/prefixSum';
-import { stackSubPatterns } from './data/stack';
+import { twoPointerSubPatterns } from './data/TwoPointers';
+import { slidingWindowSubPatterns } from './data/SlidingWindow';
+import { fastSlowSubPatterns } from './data/FastSlowPointers';
+import { binarySearchSubPatterns } from './data/BinarySearch';
+import { hashingSubPatterns } from './data/Hashing';
+import { prefixSumSubPatterns } from './data/PrefixSum';
+import { stackSubPatterns } from './data/Stack';
 import { monotonicStackSubPatterns } from './data/monotonicStack';
-import { bfsSubPatterns } from './data/bfs'; // <-- New Import
+import { bfsSubPatterns } from './data/Bfs'; // <-- New Import
 
 const PAGE_SEQUENCE = [
   { key: 'two-pointers', type: 'pattern', label: 'Two Pointers Overview', pattern: 'two-pointers' },

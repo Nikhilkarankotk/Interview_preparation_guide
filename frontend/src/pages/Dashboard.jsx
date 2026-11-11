@@ -1,5 +1,5 @@
 import React from 'react';
-import { patterns } from '../data/patterns';
+import { patterns } from '../data/Patterns';
 import { CheckCircle, Lock, ArrowRight } from 'lucide-react';
 
 export default function Dashboard({ navigateTo, progress }) {

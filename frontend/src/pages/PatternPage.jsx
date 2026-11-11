@@ -1,7 +1,6 @@
 import React from 'react';
 import { ArrowRight, CheckCircle, AlertTriangle } from 'lucide-react';
 
-// Import all data modules
 import { twoPointerOverview, twoPointerSubPatterns } from '../data/TwoPointers';
 import { slidingWindowOverview, slidingWindowSubPatterns } from '../data/SlidingWindow';
 import { fastSlowOverview, fastSlowSubPatterns } from '../data/FastSlowPointers';
@@ -11,11 +10,11 @@ import { prefixSumOverview, prefixSumSubPatterns } from '../data/PrefixSum';
 import { stackOverview, stackSubPatterns } from '../data/Stack';
 import { monotonicStackOverview, monotonicStackSubPatterns } from '../data/MonotonicStack';
 import { bfsOverview, bfsSubPatterns } from '../data/Bfs';
+import { dfsOverview, dfsSubPatterns } from '../data/Dfs'; // <-- Added DFS
 
 export default function PatternPage({ patternId, navigateTo, progress }) {
   let overview, subPatterns;
 
-  // Route to the correct data based on the patternId
   switch (patternId) {
     case 'two-pointers':
       overview = twoPointerOverview;
@@ -50,9 +49,9 @@ export default function PatternPage({ patternId, navigateTo, progress }) {
       subPatterns = monotonicStackSubPatterns;
       break;
     case 'bfs':
-      overview = bfsOverview;
-      subPatterns = bfsSubPatterns;
-      break;  
+      overview = bfsOverview; subPatterns = bfsSubPatterns; break;
+    case 'dfs': // <-- Added DFS Case
+      overview = dfsOverview; subPatterns = dfsSubPatterns; break;
     default:
       return <div style={{ padding: '20px', textAlign: 'center' }}>Pattern not found.</div>;
   }

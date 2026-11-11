@@ -11,6 +11,7 @@ import HashingVisualizer from '../components/visualizers/HashingVisualizer';
 import StackVisualizer from '../components/visualizers/StackVisualizer';
 import MonotonicStackVisualizer from '../components/visualizers/MonotonicStackVisualizer';
 import BFSVisualizer from '../components/visualizers/BFSVisualizer';
+import DFSVisualizer from '../components/visualizers/DFSVisualizer'; // <-- Added DFS
 
 export default function SubPatternPage({ subPattern, progress, markComplete, markInProgress }) {
   const steps = subPattern.steps || [];
@@ -31,29 +32,19 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
 
   const isComplete = progress[subPattern.id] === 'complete';
 
-  // Dynamically render the correct visualizer based on the patternId
   const renderVisualizer = () => {
     switch (subPattern.patternId) {
-      case 'two-pointers':
-        return <TwoPointerVisualizer state={currentState} type={subPattern.type} />;
-      case 'sliding-window':
-        return <SlidingWindowVisualizer state={currentState} type={subPattern.type} />;
-      case 'fast-slow':
-        return <FastSlowVisualizer state={currentState} type={subPattern.type} />;
-      case 'binary-search':
-        return <BinarySearchVisualizer state={currentState} type={subPattern.type} />;
-      case 'hashing':
-        return <HashingVisualizer state={currentState} type={subPattern.type} />;
-      case 'prefix-sum':
-        return <PrefixSumVisualizer state={currentState} type={subPattern.type} />;
-      case 'stack':
-        return <StackVisualizer state={currentState} type={subPattern.type} />;
-      case 'monotonic-stack':
-        return <MonotonicStackVisualizer state={currentState} type={subPattern.type} />;
-      case 'bfs':
-        return <BFSVisualizer state={currentState} type={subPattern.type} />;
-      default:
-        return <TwoPointerVisualizer state={currentState} type={subPattern.type} />;
+      case 'two-pointers': return <TwoPointerVisualizer state={currentState} type={subPattern.type} />;
+      case 'sliding-window': return <SlidingWindowVisualizer state={currentState} type={subPattern.type} />;
+      case 'fast-slow': return <FastSlowVisualizer state={currentState} type={subPattern.type} />;
+      case 'binary-search': return <BinarySearchVisualizer state={currentState} type={subPattern.type} />;
+      case 'hashing': return <HashingVisualizer state={currentState} type={subPattern.type} />;
+      case 'prefix-sum': return <PrefixSumVisualizer state={currentState} type={subPattern.type} />;
+      case 'stack': return <StackVisualizer state={currentState} type={subPattern.type} />;
+      case 'monotonic-stack': return <MonotonicStackVisualizer state={currentState} type={subPattern.type} />;
+      case 'bfs': return <BFSVisualizer state={currentState} type={subPattern.type} />;
+      case 'dfs': return <DFSVisualizer state={currentState} type={subPattern.type} />; // <-- Added DFS
+      default: return <TwoPointerVisualizer state={currentState} type={subPattern.type} />;
     }
   };
 
@@ -77,18 +68,9 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
       <section className="content-card card-blue">
         <h2>🔍 Pattern Recognition</h2>
         <div className="recognition-row">
-          <div>
-            <strong>Clues</strong>
-            <ul>{subPattern.patternRecognition.clues?.map((c, i) => <li key={i}>{c}</li>)}</ul>
-          </div>
-          <div>
-            <strong>Inputs</strong>
-            <ul>{subPattern.patternRecognition.inputs?.map((c, i) => <li key={i}>{c}</li>)}</ul>
-          </div>
-          <div>
-            <strong>Constraints</strong>
-            <ul>{subPattern.patternRecognition.constraints?.map((c, i) => <li key={i}>{c}</li>)}</ul>
-          </div>
+          <div><strong>Clues</strong><ul>{subPattern.patternRecognition.clues?.map((c, i) => <li key={i}>{c}</li>)}</ul></div>
+          <div><strong>Inputs</strong><ul>{subPattern.patternRecognition.inputs?.map((c, i) => <li key={i}>{c}</li>)}</ul></div>
+          <div><strong>Constraints</strong><ul>{subPattern.patternRecognition.constraints?.map((c, i) => <li key={i}>{c}</li>)}</ul></div>
         </div>
       </section>
 
@@ -103,10 +85,7 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
         <div className="step-body">
           <h3 className="step-title">{steps[nav.currentStep]?.title}</h3>
           <p className="step-explanation">{steps[nav.currentStep]?.explanation}</p>
-          
-          {/* Render the appropriate visualizer */}
           {renderVisualizer()}
-          
         </div>
         <div className="step-controls">
           <button className="btn-secondary" onClick={nav.prev} disabled={!nav.canGoPrev}>
@@ -159,14 +138,7 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
       <section className="content-card card-orange">
         <h2>⚖️ Brute Force vs Optimal</h2>
         <table className="comparison-table">
-          <thead>
-            <tr>
-              <th>Approach</th>
-              <th>Time</th>
-              <th>Space</th>
-              <th>Notes</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Approach</th><th>Time</th><th>Space</th><th>Notes</th></tr></thead>
           <tbody>
             <tr>
               <td>Optimal</td>

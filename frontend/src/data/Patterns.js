@@ -98,6 +98,17 @@ export const patterns = [
     available: true, 
     subPatterns: ['level-order', 'shortest-path', 'multi-source-bfs'] 
   },
+    { 
+    id: 'dfs', 
+    name: 'Depth-First Search', 
+    icon: 'GitBranch', 
+    description: 'Dive deep into paths and connected components.', 
+    subPatternCount: 3, 
+    difficulty: 'Intermediate', 
+    problemCount: 20, 
+    available: true, 
+    subPatterns: ['tree-dfs', 'path-sum', 'grid-dfs'] 
+  },
   
   // --- COMING SOON ---
   { id: 'arrays', name: 'Arrays', icon: 'Grid', description: 'Foundation of all sequence problems.', subPatternCount: 6, difficulty: 'Beginner', problemCount: 25, available: false, subPatterns: [] },

@@ -16,6 +16,8 @@ import { prefixSumSubPatterns } from './data/PrefixSum';
 import { stackSubPatterns } from './data/Stack';
 import { monotonicStackSubPatterns } from './data/MonotonicStack';
 import { bfsSubPatterns } from './data/Bfs';
+import { dfsSubPatterns } from './data/Dfs';
+
 
 const PAGE_SEQUENCE = [
   { key: 'two-pointers', type: 'pattern', label: 'Two Pointers Overview', pattern: 'two-pointers' },
@@ -44,6 +46,9 @@ const PAGE_SEQUENCE = [
 
   { key: 'bfs', type: 'pattern', label: 'BFS Overview', pattern: 'bfs' },
   ...bfsSubPatterns.map(sp => ({ key: sp.id, type: 'sub-pattern', label: sp.title, data: sp })),
+
+  { key: 'dfs', type: 'pattern', label: 'DFS Overview', pattern: 'dfs' },
+  ...dfsSubPatterns.map(sp => ({ key: sp.id, type: 'sub-pattern', label: sp.title, data: sp })),
 ];
 
 export default function App() {

@@ -9,6 +9,7 @@ import { binarySearchOverview, binarySearchSubPatterns } from '../data/binarySea
 import { hashingOverview, hashingSubPatterns } from '../data/hashing';
 import { prefixSumOverview, prefixSumSubPatterns } from '../data/prefixSum';
 import { stackOverview, stackSubPatterns } from '../data/stack';
+import { monotonicStackOverview, monotonicStackSubPatterns } from '../data/MonotonicStack'; // <-- New Import
 
 export default function PatternPage({ patternId, navigateTo, progress }) {
   let overview, subPatterns;
@@ -42,6 +43,10 @@ export default function PatternPage({ patternId, navigateTo, progress }) {
     case 'stack':
       overview = stackOverview;
       subPatterns = stackSubPatterns;
+      break;
+    case 'monotonic-stack': // <-- New Case
+      overview = monotonicStackOverview;
+      subPatterns = monotonicStackSubPatterns;
       break;
     default:
       return <div style={{ padding: '20px', textAlign: 'center' }}>Pattern not found.</div>;

@@ -76,6 +76,28 @@ export const patterns = [
     available: true, 
     subPatterns: ['valid-parentheses', 'min-stack', 'evaluate-rpn'] 
   },
+    { 
+    id: 'monotonic-stack', 
+    name: 'Monotonic Stack', 
+    icon: 'TrendingDown', 
+    description: 'Next-greater/smaller problems in O(N).', 
+    subPatternCount: 3, 
+    difficulty: 'Advanced', 
+    problemCount: 14, 
+    available: true, 
+    subPatterns: ['next-greater-element', 'daily-temperatures', 'largest-rectangle'] 
+  },
+    { 
+    id: 'bfs', 
+    name: 'Breadth-First Search', 
+    icon: 'Network', 
+    description: 'Level-by-level traversal for shortest paths and grids.', 
+    subPatternCount: 3, 
+    difficulty: 'Intermediate', 
+    problemCount: 15, 
+    available: true, 
+    subPatterns: ['level-order', 'shortest-path', 'multi-source-bfs'] 
+  },
   
   // --- COMING SOON ---
   { id: 'arrays', name: 'Arrays', icon: 'Grid', description: 'Foundation of all sequence problems.', subPatternCount: 6, difficulty: 'Beginner', problemCount: 25, available: false, subPatterns: [] },

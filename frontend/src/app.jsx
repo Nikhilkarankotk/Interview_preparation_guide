@@ -6,7 +6,6 @@ import Header from './components/layout/Header';
 import PageNavigation from './components/layout/PageNavigation';
 import { useProgress } from './hooks/useProgress';
 
-// Import all sub-patterns to build the sequence
 import { twoPointerSubPatterns } from './data/twoPointers';
 import { slidingWindowSubPatterns } from './data/slidingWindow';
 import { fastSlowSubPatterns } from './data/fastSlowPointers';
@@ -14,8 +13,9 @@ import { binarySearchSubPatterns } from './data/binarySearch';
 import { hashingSubPatterns } from './data/hashing';
 import { prefixSumSubPatterns } from './data/prefixSum';
 import { stackSubPatterns } from './data/stack';
+import { monotonicStackSubPatterns } from './data/monotonicStack';
+import { bfsSubPatterns } from './data/bfs'; // <-- New Import
 
-// The complete sequence of pages for Previous/Next navigation
 const PAGE_SEQUENCE = [
   { key: 'two-pointers', type: 'pattern', label: 'Two Pointers Overview', pattern: 'two-pointers' },
   ...twoPointerSubPatterns.map(sp => ({ key: sp.id, type: 'sub-pattern', label: sp.title, data: sp })),
@@ -37,6 +37,12 @@ const PAGE_SEQUENCE = [
 
   { key: 'stack', type: 'pattern', label: 'Stack Overview', pattern: 'stack' },
   ...stackSubPatterns.map(sp => ({ key: sp.id, type: 'sub-pattern', label: sp.title, data: sp })),
+
+  { key: 'monotonic-stack', type: 'pattern', label: 'Monotonic Stack Overview', pattern: 'monotonic-stack' },
+  ...monotonicStackSubPatterns.map(sp => ({ key: sp.id, type: 'sub-pattern', label: sp.title, data: sp })),
+
+  { key: 'bfs', type: 'pattern', label: 'BFS Overview', pattern: 'bfs' }, // <-- New Route
+  ...bfsSubPatterns.map(sp => ({ key: sp.id, type: 'sub-pattern', label: sp.title, data: sp })),
 ];
 
 export default function App() {

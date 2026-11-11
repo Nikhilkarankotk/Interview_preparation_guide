@@ -11,7 +11,8 @@ import HashingVisualizer from '../components/visualizers/HashingVisualizer';
 import StackVisualizer from '../components/visualizers/StackVisualizer';
 import MonotonicStackVisualizer from '../components/visualizers/MonotonicStackVisualizer';
 import BFSVisualizer from '../components/visualizers/BFSVisualizer';
-import DFSVisualizer from '../components/visualizers/DFSVisualizer'; // <-- Added DFS
+import DFSVisualizer from '../components/visualizers/DFSVisualizer';
+import BacktrackingVisualizer from '../components/visualizers/BacktrackingVisualizer'; 
 
 export default function SubPatternPage({ subPattern, progress, markComplete, markInProgress }) {
   const steps = subPattern.steps || [];
@@ -43,7 +44,8 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
       case 'stack': return <StackVisualizer state={currentState} type={subPattern.type} />;
       case 'monotonic-stack': return <MonotonicStackVisualizer state={currentState} type={subPattern.type} />;
       case 'bfs': return <BFSVisualizer state={currentState} type={subPattern.type} />;
-      case 'dfs': return <DFSVisualizer state={currentState} type={subPattern.type} />; // <-- Added DFS
+      case 'dfs': return <DFSVisualizer state={currentState} type={subPattern.type} />; 
+      case 'backtracking': return <BacktrackingVisualizer state={currentState} type={subPattern.type} />; 
       default: return <TwoPointerVisualizer state={currentState} type={subPattern.type} />;
     }
   };

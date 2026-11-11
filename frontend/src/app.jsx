@@ -6,7 +6,6 @@ import Header from './components/layout/Header';
 import PageNavigation from './components/layout/PageNavigation';
 import { useProgress } from './hooks/useProgress';
 
-// Using exact PascalCase to match your folder structure
 import { twoPointerSubPatterns } from './data/TwoPointers';
 import { slidingWindowSubPatterns } from './data/SlidingWindow';
 import { fastSlowSubPatterns } from './data/FastSlowPointers';
@@ -17,7 +16,7 @@ import { stackSubPatterns } from './data/Stack';
 import { monotonicStackSubPatterns } from './data/MonotonicStack';
 import { bfsSubPatterns } from './data/Bfs';
 import { dfsSubPatterns } from './data/Dfs';
-
+import { backtrackingSubPatterns } from './data/Backtracking'; // <-- New Import
 
 const PAGE_SEQUENCE = [
   { key: 'two-pointers', type: 'pattern', label: 'Two Pointers Overview', pattern: 'two-pointers' },
@@ -49,6 +48,9 @@ const PAGE_SEQUENCE = [
 
   { key: 'dfs', type: 'pattern', label: 'DFS Overview', pattern: 'dfs' },
   ...dfsSubPatterns.map(sp => ({ key: sp.id, type: 'sub-pattern', label: sp.title, data: sp })),
+
+  { key: 'backtracking', type: 'pattern', label: 'Backtracking Overview', pattern: 'backtracking' }, // <-- New Route
+  ...backtrackingSubPatterns.map(sp => ({ key: sp.id, type: 'sub-pattern', label: sp.title, data: sp })),
 ];
 
 export default function App() {

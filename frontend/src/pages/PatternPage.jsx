@@ -11,6 +11,7 @@ import { stackOverview, stackSubPatterns } from '../data/Stack';
 import { monotonicStackOverview, monotonicStackSubPatterns } from '../data/MonotonicStack';
 import { bfsOverview, bfsSubPatterns } from '../data/Bfs';
 import { dfsOverview, dfsSubPatterns } from '../data/Dfs'; // <-- Added DFS
+import { backtrackingOverview, backtrackingSubPatterns } from '../data/Backtracking'; // <-- New Import
 
 export default function PatternPage({ patternId, navigateTo, progress }) {
   let overview, subPatterns;
@@ -52,6 +53,8 @@ export default function PatternPage({ patternId, navigateTo, progress }) {
       overview = bfsOverview; subPatterns = bfsSubPatterns; break;
     case 'dfs': // <-- Added DFS Case
       overview = dfsOverview; subPatterns = dfsSubPatterns; break;
+    case 'backtracking': // <-- New Case
+      overview = backtrackingOverview; subPatterns = backtrackingSubPatterns; break;  
     default:
       return <div style={{ padding: '20px', textAlign: 'center' }}>Pattern not found.</div>;
   }

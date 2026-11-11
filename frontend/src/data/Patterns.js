@@ -109,6 +109,17 @@ export const patterns = [
     available: true, 
     subPatterns: ['tree-dfs', 'path-sum', 'grid-dfs'] 
   },
+    { 
+    id: 'backtracking', 
+    name: 'Backtracking', 
+    icon: 'GitBranch', 
+    description: 'Explore all possibilities and prune invalid paths.', 
+    subPatternCount: 3, 
+    difficulty: 'Advanced', 
+    problemCount: 15, 
+    available: true, 
+    subPatterns: ['subsets', 'permutations', 'combination-sum'] 
+  },
   
   // --- COMING SOON ---
   { id: 'arrays', name: 'Arrays', icon: 'Grid', description: 'Foundation of all sequence problems.', subPatternCount: 6, difficulty: 'Beginner', problemCount: 25, available: false, subPatterns: [] },

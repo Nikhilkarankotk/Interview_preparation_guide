@@ -6,6 +6,7 @@ import Header from './components/layout/Header';
 import PageNavigation from './components/layout/PageNavigation';
 import { useProgress } from './hooks/useProgress';
 
+// Using exact PascalCase to match your folder structure
 import { twoPointerSubPatterns } from './data/TwoPointers';
 import { slidingWindowSubPatterns } from './data/SlidingWindow';
 import { fastSlowSubPatterns } from './data/FastSlowPointers';
@@ -13,8 +14,8 @@ import { binarySearchSubPatterns } from './data/BinarySearch';
 import { hashingSubPatterns } from './data/Hashing';
 import { prefixSumSubPatterns } from './data/PrefixSum';
 import { stackSubPatterns } from './data/Stack';
-import { monotonicStackSubPatterns } from './data/monotonicStack';
-import { bfsSubPatterns } from './data/Bfs'; // <-- New Import
+import { monotonicStackSubPatterns } from './data/MonotonicStack';
+import { bfsSubPatterns } from './data/Bfs';
 
 const PAGE_SEQUENCE = [
   { key: 'two-pointers', type: 'pattern', label: 'Two Pointers Overview', pattern: 'two-pointers' },
@@ -41,7 +42,7 @@ const PAGE_SEQUENCE = [
   { key: 'monotonic-stack', type: 'pattern', label: 'Monotonic Stack Overview', pattern: 'monotonic-stack' },
   ...monotonicStackSubPatterns.map(sp => ({ key: sp.id, type: 'sub-pattern', label: sp.title, data: sp })),
 
-  { key: 'bfs', type: 'pattern', label: 'BFS Overview', pattern: 'bfs' }, // <-- New Route
+  { key: 'bfs', type: 'pattern', label: 'BFS Overview', pattern: 'bfs' },
   ...bfsSubPatterns.map(sp => ({ key: sp.id, type: 'sub-pattern', label: sp.title, data: sp })),
 ];
 

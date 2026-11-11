@@ -10,6 +10,7 @@ import PrefixSumVisualizer from '../components/visualizers/PrefixSumVisualizer';
 import HashingVisualizer from '../components/visualizers/HashingVisualizer';
 import StackVisualizer from '../components/visualizers/StackVisualizer';
 import MonotonicStackVisualizer from '../components/visualizers/MonotonicStackVisualizer';
+import BFSVisualizer from '../components/visualizers/BFSVisualizer';
 
 export default function SubPatternPage({ subPattern, progress, markComplete, markInProgress }) {
   const steps = subPattern.steps || [];
@@ -30,23 +31,27 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
 
   const isComplete = progress[subPattern.id] === 'complete';
 
+  // Dynamically render the correct visualizer based on the patternId
   const renderVisualizer = () => {
     switch (subPattern.patternId) {
+      case 'two-pointers':
+        return <TwoPointerVisualizer state={currentState} type={subPattern.type} />;
       case 'sliding-window':
         return <SlidingWindowVisualizer state={currentState} type={subPattern.type} />;
       case 'fast-slow':
         return <FastSlowVisualizer state={currentState} type={subPattern.type} />;
       case 'binary-search':
         return <BinarySearchVisualizer state={currentState} type={subPattern.type} />;
-      case 'prefix-sum':
-        return <PrefixSumVisualizer state={currentState} type={subPattern.type} />;
       case 'hashing':
         return <HashingVisualizer state={currentState} type={subPattern.type} />;
+      case 'prefix-sum':
+        return <PrefixSumVisualizer state={currentState} type={subPattern.type} />;
       case 'stack':
         return <StackVisualizer state={currentState} type={subPattern.type} />;
       case 'monotonic-stack':
         return <MonotonicStackVisualizer state={currentState} type={subPattern.type} />;
-      case 'two-pointers':
+      case 'bfs':
+        return <BFSVisualizer state={currentState} type={subPattern.type} />;
       default:
         return <TwoPointerVisualizer state={currentState} type={subPattern.type} />;
     }
@@ -99,6 +104,7 @@ export default function SubPatternPage({ subPattern, progress, markComplete, mar
           <h3 className="step-title">{steps[nav.currentStep]?.title}</h3>
           <p className="step-explanation">{steps[nav.currentStep]?.explanation}</p>
           
+          {/* Render the appropriate visualizer */}
           {renderVisualizer()}
           
         </div>

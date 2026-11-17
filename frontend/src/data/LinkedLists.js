@@ -34,50 +34,86 @@ export const reverseLinkedList = {
     {
       id: 0,
       title: 'Initial State',
-      explanation: 'We start with prev = null and curr = head (node 1).',
-      state: {
-        nodes: [1, 2, 3, 4], prev: null, curr: 0, next: null, action: 'prev = null, curr = 1.',
-      },
+      explanation: 'We start with `prev = null` and `curr` pointing to the head (node 1). WHY: The head of the list will become the tail, so its next pointer must eventually point to null. We initialize `prev` as null for this reason.',
+      state: { nodes: [1, 2, 3, 4], prev: null, curr: 0, next: null, action: 'prev = null, curr = 1.' },
     },
     {
       id: 1,
-      title: 'Save Next',
-      explanation: 'Save `next = curr.next` (node 2) so we don\'t lose the rest of the list.',
-      state: {
-        nodes: [1, 2, 3, 4], prev: null, curr: 0, next: 1, action: 'next = 2.',
-      },
+      title: 'Node 1: Save Next',
+      explanation: 'Before changing any pointers, we must save the rest of the list. We set `next = curr.next` (node 2). WHY: If we flip node 1\'s pointer first, we would lose our connection to node 2 and the rest of the list.',
+      state: { nodes: [1, 2, 3, 4], prev: null, curr: 0, next: 1, action: 'Save next = 2.' },
     },
     {
       id: 2,
-      title: 'Flip Pointer',
-      explanation: 'Flip `curr.next = prev`. Node 1 now points to null.',
-      state: {
-        nodes: [1, 2, 3, 4], prev: null, curr: 0, next: 1, action: '1 -> null.',
-      },
+      title: 'Node 1: Flip Pointer',
+      explanation: 'We flip the pointer: `curr.next = prev`. Node 1 now points to null instead of node 2. WHY: This is the exact reversal operation for this node.',
+      state: { nodes: [1, 2, 3, 4], prev: null, curr: 0, next: 1, action: '1 -> null.' },
     },
     {
       id: 3,
-      title: 'Move Pointers',
-      explanation: 'Move `prev = curr` and `curr = next`. Now prev is node 1, curr is node 2.',
-      state: {
-        nodes: [1, 2, 3, 4], prev: 0, curr: 1, next: null, action: 'prev = 1, curr = 2.',
-      },
+      title: 'Node 1: Move Pointers',
+      explanation: 'We advance our pointers for the next iteration. `prev` becomes node 1, and `curr` becomes node 2. WHY: We need to move forward through the list to process the next node.',
+      state: { nodes: [1, 2, 3, 4], prev: 0, curr: 1, next: null, action: 'prev = 1, curr = 2.' },
     },
     {
       id: 4,
-      title: 'Repeat',
-      explanation: 'Save next (3), flip pointer (2 -> 1), move prev (2), curr (3).',
-      state: {
-        nodes: [1, 2, 3, 4], prev: 1, curr: 2, next: 2, action: '2 -> 1.',
-      },
+      title: 'Node 2: Save Next',
+      explanation: 'At node 2, we again save the next node to avoid losing the list. `next = node 3`.',
+      state: { nodes: [1, 2, 3, 4], prev: 0, curr: 1, next: 2, action: 'Save next = 3.' },
     },
     {
       id: 5,
+      title: 'Node 2: Flip Pointer',
+      explanation: 'We flip node 2\'s pointer. `curr.next = prev`. Node 2 now points back to node 1.',
+      state: { nodes: [1, 2, 3, 4], prev: 0, curr: 1, next: 2, action: '2 -> 1.' },
+    },
+    {
+      id: 6,
+      title: 'Node 2: Move Pointers',
+      explanation: 'Advance pointers. `prev` becomes node 2, `curr` becomes node 3.',
+      state: { nodes: [1, 2, 3, 4], prev: 1, curr: 2, next: null, action: 'prev = 2, curr = 3.' },
+    },
+    {
+      id: 7,
+      title: 'Node 3: Save Next',
+      explanation: 'At node 3, we save the next node (node 4).',
+      state: { nodes: [1, 2, 3, 4], prev: 1, curr: 2, next: 3, action: 'Save next = 4.' },
+    },
+    {
+      id: 8,
+      title: 'Node 3: Flip Pointer',
+      explanation: 'Flip node 3\'s pointer. `curr.next = prev`. Node 3 now points back to node 2.',
+      state: { nodes: [1, 2, 3, 4], prev: 1, curr: 2, next: 3, action: '3 -> 2.' },
+    },
+    {
+      id: 9,
+      title: 'Node 3: Move Pointers',
+      explanation: 'Advance pointers. `prev` becomes node 3, `curr` becomes node 4.',
+      state: { nodes: [1, 2, 3, 4], prev: 2, curr: 3, next: null, action: 'prev = 3, curr = 4.' },
+    },
+    {
+      id: 10,
+      title: 'Node 4: Save Next',
+      explanation: 'At node 4, `curr.next` is null, so `next` becomes null.',
+      state: { nodes: [1, 2, 3, 4], prev: 2, curr: 3, next: null, action: 'Save next = null.' },
+    },
+    {
+      id: 11,
+      title: 'Node 4: Flip Pointer',
+      explanation: 'Flip node 4\'s pointer. `curr.next = prev`. Node 4 now points back to node 3.',
+      state: { nodes: [1, 2, 3, 4], prev: 2, curr: 3, next: null, action: '4 -> 3.' },
+    },
+    {
+      id: 12,
+      title: 'Node 4: Move Pointers',
+      explanation: 'Advance pointers. `prev` becomes node 4, `curr` becomes null.',
+      state: { nodes: [1, 2, 3, 4], prev: 3, curr: null, next: null, action: 'prev = 4, curr = null.' },
+    },
+    {
+      id: 13,
       title: 'Finish',
-      explanation: 'When curr becomes null, prev points to the new head.',
-      state: {
-        nodes: [1, 2, 3, 4], prev: 3, curr: null, next: null, action: 'Done! New head is 4.', found: true,
-      },
+      explanation: 'The loop terminates because `curr` is null. `prev` points to the last node (4), which is now the new head of the reversed list. WHY: We have successfully flipped every pointer in the list.',
+      state: { nodes: [1, 2, 3, 4], prev: 3, curr: null, next: null, action: 'Done! New head is 4.', found: true },
     },
   ],
 
@@ -167,43 +203,39 @@ export const mergeTwoLists = {
   steps: [
     {
       id: 0,
-      title: 'Setup',
-      explanation: 'List 1: 1 -> 3. List 2: 2 -> 4. We create a dummy node and a tail pointer pointing to it.',
-      state: {
-        list1: [1, 3], list2: [2, 4], p1: 0, p2: 0, result: ['D'], action: 'Dummy node created.',
-      },
+      title: 'Setup Dummy Node',
+      explanation: 'List 1: [1, 3]. List 2: [2, 4]. We create a `dummy` node and a `tail` pointer pointing to it. WHY: The dummy node acts as a placeholder for the start of our merged list. It simplifies our logic so we don\'t need special "if" statements to set the head of the new list.',
+      state: { list1: [1, 3], list2: [2, 4], p1: 0, p2: 0, result: ['D'], action: 'Dummy node created.' },
     },
     {
       id: 1,
-      title: 'Compare 1 and 2',
-      explanation: '1 is smaller than 2. Attach 1 to the result, move p1.',
-      state: {
-        list1: [1, 3], list2: [2, 4], p1: 1, p2: 0, result: ['D', 1], action: 'Attach 1.',
-      },
+      title: 'Compare Heads: 1 vs 2',
+      explanation: 'We compare the current nodes of both lists. `p1` is at 1, `p2` is at 2. Since 1 < 2, we attach node 1 to the `tail.next`. We then advance `p1` to point to 3. WHY: The smaller node must come first to maintain sorted order.',
+      state: { list1: [1, 3], list2: [2, 4], p1: 1, p2: 0, result: ['D', 1], action: 'Attach 1. p1 moves to 3.' },
     },
     {
       id: 2,
-      title: 'Compare 3 and 2',
-      explanation: '2 is smaller than 3. Attach 2 to the result, move p2.',
-      state: {
-        list1: [1, 3], list2: [2, 4], p1: 1, p2: 1, result: ['D', 1, 2], action: 'Attach 2.',
-      },
+      title: 'Compare Heads: 3 vs 2',
+      explanation: 'Now `p1` is at 3, and `p2` is at 2. Since 2 < 3, we attach node 2 to `tail.next`. We advance `p2` to point to 4.',
+      state: { list1: [1, 3], list2: [2, 4], p1: 1, p2: 1, result: ['D', 1, 2], action: 'Attach 2. p2 moves to 4.' },
     },
     {
       id: 3,
-      title: 'Compare 3 and 4',
-      explanation: '3 is smaller. Attach 3.',
-      state: {
-        list1: [1, 3], list2: [2, 4], p1: 2, p2: 1, result: ['D', 1, 2, 3], action: 'Attach 3.',
-      },
+      title: 'Compare Heads: 3 vs 4',
+      explanation: 'Now `p1` is at 3, and `p2` is at 4. Since 3 < 4, we attach node 3 to `tail.next`. We advance `p1` to null.',
+      state: { list1: [1, 3], list2: [2, 4], p1: 2, p2: 1, result: ['D', 1, 2, 3], action: 'Attach 3. p1 is null.' },
     },
     {
       id: 4,
-      title: 'Finish',
-      explanation: 'List 1 is empty. Attach the rest of List 2 (4).',
-      state: {
-        list1: [1, 3], list2: [2, 4], p1: 2, p2: 2, result: ['D', 1, 2, 3, 4], action: 'Attach 4. Done.', found: true,
-      },
+      title: 'Attach Leftovers',
+      explanation: 'List 1 is now empty (p1 is null). The while loop terminates. We simply attach the rest of List 2 directly to `tail.next`. WHY: Since both lists were sorted, the remaining nodes in List 2 (just 4) are guaranteed to be larger than everything we have attached so far.',
+      state: { list1: [1, 3], list2: [2, 4], p1: 2, p2: 1, result: ['D', 1, 2, 3, 4], action: 'Attach 4.' },
+    },
+    {
+      id: 5,
+      title: 'Return Merged List',
+      explanation: 'The merged list is complete. We return `dummy.next` to skip the placeholder and return the actual head of the sorted list (node 1).',
+      state: { list1: [1, 3], list2: [2, 4], p1: 2, p2: 2, result: ['D', 1, 2, 3, 4], action: 'Done!', found: true },
     },
   ],
 
@@ -299,35 +331,57 @@ export const removeNthNode = {
   steps: [
     {
       id: 0,
-      title: 'Initialize',
-      explanation: 'List: 1 -> 2 -> 3 -> 4 -> 5. N = 2. Create a dummy node pointing to 1. Fast and Slow start at dummy.',
-      state: {
-        nodes: [1, 2, 3, 4, 5], slow: 'D', fast: 'D', n: 2, action: 'Start at dummy.',
-      },
+      title: 'Initialize with Dummy',
+      explanation: 'List: 1 -> 2 -> 3 -> 4 -> 5. N = 2. We create a `dummy` node pointing to the head (1). Both `fast` and `slow` pointers start at the `dummy` node. WHY: The dummy node ensures that if we need to remove the original head (e.g., if N equals the length of the list), our `slow` pointer will stop at the dummy, allowing us to safely remove the head.',
+      state: { nodes: [1, 2, 3, 4, 5], slow: 'D', fast: 'D', n: 2, action: 'Start at dummy.' },
     },
     {
       id: 1,
-      title: 'Create Gap',
-      explanation: 'Move Fast N+1 (3) steps ahead. Fast is now at node 2.',
-      state: {
-        nodes: [1, 2, 3, 4, 5], slow: 'D', fast: 1, n: 2, action: 'Fast moved to 2.',
-      },
+      title: 'Move Fast (Step 1)',
+      explanation: 'We move the `fast` pointer forward. It moves from `dummy` to node 1.',
+      state: { nodes: [1, 2, 3, 4, 5], slow: 'D', fast: 0, n: 2, action: 'Fast moves to 1.' },
     },
     {
       id: 2,
-      title: 'Move Together',
-      explanation: 'Move both pointers until Fast reaches the end (null). Slow will be at node 3.',
-      state: {
-        nodes: [1, 2, 3, 4, 5], slow: 2, fast: 'null', n: 2, action: 'Slow is at 3.',
-      },
+      title: 'Move Fast (Step 2)',
+      explanation: 'We continue moving `fast`. It moves from node 1 to node 2.',
+      state: { nodes: [1, 2, 3, 4, 5], slow: 'D', fast: 1, n: 2, action: 'Fast moves to 2.' },
     },
     {
       id: 3,
-      title: 'Remove Node',
-      explanation: 'Slow is right before the target (node 4). Skip it: `slow.next = slow.next.next`.',
-      state: {
-        nodes: [1, 2, 3, 5], slow: 2, fast: 'null', n: 2, action: 'Removed 4.', found: true,
-      },
+      title: 'Move Fast (Step 3)',
+      explanation: 'We move `fast` one final time for this phase. It moves from node 2 to node 3. We have now moved `fast` exactly N+1 (3) steps. WHY: We need the gap between `fast` and `slow` to be N+1. This way, when `fast` reaches `null` (the end of the list), `slow` will be exactly at the node *before* the one we want to remove.',
+      state: { nodes: [1, 2, 3, 4, 5], slow: 'D', fast: 2, n: 2, action: 'Fast moves to 3. Gap created.' },
+    },
+    {
+      id: 4,
+      title: 'Move Both (Step 1)',
+      explanation: 'Now we move both pointers simultaneously until `fast` reaches `null`. `fast` moves to 4, `slow` moves to node 1.',
+      state: { nodes: [1, 2, 3, 4, 5], slow: 0, fast: 3, n: 2, action: 'Fast->4, Slow->1.' },
+    },
+    {
+      id: 5,
+      title: 'Move Both (Step 2)',
+      explanation: 'Continue moving both. `fast` moves to 5, `slow` moves to node 2.',
+      state: { nodes: [1, 2, 3, 4, 5], slow: 1, fast: 4, n: 2, action: 'Fast->5, Slow->2.' },
+    },
+    {
+      id: 6,
+      title: 'Move Both (Step 3)',
+      explanation: 'One more move. `fast` becomes null (end of list), `slow` moves to node 3. The while loop terminates.',
+      state: { nodes: [1, 2, 3, 4, 5], slow: 2, fast: 'null', n: 2, action: 'Fast->null, Slow->3.' },
+    },
+    {
+      id: 7,
+      title: 'Skip the Target Node',
+      explanation: '`slow` is currently at node 3. The node we want to remove is `slow.next` (node 4). We skip it by changing the pointer: `slow.next = slow.next.next`. Node 3 now points directly to node 5. WHY: This effectively removes node 4 from the list.',
+      state: { nodes: [1, 2, 3, 5], slow: 2, fast: 'null', n: 2, action: 'Removed 4. 3 -> 5.' },
+    },
+    {
+      id: 8,
+      title: 'Return Result',
+      explanation: 'We return `dummy.next`. The dummy node safely handled the edge case where the head might need to be removed. The final list is 1 -> 2 -> 3 -> 5.',
+      state: { nodes: [1, 2, 3, 5], slow: 2, fast: 'null', n: 2, action: 'Done!', found: true },
     },
   ],
 

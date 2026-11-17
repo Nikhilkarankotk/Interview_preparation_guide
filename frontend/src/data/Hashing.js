@@ -1,5 +1,5 @@
 // ============================================================
-// COMPLEMENT LOOKUP — Two Sum (Unsorted)
+// COMPLEMENT LOOKUP — LeetCode 1: Two Sum
 // ============================================================
 export const complementLookup = {
   id: 'complement-lookup',
@@ -33,35 +33,29 @@ export const complementLookup = {
   steps: [
     {
       id: 0,
-      title: 'Initialize',
-      explanation: 'Target is 9. We start with an empty map.',
+      title: 'LC 1 — What Are We Looking For?',
+      explanation: 'Input: `nums = [2, 7, 11, 15]`, `target = 9`.\n\n🎯 Goal: Find TWO indices i, j such that `nums[i] + nums[j] = 9`. Return `[i, j]`. The array is UNSORTED — Two Pointers won\'t work.\n\n🔍 Strategy: As we walk left-to-right, we ask a simple question for each number: "What value do I need to complete target?" That\'s the complement = 9 − current. If we\'ve seen it before (stored in a map), we\'re done. If not, store current for future lookups.\n\nStart: empty map, no numbers seen yet.\n\nNext step → Check nums[0] = 2.',
       state: {
-        array: [2, 11, 7, 15], target: 9, map: {}, currentIdx: 0, action: 'Empty map.',
+        array: [2, 7, 11, 15], target: 9, map: {}, currentIdx: 0,
+        action: 'Goal: find pair summing to 9. Map empty.',
       },
     },
     {
       id: 1,
-      title: 'First Element',
-      explanation: 'Current is 2. Complement needed = 9 - 2 = 7. Is 7 in the map? No. Store {2: 0}.',
+      title: 'Probe 1 — Current = 2',
+      explanation: '🔍 What we\'re doing: For nums[0] = 2, compute its complement.\n\n🧮 Complement = 9 − 2 = 7. If 7 were already in the map, we\'d have our pair (7 + 2 = 9).\n\n❌ Verdict: Map is empty → 7 not found.\n\n➡️ Next move: Store `2 → 0` in the map so future numbers can check against 2. Then advance to index 1.\n\nNext step → Check nums[1] = 7.',
       state: {
-        array: [2, 11, 7, 15], target: 9, map: {2: 0}, currentIdx: 1, action: '2 not found. Store 2 -> 0.',
+        array: [2, 7, 11, 15], target: 9, map: {2: 0}, currentIdx: 1,
+        action: 'nums[0]=2 → need 7. Not in map. Store 2→0.',
       },
     },
     {
       id: 2,
-      title: 'Second Element',
-      explanation: 'Current is 11. Complement = 9 - 11 = -2. Is -2 in the map? No. Store {11: 1}.',
+      title: 'Probe 2 — Current = 7',
+      explanation: '🔍 What we\'re doing: For nums[1] = 7, compute its complement.\n\n🧮 Complement = 9 − 7 = 2. Check map for 2.\n\n✅ Verdict: `2 → 0` IS in the map (we stored it last step). The pair is nums[0] + nums[1] = 2 + 7 = 9. \n\n➡️ Next move: Return `[0, 1]`.\n\n🎯 Answer: `[0, 1]` — matches LC 1\'s expected output. Note we check BEFORE storing 7, because storing first could match 7 with itself in edge cases (like target = 14, nums = [7, 7]).',
       state: {
-        array: [2, 11, 7, 15], target: 9, map: {2: 0, 11: 1}, currentIdx: 2, action: '11 not found. Store 11 -> 1.',
-      },
-    },
-    {
-      id: 3,
-      title: 'Third Element (Match!)',
-      explanation: 'Current is 7. Complement = 9 - 7 = 2. Is 2 in the map? YES! It is at index 0. We found our pair.',
-      state: {
-        array: [2, 11, 7, 15], target: 9, map: {2: 0, 11: 1}, currentIdx: 2, found: true,
-        action: '7 + 2 = 9. Return [0, 2].',
+        array: [2, 7, 11, 15], target: 9, map: {2: 0}, currentIdx: 1, found: true,
+        action: 'nums[1]=7 → need 2. Found at index 0. Return [0, 1].',
       },
     },
   ],
@@ -121,7 +115,7 @@ public class TwoSum {
 };
 
 // ============================================================
-// FREQUENCY MAP — Valid Anagram
+// FREQUENCY MAP — LeetCode 242: Valid Anagram
 // ============================================================
 export const frequencyMap = {
   id: 'frequency-map',
@@ -153,18 +147,47 @@ export const frequencyMap = {
   steps: [
     {
       id: 0,
-      title: 'Count String 1',
-      explanation: 'We want to check if "anagram" and "nagaram" are anagrams. First, count characters in string 1.',
+      title: 'LC 242 — What Are We Checking?',
+      explanation: 'Input: `s = "anagram"`, `t = "nagaram"`.\n\n🎯 Goal: Return true if t is an anagram of s — meaning both strings have the SAME letters with the SAME counts, just in any order.\n\n💡 Simple idea: For each letter, count how many times it appears in s, and count how many times it appears in t. If every letter has the same count in both, they are anagrams.\n\n🔧 Setup:\n- Both strings are 7 letters → OK (different lengths would be instant false)\n- Create a count table: one slot per letter, all starting at 0\n- We will add 1 for each letter in s, and subtract 1 for each letter in t\n\nAt the end, if every slot is 0, the counts matched everywhere.\n\nNext step → Look at position 0.',
       state: {
-        string1: 'anagram', string2: 'nagaram', map: {a: 3, n: 1, g: 1, r: 1, m: 1}, phase: 'count1', action: 'Built frequency map for "anagram".',
+        string1: 'anagram', string2: 'nagaram', map: {}, phase: 'init',
+        action: 'Lengths match (7). Start with empty count table.',
       },
     },
     {
       id: 1,
-      title: 'Subtract String 2',
-      explanation: 'Loop through string 2 and decrement the counts in the map. If a character is missing or goes negative, it\'s not an anagram.',
+      title: 'Position 0 — Add s[0], Subtract t[0]',
+      explanation: 'What we do at position 0:\n\n- s[0] = \'a\' → count[a] goes from 0 to +1 (found one \'a\' in s)\n- t[0] = \'n\' → count[n] goes from 0 to −1 (found one \'n\' in t)\n\n📊 Table now looks like:\n- a → +1  (s has one extra \'a\' so far)\n- n → −1  (t has one extra \'n\' so far)\n\nThink of +1 as "s is ahead on this letter" and −1 as "t is ahead on this letter". If both strings have the same letters, these will cancel out as we keep scanning.\n\nNext step → Position 1.',
       state: {
-        string1: 'anagram', string2: 'nagaram', map: {a: 0, n: 0, g: 0, r: 0, m: 0}, phase: 'subtract2', found: true, action: 'All counts reached 0. Valid Anagram!',
+        string1: 'anagram', string2: 'nagaram', map: {a: 1, n: -1}, phase: 'scan',
+        action: 'i=0: ++a → +1, --n → −1.',
+      },
+    },
+    {
+      id: 2,
+      title: 'Position 1 — They Cancel Out',
+      explanation: 'What we do at position 1:\n\n- s[1] = \'n\' → count[n] goes from −1 to 0 (this \'n\' in s pays back the \'n\' we saw earlier in t)\n- t[1] = \'a\' → count[a] goes from +1 to 0 (this \'a\' in t pays back the \'a\' we saw earlier in s)\n\n📊 Table now looks like:\n- a → 0  (balanced)\n- n → 0  (balanced)\n\n✅ This is exactly the behavior we want — a letter that appears in BOTH strings will add 1 somewhere and subtract 1 somewhere else, netting to 0. Order doesn\'t matter.\n\nNext step → Positions 2 through 6.',
+      state: {
+        string1: 'anagram', string2: 'nagaram', map: {a: 0, n: 0}, phase: 'scan',
+        action: 'i=1: ++n → 0, --a → 0. Both balanced.',
+      },
+    },
+    {
+      id: 3,
+      title: 'Positions 2–6 — Finish the Scan',
+      explanation: 'We repeat the same +1 / −1 pattern for every remaining position:\n\n- i=2: s[2]=\'a\' (+1), t[2]=\'g\' (−1)\n- i=3: s[3]=\'g\' (+1), t[3]=\'a\' (−1)\n- i=4: s[4]=\'r\' (+1), t[4]=\'r\' (−1) → net 0\n- i=5: s[5]=\'a\' (+1), t[5]=\'a\' (−1) → net 0\n- i=6: s[6]=\'m\' (+1), t[6]=\'m\' (−1) → net 0\n\n📊 Final counts for every letter that appeared:\n- a → 0  (appeared 3 times in s, 3 times in t)\n- n → 0  (1 and 1)\n- g → 0  (1 and 1)\n- r → 0  (1 and 1)\n- m → 0  (1 and 1)\n\nEvery slot balanced to zero.\n\nNext step → Verify all slots are zero.',
+      state: {
+        string1: 'anagram', string2: 'nagaram', map: {a: 0, n: 0, g: 0, r: 0, m: 0}, phase: 'verify',
+        action: 'Finished i=0..6. Every count is 0.',
+      },
+    },
+    {
+      id: 4,
+      title: 'Return Answer',
+      explanation: 'Final check: walk through the count table. If ANY slot is not 0, the strings have different character counts → return false. If every slot is 0 → return true.\n\n✅ All slots are 0 here → return true.\n\n🎯 Answer: `true` — matches LC 242\'s expected output for "anagram" / "nagaram".\n\n💭 Why this works in one sentence: a letter that appears k times in s contributes +k, and if it also appears k times in t it contributes −k → they cancel. If t had one extra \'x\', that slot would end at −1 and we\'d return false. If t had one missing \'a\', the \'a\' slot would end at +1 and we\'d return false.',
+      state: {
+        string1: 'anagram', string2: 'nagaram', map: {a: 0, n: 0, g: 0, r: 0, m: 0}, phase: 'done', found: true,
+        action: 'All counts = 0 → return true.',
       },
     },
   ],
@@ -223,7 +246,6 @@ export const frequencyMap = {
     'All zeros means anagram.',
   ],
 };
-
 export const hashingSubPatterns = [complementLookup, frequencyMap];
 
 export const hashingOverview = {

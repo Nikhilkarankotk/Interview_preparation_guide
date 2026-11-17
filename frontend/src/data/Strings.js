@@ -32,35 +32,69 @@ export const palindromeCheck = {
   steps: [
     {
       id: 0,
-      title: 'Setup',
-      explanation: 'String: "A man, a plan, a canal: Panama". We use L=0 and R=length-1.',
-      state: {
-        str: 'A man, a plan, a canal: Panama', left: 0, right: 29, action: 'L at "A", R at "a".',
-      },
+      title: 'Initial Pointers',
+      explanation: 'String: "A man, a plan, a canal: Panama". We set L=0 ("A") and R=29 ("a"). Both are alphanumeric. They match (ignoring case). WHY: The outer characters must match to be a palindrome.',
+      state: { str: 'A man, a plan, a canal: Panama', left: 0, right: 29, action: 'Match "A" and "a".' },
     },
     {
       id: 1,
-      title: 'Skip Non-Alphanumeric',
-      explanation: 'L points to "A" (valid). R points to "a" (valid). They match (ignoring case). Move both.',
-      state: {
-        str: 'A man, a plan, a canal: Panama', left: 1, right: 28, action: 'Match "A" and "a". L++, R--.',
-      },
+      title: 'Skip Space',
+      explanation: 'Move inward. L=1 is a space (skip). L becomes 2 ("m"). R=28 is "m". They match.',
+      state: { str: 'A man, a plan, a canal: Panama', left: 2, right: 28, action: 'Skip space. Match "m".' },
     },
     {
       id: 2,
-      title: 'Skip Spaces and Commas',
-      explanation: 'L points to space (skip). R points to "m" (valid). L moves to "m" (valid). They match.',
-      state: {
-        str: 'A man, a plan, a canal: Panama', left: 2, right: 27, action: 'Skip spaces. Match "m".',
-      },
+      title: 'Match "a"',
+      explanation: 'Move inward. L=3 ("a"), R=27 ("a"). They match.',
+      state: { str: 'A man, a plan, a canal: Panama', left: 3, right: 27, action: 'Match "a" and "a".' },
     },
     {
       id: 3,
-      title: 'Continue...',
-      explanation: 'This pattern continues until L >= R, verifying the palindrome.',
-      state: {
-        str: 'A man, a plan, a canal: Panama', left: 15, right: 15, action: 'Midpoint reached. Valid Palindrome!', found: true,
-      },
+      title: 'Match "n"',
+      explanation: 'Move inward. L=4 ("n"), R=26 ("n"). They match.',
+      state: { str: 'A man, a plan, a canal: Panama', left: 4, right: 26, action: 'Match "n" and "n".' },
+    },
+    {
+      id: 4,
+      title: 'Skip Comma and Space',
+      explanation: 'Move inward. L=5 is a comma. Skip. L=6 is a space. Skip. L becomes 7 ("a"). R=25 is "a". They match. WHY: Punctuation and spaces are ignored.',
+      state: { str: 'A man, a plan, a canal: Panama', left: 7, right: 25, action: 'Skip ", ". Match "a".' },
+    },
+    {
+      id: 5,
+      title: 'Skip Space (Left)',
+      explanation: 'Move inward. L=8 is a space. Skip. L becomes 9 ("p"). R=24 is "P". They match.',
+      state: { str: 'A man, a plan, a canal: Panama', left: 9, right: 24, action: 'Skip space. Match "p" and "P".' },
+    },
+    {
+      id: 6,
+      title: 'Match "l"',
+      explanation: 'Move inward. L=10 ("l"). R=23 is a space. Skip. R becomes 22 (":"), then 21 ("l"). They match.',
+      state: { str: 'A man, a plan, a canal: Panama', left: 10, right: 21, action: 'Match "l" and "l".' },
+    },
+    {
+      id: 7,
+      title: 'Match "a"',
+      explanation: 'Move inward. L=11 ("a"). R=20 ("a"). They match.',
+      state: { str: 'A man, a plan, a canal: Panama', left: 11, right: 20, action: 'Match "a" and "a".' },
+    },
+    {
+      id: 8,
+      title: 'Match "n"',
+      explanation: 'Move inward. L=12 ("n"). R=19 ("n"). They match.',
+      state: { str: 'A man, a plan, a canal: Panama', left: 12, right: 19, action: 'Match "n" and "n".' },
+    },
+    {
+      id: 9,
+      title: 'Skip Comma and Match',
+      explanation: 'Move inward. L=13 is a comma. Skip. L becomes 14 (space). Skip. L becomes 15 ("a"). R=18 is "a". They match.',
+      state: { str: 'A man, a plan, a canal: Panama', left: 15, right: 18, action: 'Skip ", ". Match "a".' },
+    },
+    {
+      id: 10,
+      title: 'Midpoint Reached',
+      explanation: 'Move inward. L=16 (space). Skip to 17 ("c"). R=17 ("c"). L and R meet. The loop terminates. All characters matched, so it is a valid palindrome.',
+      state: { str: 'A man, a plan, a canal: Panama', left: 17, right: 17, action: 'L meets R. Valid!', found: true },
     },
   ],
 
@@ -152,35 +186,57 @@ export const validAnagram = {
   steps: [
     {
       id: 0,
-      title: 'Init Count Array',
-      explanation: 'String 1: "anagram", String 2: "nagaram". Create an array of size 26 (0s).',
-      state: {
-        str1: 'anagram', str2: 'nagaram', counts: [0,0,0,0,0,0,0,0,0,0,0,0,0], action: 'Init counts to 0.',
-      },
+      title: 'Initialize Array',
+      explanation: 'String 1: "anagram", String 2: "nagaram". We create an array of size 26 (representing a-z), initialized to 0. WHY: We need to track the difference in character counts between the two strings.',
+      state: { str1: 'anagram', str2: 'nagaram', counts: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], action: 'Init 26 zeros.' },
     },
     {
       id: 1,
-      title: 'Count String 1',
-      explanation: 'Increment for each char in "anagram". e.g., "a" becomes 3.',
-      state: {
-        str1: 'anagram', str2: 'nagaram', counts: [3,0,0,0,0,0,1,0,0,0,0,0,1], action: 'Count "anagram".',
-      },
+      title: 'Process "a" and "n"',
+      explanation: 'Index 0: Add "a" from String 1 (index 0 becomes 1). Subtract "n" from String 2 (index 13 becomes -1).',
+      state: { str1: 'anagram', str2: 'nagaram', counts: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], action: 'a:+1, n:-1.' },
     },
     {
       id: 2,
-      title: 'Subtract String 2',
-      explanation: 'Decrement for each char in "nagaram".',
-      state: {
-        str1: 'anagram', str2: 'nagaram', counts: [0,0,0,0,0,0,0,0,0,0,0,0,0], action: 'Subtract "nagaram". All 0s!',
-      },
+      title: 'Process "n" and "a"',
+      explanation: 'Index 1: Add "n" from String 1 (index 13 becomes 0). Subtract "a" from String 2 (index 0 becomes 0). They cancel out.',
+      state: { str1: 'anagram', str2: 'nagaram', counts: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], action: 'n:+1, a:-1.' },
     },
     {
       id: 3,
-      title: 'Check',
-      explanation: 'All counts are 0. They are anagrams.',
-      state: {
-        str1: 'anagram', str2: 'nagaram', counts: [0,0,0,0,0,0,0,0,0,0,0,0,0], action: 'Valid Anagram!', found: true,
-      },
+      title: 'Process "a" and "g"',
+      explanation: 'Index 2: Add "a" (index 0 becomes 1). Subtract "g" (index 6 becomes -1).',
+      state: { str1: 'anagram', str2: 'nagaram', counts: [1, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], action: 'a:+1, g:-1.' },
+    },
+    {
+      id: 4,
+      title: 'Process "g" and "a"',
+      explanation: 'Index 3: Add "g" (index 6 becomes 0). Subtract "a" (index 0 becomes 0).',
+      state: { str1: 'anagram', str2: 'nagaram', counts: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], action: 'g:+1, a:-1.' },
+    },
+    {
+      id: 5,
+      title: 'Process "r" and "r"',
+      explanation: 'Index 4: Add "r" (index 17 becomes 1). Subtract "r" (index 17 becomes 0). WHY: The same character is added and subtracted immediately.',
+      state: { str1: 'anagram', str2: 'nagaram', counts: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], action: 'r:+1, r:-1.' },
+    },
+    {
+      id: 6,
+      title: 'Process "a" and "a"',
+      explanation: 'Index 5: Add "a" (index 0 becomes 1). Subtract "a" (index 0 becomes 0).',
+      state: { str1: 'anagram', str2: 'nagaram', counts: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], action: 'a:+1, a:-1.' },
+    },
+    {
+      id: 7,
+      title: 'Process "m" and "m"',
+      explanation: 'Index 6: Add "m" (index 12 becomes 1). Subtract "m" (index 12 becomes 0).',
+      state: { str1: 'anagram', str2: 'nagaram', counts: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], action: 'm:+1, m:-1.' },
+    },
+    {
+      id: 8,
+      title: 'Final Check',
+      explanation: 'We iterate through the counts. All values are exactly 0. This means both strings have the exact same characters with the same frequencies. They are anagrams.',
+      state: { str1: 'anagram', str2: 'nagaram', counts: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], action: 'All 0s. Valid Anagram!', found: true },
     },
   ],
 
@@ -272,35 +328,51 @@ export const stringCompression = {
   steps: [
     {
       id: 0,
-      title: 'Init Pointers',
-      explanation: 'Chars: ["a","a","b","b","c","c","c"]. Read = 0, Write = 0.',
-      state: {
-        str: 'a a b b c c c', read: 0, write: 0, action: 'Read at a, Write at 0.',
-      },
+      title: 'Initialize Pointers',
+      explanation: 'Chars: ["a","a","b","b","c","c","c"]. Read = 0, Write = 0. WHY: Read will scan ahead to count duplicates, while Write will stay behind to build the compressed version.',
+      state: { str: 'a a b b c c c', read: 0, write: 0, action: 'Read at a, Write at 0.' },
     },
     {
       id: 1,
       title: 'Count "a"',
-      explanation: 'Read counts 2 "a"s. Write "a" and "2" at index 0 and 1. Write becomes 2.',
-      state: {
-        str: 'a 2 b b c c c', read: 2, write: 2, action: 'Write "a", "2".',
-      },
+      explanation: 'Read counts consecutive "a"s. It moves to index 2. Count = 2. We write "a" at index 0. Write becomes 1.',
+      state: { str: 'a a b b c c c', read: 2, write: 1, action: 'Write "a".' },
     },
     {
       id: 2,
-      title: 'Count "b"',
-      explanation: 'Read counts 2 "b"s. Write "b" and "2" at index 2 and 3. Write becomes 4.',
-      state: {
-        str: 'a 2 b 2 c c c', read: 4, write: 4, action: 'Write "b", "2".',
-      },
+      title: 'Write Count for "a"',
+      explanation: 'Count > 1, so we write the count "2" at index 1. Write becomes 2.',
+      state: { str: 'a 2 b b c c c', read: 2, write: 2, action: 'Write "2".' },
     },
     {
       id: 3,
+      title: 'Count "b"',
+      explanation: 'Read continues from index 2. Counts consecutive "b"s. Moves to index 4. Count = 2. We write "b" at index 2. Write becomes 3.',
+      state: { str: 'a 2 b b c c c', read: 4, write: 3, action: 'Write "b".' },
+    },
+    {
+      id: 4,
+      title: 'Write Count for "b"',
+      explanation: 'Write the count "2" at index 3. Write becomes 4.',
+      state: { str: 'a 2 b 2 c c c', read: 4, write: 4, action: 'Write "2".' },
+    },
+    {
+      id: 5,
       title: 'Count "c"',
-      explanation: 'Read counts 3 "c"s. Write "c" and "3". Write becomes 6. Return length 6.',
-      state: {
-        str: 'a 2 b 2 c 3', read: 7, write: 6, action: 'Write "c", "3". Length = 6.', found: true,
-      },
+      explanation: 'Read continues from index 4. Counts consecutive "c"s. Moves to index 7. Count = 3. We write "c" at index 4. Write becomes 5.',
+      state: { str: 'a 2 b 2 c c c', read: 7, write: 5, action: 'Write "c".' },
+    },
+    {
+      id: 6,
+      title: 'Write Count for "c"',
+      explanation: 'Write the count "3" at index 5. Write becomes 6.',
+      state: { str: 'a 2 b 2 c 3', read: 7, write: 6, action: 'Write "3".' },
+    },
+    {
+      id: 7,
+      title: 'Final Result',
+      explanation: 'Read reaches the end of the array. The algorithm stops. The compressed array is the first 6 characters: "a 2 b 2 c 3". Return the write pointer: 6.',
+      state: { str: 'a 2 b 2 c 3', read: 7, write: 6, action: 'Return 6. Done!', found: true },
     },
   ],
 

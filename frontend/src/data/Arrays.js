@@ -33,42 +33,44 @@ export const arrayTraversal = {
     {
       id: 0,
       title: 'Initial State',
-      explanation: 'Array: [3, 1, 4, 1, 5, 9, 2]. We start by assuming the first element (3) is the maximum.',
-      state: {
-        array: [3, 1, 4, 1, 5, 9, 2], currentIdx: 0, maxIdx: 0, action: 'Assume max is 3.',
-      },
+      explanation: 'Array: [3, 1, 4, 1, 5, 9, 2]. We start by assuming the first element (3) is the maximum. WHY: We must initialize our running maximum with a valid element from the array so we have a baseline to compare against. Initializing with 0 would fail if all elements are negative.',
+      state: { array: [3, 1, 4, 1, 5, 9, 2], currentIdx: 0, maxIdx: 0, action: 'Assume max is 3 (index 0).' },
     },
     {
       id: 1,
-      title: 'Compare 1',
-      explanation: 'Current is 1. 1 < 3. Max remains 3.',
-      state: {
-        array: [3, 1, 4, 1, 5, 9, 2], currentIdx: 1, maxIdx: 0, action: '1 < 3. Max is still 3.',
-      },
+      title: 'Compare Index 1',
+      explanation: 'Current value is 1. We compare 1 with our current max (3). 1 is not greater than 3. The maximum remains 3.',
+      state: { array: [3, 1, 4, 1, 5, 9, 2], currentIdx: 1, maxIdx: 0, action: '1 < 3. Max remains at index 0.' },
     },
     {
       id: 2,
-      title: 'New Maximum',
-      explanation: 'Current is 4. 4 > 3. We update the max to 4.',
-      state: {
-        array: [3, 1, 4, 1, 5, 9, 2], currentIdx: 2, maxIdx: 2, action: '4 > 3. New max is 4.',
-      },
+      title: 'New Maximum Found',
+      explanation: 'Current value is 4. We compare 4 with our current max (3). 4 > 3. We update our maximum to 4. WHY: We have found a new largest element, so the old maximum is no longer relevant.',
+      state: { array: [3, 1, 4, 1, 5, 9, 2], currentIdx: 2, maxIdx: 2, action: '4 > 3. New max is 4 (index 2).' },
     },
     {
       id: 3,
-      title: 'Continue Scan',
-      explanation: 'We skip 1, then find 5. Update max to 5.',
-      state: {
-        array: [3, 1, 4, 1, 5, 9, 2], currentIdx: 4, maxIdx: 4, action: '5 > 4. New max is 5.',
-      },
+      title: 'Compare Index 3',
+      explanation: 'Current value is 1. 1 is not greater than our current max (4). The maximum remains 4.',
+      state: { array: [3, 1, 4, 1, 5, 9, 2], currentIdx: 3, maxIdx: 2, action: '1 < 4. Max remains at index 2.' },
     },
     {
       id: 4,
-      title: 'Final Maximum',
-      explanation: 'Current is 9. 9 > 5. Update max to 9. End of array.',
-      state: {
-        array: [3, 1, 4, 1, 5, 9, 2], currentIdx: 5, maxIdx: 5, action: '9 > 5. Max is 9.', found: true,
-      },
+      title: 'New Maximum Found',
+      explanation: 'Current value is 5. 5 > 4. We update our maximum to 5.',
+      state: { array: [3, 1, 4, 1, 5, 9, 2], currentIdx: 4, maxIdx: 4, action: '5 > 4. New max is 5 (index 4).' },
+    },
+    {
+      id: 5,
+      title: 'New Maximum Found',
+      explanation: 'Current value is 9. 9 > 5. We update our maximum to 9.',
+      state: { array: [3, 1, 4, 1, 5, 9, 2], currentIdx: 5, maxIdx: 5, action: '9 > 5. New max is 9 (index 5).' },
+    },
+    {
+      id: 6,
+      title: 'Final Element',
+      explanation: 'Current value is 2. 2 is not greater than 9. The maximum remains 9. The array is fully traversed, so 9 is our final answer.',
+      state: { array: [3, 1, 4, 1, 5, 9, 2], currentIdx: 6, maxIdx: 5, action: '2 < 9. Max is 9. Done.', found: true },
     },
   ],
 
@@ -154,43 +156,57 @@ export const kadanesAlgorithm = {
   steps: [
     {
       id: 0,
-      title: 'Init',
-      explanation: 'Array: [-2, 1, -3, 4, -1, 2, 1, -5, 4]. We start with maxSum = -2 and currSum = -2.',
-      state: {
-        array: [-2, 1, -3, 4, -1, 2, 1, -5, 4], currentIdx: 0, currSum: -2, maxSum: -2, action: 'Init with -2.',
-      },
+      title: 'Initial State',
+      explanation: 'Array: [-2, 1, -3, 4, -1, 2, 1, -5, 4]. We start by assuming the first element (-2) is the maximum. The running sum is also -2. WHY: We initialize with the first element rather than 0 to correctly handle arrays that contain only negative numbers.',
+      state: { array: [-2, 1, -3, 4, -1, 2, 1, -5, 4], currentIdx: 0, currSum: -2, maxSum: -2, action: 'Init with -2.' },
     },
     {
       id: 1,
-      title: 'Current Sum Turns Negative',
-      explanation: 'At index 1, value is 1. currSum becomes -2 + 1 = -1. Since it\'s negative, we reset currSum to 0, then add the current value (1). currSum = 1. maxSum updates to 1.',
-      state: {
-        array: [-2, 1, -3, 4, -1, 2, 1, -5, 4], currentIdx: 1, currSum: 1, maxSum: 1, action: 'Reset currSum to 0, add 1. maxSum = 1.',
-      },
+      title: 'Restart or Extend?',
+      explanation: 'Current value is 1. Extending the previous subarray gives (-2 + 1) = -1. Starting a new subarray gives just 1. Since 1 > -1, we restart our subarray at index 1. currSum = 1. maxSum updates to 1. WHY: A negative running sum will only drag down our future sums, so it is better to start fresh.',
+      state: { array: [-2, 1, -3, 4, -1, 2, 1, -5, 4], currentIdx: 1, currSum: 1, maxSum: 1, action: 'Restart subarray. Sum=1.' },
     },
     {
       id: 2,
-      title: 'Continue',
-      explanation: 'At index 2, value is -3. currSum = 1 - 3 = -2. maxSum stays 1.',
-      state: {
-        array: [-2, 1, -3, 4, -1, 2, 1, -5, 4], currentIdx: 2, currSum: -2, maxSum: 1, action: 'currSum = -2.',
-      },
+      title: 'Extend Subarray',
+      explanation: 'Current value is -3. Extending gives (1 - 3) = -2. Starting fresh gives -3. Since -2 > -3, we extend the current subarray. currSum = -2. maxSum remains 1.',
+      state: { array: [-2, 1, -3, 4, -1, 2, 1, -5, 4], currentIdx: 2, currSum: -2, maxSum: 1, action: 'Extend subarray. Sum=-2.' },
     },
     {
       id: 3,
-      title: 'Reset Again',
-      explanation: 'At index 3, value is 4. Since currSum is -2, we reset to 0, then add 4. currSum = 4. maxSum updates to 4.',
-      state: {
-        array: [-2, 1, -3, 4, -1, 2, 1, -5, 4], currentIdx: 3, currSum: 4, maxSum: 4, action: 'Reset to 0, add 4. maxSum = 4.',
-      },
+      title: 'Restart Subarray',
+      explanation: 'Current value is 4. Extending the current negative sum (-2 + 4) = 2. Starting fresh gives 4. Since 4 > 2, we restart again. currSum = 4. maxSum updates to 4. WHY: The previous prefix was negative, so dropping it yields a larger sum.',
+      state: { array: [-2, 1, -3, 4, -1, 2, 1, -5, 4], currentIdx: 3, currSum: 4, maxSum: 4, action: 'Restart. Sum=4.' },
     },
     {
       id: 4,
-      title: 'Build Up',
-      explanation: 'Values 4, -1, 2, 1 give a sum of 6. maxSum updates to 6.',
-      state: {
-        array: [-2, 1, -3, 4, -1, 2, 1, -5, 4], currentIdx: 6, currSum: 6, maxSum: 6, action: 'Sum 4-1+2+1 = 6. Max is 6.',
-      },
+      title: 'Extend Subarray',
+      explanation: 'Current value is -1. Extending gives (4 - 1) = 3. Starting fresh gives -1. Since 3 > -1, we extend. currSum = 3. maxSum remains 4.',
+      state: { array: [-2, 1, -3, 4, -1, 2, 1, -5, 4], currentIdx: 4, currSum: 3, maxSum: 4, action: 'Extend. Sum=3.' },
+    },
+    {
+      id: 5,
+      title: 'Extend Subarray',
+      explanation: 'Current value is 2. Extending gives (3 + 2) = 5. Starting fresh gives 2. Since 5 > 2, we extend. currSum = 5. maxSum updates to 5.',
+      state: { array: [-2, 1, -3, 4, -1, 2, 1, -5, 4], currentIdx: 5, currSum: 5, maxSum: 5, action: 'Extend. Sum=5. New max!' },
+    },
+    {
+      id: 6,
+      title: 'Extend Subarray',
+      explanation: 'Current value is 1. Extending gives (5 + 1) = 6. Starting fresh gives 1. Since 6 > 1, we extend. currSum = 6. maxSum updates to 6.',
+      state: { array: [-2, 1, -3, 4, -1, 2, 1, -5, 4], currentIdx: 6, currSum: 6, maxSum: 6, action: 'Extend. Sum=6. New max!' },
+    },
+    {
+      id: 7,
+      title: 'Extend Subarray',
+      explanation: 'Current value is -5. Extending gives (6 - 5) = 1. Starting fresh gives -5. Since 1 > -5, we extend. currSum = 1. maxSum remains 6.',
+      state: { array: [-2, 1, -3, 4, -1, 2, 1, -5, 4], currentIdx: 7, currSum: 1, maxSum: 6, action: 'Extend. Sum=1.' },
+    },
+    {
+      id: 8,
+      title: 'Final Element',
+      explanation: 'Current value is 4. Extending gives (1 + 4) = 5. Starting fresh gives 4. Since 5 > 4, we extend. currSum = 5. maxSum remains 6. The array is fully processed, so the maximum subarray sum is 6.',
+      state: { array: [-2, 1, -3, 4, -1, 2, 1, -5, 4], currentIdx: 8, currSum: 5, maxSum: 6, action: 'Extend. Sum=5. Max remains 6.', found: true },
     },
   ],
 
@@ -278,34 +294,44 @@ export const arrayRotation = {
     {
       id: 0,
       title: 'Original Array',
-      explanation: 'Array: [1, 2, 3, 4, 5, 6, 7]. K = 3. We want to rotate right by 3.',
-      state: {
-        array: [1, 2, 3, 4, 5, 6, 7], left: 0, right: 6, k: 3, action: 'Original array.',
-      },
+      explanation: 'Array: [1, 2, 3, 4, 5, 6, 7]. K = 3. We want to rotate right by 3 steps. WHY: Shifting elements one by one takes O(N*K) time. The reversal trick achieves O(N) time and O(1) space.',
+      state: { array: [1, 2, 3, 4, 5, 6, 7], left: 0, right: 6, k: 3, action: 'Original array.' },
     },
     {
       id: 1,
-      title: 'Reverse Entire Array',
-      explanation: 'Reverse all elements from index 0 to 6. Result: [7, 6, 5, 4, 3, 2, 1].',
-      state: {
-        array: [7, 6, 5, 4, 3, 2, 1], left: 0, right: 6, k: 3, action: 'Reverse all.',
-      },
+      title: 'Reverse Entire Array (Swap 1)',
+      explanation: 'We use two pointers (left=0, right=6). We swap the elements at these pointers: 1 and 7. The array becomes [7, 2, 3, 4, 5, 6, 1].',
+      state: { array: [7, 2, 3, 4, 5, 6, 1], left: 1, right: 5, k: 3, action: 'Swap 1 and 7.' },
     },
     {
       id: 2,
-      title: 'Reverse First K',
-      explanation: 'Reverse the first K (3) elements (0 to 2). Result: [5, 6, 7, 4, 3, 2, 1].',
-      state: {
-        array: [5, 6, 7, 4, 3, 2, 1], left: 0, right: 2, k: 3, action: 'Reverse first 3.',
-      },
+      title: 'Reverse Entire Array (Swap 2)',
+      explanation: 'Move pointers inward. Swap 2 and 6. Array becomes [7, 6, 3, 4, 5, 2, 1].',
+      state: { array: [7, 6, 3, 4, 5, 2, 1], left: 2, right: 4, k: 3, action: 'Swap 2 and 6.' },
     },
     {
       id: 3,
-      title: 'Reverse Rest',
-      explanation: 'Reverse the remaining elements (3 to 6). Result: [5, 6, 7, 1, 2, 3, 4].',
-      state: {
-        array: [5, 6, 7, 1, 2, 3, 4], left: 3, right: 6, k: 3, action: 'Rotated!', found: true,
-      },
+      title: 'Reverse Entire Array (Swap 3)',
+      explanation: 'Move pointers inward. Swap 3 and 5. Array becomes [7, 6, 5, 4, 3, 2, 1]. The middle element (4) remains in place. The first reversal is complete.',
+      state: { array: [7, 6, 5, 4, 3, 2, 1], left: 3, right: 3, k: 3, action: 'Swap 3 and 5. Reversal done.' },
+    },
+    {
+      id: 4,
+      title: 'Reverse First K Elements',
+      explanation: 'Now we reverse the first K (3) elements (indices 0 to 2). We reset pointers: left=0, right=2. We swap 7 and 5. Array becomes [5, 6, 7, 4, 3, 2, 1]. WHY: The first K elements are currently in reverse order of how they should appear.',
+      state: { array: [5, 6, 7, 4, 3, 2, 1], left: 1, right: 1, k: 3, action: 'Swap 7 and 5. First K done.' },
+    },
+    {
+      id: 5,
+      title: 'Reverse Remaining Elements',
+      explanation: 'Finally, we reverse the remaining elements (indices 3 to 6). We reset pointers: left=3, right=6. Swap 4 and 1. Array becomes [5, 6, 7, 1, 3, 2, 4]. WHY: These elements also appear in reverse order from their final expected positions.',
+      state: { array: [5, 6, 7, 1, 3, 2, 4], left: 4, right: 5, k: 3, action: 'Swap 4 and 1.' },
+    },
+    {
+      id: 6,
+      title: 'Final Swap',
+      explanation: 'Move pointers inward. Swap 3 and 2. Array becomes [5, 6, 7, 1, 2, 3, 4]. Pointers cross, so the third reversal is complete. The array is successfully rotated right by 3.',
+      state: { array: [5, 6, 7, 1, 2, 3, 4], left: 5, right: 4, k: 3, action: 'Swap 3 and 2. Rotated!', found: true },
     },
   ],
 

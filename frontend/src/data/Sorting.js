@@ -33,35 +33,63 @@ export const mergeSort = {
   steps: [
     {
       id: 0,
-      title: 'Divide',
-      explanation: 'Array: [38, 27, 43, 3, 9, 82, 10]. Split into two halves.',
-      state: {
-        array: [38, 27, 43, 3, 9, 82, 10], left: 0, right: 6, mid: 3, action: 'Split at mid=3.',
-      },
+      title: 'Initial Divide',
+      explanation: 'Array: [38, 27, 43, 3]. We calculate mid = (0 + 3) / 2 = 1. We split the array into two halves: left subarray [38, 27] and right subarray [43, 3]. WHY: Merge sort uses divide-and-conquer. Splitting the array halves the problem size, eventually reaching single-element arrays which are inherently sorted.',
+      state: { array: [38, 27, 43, 3], left: 0, right: 3, mid: 1, action: 'Split into [38, 27] and [43, 3].' },
     },
     {
       id: 1,
-      title: 'Recursively Sort Left',
-      explanation: 'Sort left half [38, 27, 43, 3]. Split and merge to get [3, 27, 38, 43].',
-      state: {
-        array: [3, 27, 38, 43, 9, 82, 10], left: 0, right: 3, mid: 1, action: 'Left half sorted.',
-      },
+      title: 'Divide Left Half',
+      explanation: 'We recurse on the left half [38, 27]. Mid = (0 + 1) / 2 = 0. We split it into [38] and [27].',
+      state: { array: [38, 27, 43, 3], left: 0, right: 1, mid: 0, action: 'Split [38, 27] into [38] and [27].' },
     },
     {
       id: 2,
-      title: 'Recursively Sort Right',
-      explanation: 'Sort right half [9, 82, 10]. Split and merge to get [9, 10, 82].',
-      state: {
-        array: [3, 27, 38, 43, 9, 10, 82], left: 4, right: 6, mid: 5, action: 'Right half sorted.',
-      },
+      title: 'Merge Left Half',
+      explanation: 'Both [38] and [27] are base cases (size 1). We merge them. We compare 38 and 27. Since 27 < 38, we place 27 first, then 38. The left half is now sorted: [27, 38].',
+      state: { array: [27, 38, 43, 3], left: 0, right: 1, mid: 0, action: 'Merged to [27, 38].' },
     },
     {
       id: 3,
-      title: 'Merge Halves',
-      explanation: 'Merge [3, 27, 38, 43] and [9, 10, 82] by comparing elements from each half.',
-      state: {
-        array: [3, 9, 10, 27, 38, 43, 82], left: null, right: null, mid: null, action: 'Merged! Array sorted.', found: true,
-      },
+      title: 'Divide Right Half',
+      explanation: 'We recurse on the right half [43, 3] (indices 2 to 3). Mid = (2 + 3) / 2 = 2. We split it into [43] and [3].',
+      state: { array: [27, 38, 43, 3], left: 2, right: 3, mid: 2, action: 'Split [43, 3] into [43] and [3].' },
+    },
+    {
+      id: 4,
+      title: 'Merge Right Half',
+      explanation: 'We merge [43] and [3]. Compare 43 and 3. Since 3 < 43, we place 3 first, then 43. The right half is now sorted: [3, 43].',
+      state: { array: [27, 38, 3, 43], left: 2, right: 3, mid: 2, action: 'Merged to [3, 43].' },
+    },
+    {
+      id: 5,
+      title: 'Compare Left and Right Halves (1)',
+      explanation: 'Now we merge the two sorted halves: [27, 38] and [3, 43]. We use two pointers (i for left, j for right). Compare 27 and 3. 3 is smaller, so we place 3 in the temp array.',
+      state: { array: [27, 38, 3, 43], left: 0, right: 3, mid: 1, action: 'Pick 3 (from right half).' },
+    },
+    {
+      id: 6,
+      title: 'Compare Left and Right Halves (2)',
+      explanation: 'Compare 27 and 43. 27 is smaller, so we place 27 in the temp array.',
+      state: { array: [27, 38, 3, 43], left: 0, right: 3, mid: 1, action: 'Pick 27 (from left half).' },
+    },
+    {
+      id: 7,
+      title: 'Compare Left and Right Halves (3)',
+      explanation: 'Compare 38 and 43. 38 is smaller, so we place 38 in the temp array.',
+      state: { array: [27, 38, 3, 43], left: 0, right: 3, mid: 1, action: 'Pick 38 (from left half).' },
+    },
+    {
+      id: 8,
+      title: 'Attach Remaining Elements',
+      explanation: 'The left half is exhausted. The only remaining element is 43 from the right half. We copy 43 to the temp array.',
+      state: { array: [27, 38, 3, 43], left: 0, right: 3, mid: 1, action: 'Pick 43 (from right half).' },
+    },
+    {
+      id: 9,
+      title: 'Final Sorted Array',
+      explanation: 'We copy the sorted temp array [3, 27, 38, 43] back into the original array. The array is now fully sorted.',
+      state: { array: [3, 27, 38, 43], left: null, right: null, mid: null, action: 'Merged! Array sorted.', found: true },
     },
   ],
 
@@ -165,34 +193,56 @@ export const quickSort = {
     {
       id: 0,
       title: 'Choose Pivot',
-      explanation: 'Array: [10, 80, 30, 90, 40, 50, 70]. Let\'s pick the last element (70) as the pivot.',
-      state: {
-        array: [10, 80, 30, 90, 40, 50, 70], left: 0, right: 6, pivot: 70, action: 'Pivot = 70.',
-      },
+      explanation: 'Array: [10, 80, 30, 90, 40]. We pick the last element (40) as the pivot. We also initialize a pointer `i = -1` to track the boundary of elements smaller than the pivot. WHY: The pivot acts as the dividing line. We want all elements smaller than 40 to be on its left, and larger on its right.',
+      state: { array: [10, 80, 30, 90, 40], left: 0, right: 4, pivot: 40, action: 'Pivot = 40. i = -1.' },
     },
     {
       id: 1,
-      title: 'Partition',
-      explanation: 'Move all elements < 70 to the left, and > 70 to the right. The array becomes [10, 30, 40, 50, 70, 90, 80]. Pivot is at its correct index (4).',
-      state: {
-        array: [10, 30, 40, 50, 70, 90, 80], left: 0, right: 6, pivot: 70, action: 'Pivot placed at index 4.',
-      },
+      title: 'Compare 10 with Pivot',
+      explanation: '`j = 0` (value 10). 10 < 40. We increment `i` (i becomes 0) and swap `arr[i]` with `arr[j]` (swapping 10 with itself). Array remains [10, 80, 30, 90, 40]. WHY: We are moving smaller elements to the left partition.',
+      state: { array: [10, 80, 30, 90, 40], left: 0, right: 4, pivot: 40, action: '10 < 40. Swap.' },
     },
     {
       id: 2,
-      title: 'Recurse Left',
-      explanation: 'Sort the left subarray [10, 30, 40, 50].',
-      state: {
-        array: [10, 30, 40, 50, 70, 90, 80], left: 0, right: 3, pivot: 50, action: 'Sorting left half.',
-      },
+      title: 'Compare 80 with Pivot',
+      explanation: '`j = 1` (value 80). 80 > 40. We do nothing. 80 stays on the right side of the partition.',
+      state: { array: [10, 80, 30, 90, 40], left: 0, right: 4, pivot: 40, action: '80 > 40. Ignore.' },
     },
     {
       id: 3,
-      title: 'Recurse Right',
-      explanation: 'Sort the right subarray [90, 80].',
-      state: {
-        array: [10, 30, 40, 50, 70, 80, 90], left: 5, right: 6, pivot: 80, action: 'Sorting right half. Sorted!', found: true,
-      },
+      title: 'Compare 30 with Pivot',
+      explanation: '`j = 2` (value 30). 30 < 40. We increment `i` (i becomes 1) and swap `arr[i]` (80) with `arr[j]` (30). Array becomes [10, 30, 80, 90, 40]. WHY: We found a smaller element (30), so we swap it into the smaller-elements partition.',
+      state: { array: [10, 30, 80, 90, 40], left: 0, right: 4, pivot: 40, action: '30 < 40. Swap 80 and 30.' },
+    },
+    {
+      id: 4,
+      title: 'Compare 90 with Pivot',
+      explanation: '`j = 3` (value 90). 90 > 40. We do nothing. The loop ends.',
+      state: { array: [10, 30, 80, 90, 40], left: 0, right: 4, pivot: 40, action: '90 > 40. Ignore.' },
+    },
+    {
+      id: 5,
+      title: 'Place Pivot in Correct Position',
+      explanation: 'We swap the pivot (40) with the element at `i + 1` (80). Array becomes [10, 30, 40, 90, 80]. The pivot 40 is now at its exact sorted index (2). WHY: The pivot separates the smaller and larger elements.',
+      state: { array: [10, 30, 40, 90, 80], left: 0, right: 4, pivot: 40, action: 'Swap pivot with 80. Pivot at index 2.' },
+    },
+    {
+      id: 6,
+      title: 'Recurse Left Partition',
+      explanation: 'We recursively sort the left partition [10, 30]. The pivot is 30. 10 < 30, so they remain in order. Left partition sorted.',
+      state: { array: [10, 30, 40, 90, 80], left: 0, right: 1, pivot: 30, action: 'Left partition sorted.' },
+    },
+    {
+      id: 7,
+      title: 'Recurse Right Partition',
+      explanation: 'We recursively sort the right partition [90, 80]. The pivot is 80. 90 > 80, so we swap them to [80, 90]. Right partition sorted.',
+      state: { array: [10, 30, 40, 80, 90], left: 3, right: 4, pivot: 80, action: 'Right partition sorted.' },
+    },
+    {
+      id: 8,
+      title: 'Final Sorted Array',
+      explanation: 'All partitions are sorted. The array is fully sorted: [10, 30, 40, 80, 90].',
+      state: { array: [10, 30, 40, 80, 90], left: null, right: null, pivot: null, action: 'Array sorted!', found: true },
     },
   ],
 
@@ -300,43 +350,57 @@ export const cyclicSort = {
   steps: [
     {
       id: 0,
-      title: 'Initialize Index',
-      explanation: 'Array: [3, 1, 5, 4, 2]. Start at index 0. The value is 3, which should be at index 2 (3-1).',
-      state: {
-        array: [3, 1, 5, 4, 2], current: 0, action: 'Value 3 should be at index 2.',
-      },
+      title: 'Start at Index 0',
+      explanation: 'Array: [3, 1, 5, 4, 2]. We start at `i = 0`. The value is 3. The correct index for 3 is `3 - 1 = 2`. Since `i` (0) does not equal the correct index (2), we must swap. WHY: Every number N in the range 1 to N belongs at index N-1.',
+      state: { array: [3, 1, 5, 4, 2], current: 0, action: 'Value 3 belongs at index 2. Swap.' },
     },
     {
       id: 1,
-      title: 'Swap',
-      explanation: 'Swap nums[0] and nums[2]. Array becomes [5, 1, 3, 4, 2].',
-      state: {
-        array: [5, 1, 3, 4, 2], current: 0, action: 'Swapped 3 and 5.',
-      },
+      title: 'Swap 3 and 5',
+      explanation: 'We swap `arr[0]` (3) with `arr[2]` (5). The array becomes [5, 1, 3, 4, 2]. 3 is now in its correct position. We do NOT increment `i` yet.',
+      state: { array: [5, 1, 3, 4, 2], current: 0, action: 'Swapped. 3 is home. Check index 0 again.' },
     },
     {
       id: 2,
-      title: 'Continue at Same Index',
-      explanation: 'Now value 5 is at index 0. It should be at index 4. Swap nums[0] and nums[4]. Array: [2, 1, 3, 4, 5].',
-      state: {
-        array: [2, 1, 3, 4, 5], current: 0, action: 'Swapped 5 and 2.',
-      },
+      title: 'Index 0 has 5',
+      explanation: 'Still at `i = 0`. The value is 5. The correct index for 5 is `5 - 1 = 4`. `i` (0) != 4, so we swap `arr[0]` (5) with `arr[4]` (2).',
+      state: { array: [2, 1, 3, 4, 5], current: 0, action: 'Value 5 belongs at index 4. Swap.' },
     },
     {
       id: 3,
-      title: 'Move Forward',
-      explanation: 'Value 2 is at index 0. It should be at index 1. Swap nums[0] and nums[1]. Array: [1, 2, 3, 4, 5].',
-      state: {
-        array: [1, 2, 3, 4, 5], current: 0, action: 'Swapped 2 and 1.',
-      },
+      title: 'Index 0 has 2',
+      explanation: 'Still at `i = 0`. The value is 2. The correct index for 2 is `2 - 1 = 1`. `i` (0) != 1, so we swap `arr[0]` (2) with `arr[1]` (1).',
+      state: { array: [1, 2, 3, 4, 5], current: 0, action: 'Value 2 belongs at index 1. Swap.' },
     },
     {
       id: 4,
-      title: 'Check Next',
-      explanation: 'Index 0 is correct. Move to index 1 (value 2, index 1, correct). Move to index 2 (value 3, correct). Array is sorted!',
-      state: {
-        array: [1, 2, 3, 4, 5], current: 2, action: 'Sorted!', found: true,
-      },
+      title: 'Check Index 0 (Correct)',
+      explanation: 'Still at `i = 0`. The value is 1. The correct index for 1 is 0. `i` (0) == 0, so the element is in its correct place. We increment `i` to 1.',
+      state: { array: [1, 2, 3, 4, 5], current: 1, action: '1 is home. Move to index 1.' },
+    },
+    {
+      id: 5,
+      title: 'Check Index 1',
+      explanation: 'At `i = 1`, value is 2. Correct index is 1. It is already in place. Increment `i` to 2.',
+      state: { array: [1, 2, 3, 4, 5], current: 2, action: '2 is home. Move to index 2.' },
+    },
+    {
+      id: 6,
+      title: 'Check Index 2',
+      explanation: 'At `i = 2`, value is 3. Correct index is 2. It is already in place. Increment `i` to 3.',
+      state: { array: [1, 2, 3, 4, 5], current: 3, action: '3 is home. Move to index 3.' },
+    },
+    {
+      id: 7,
+      title: 'Check Index 3',
+      explanation: 'At `i = 3`, value is 4. Correct index is 3. It is already in place. Increment `i` to 4.',
+      state: { array: [1, 2, 3, 4, 5], current: 4, action: '4 is home. Move to index 4.' },
+    },
+    {
+      id: 8,
+      title: 'Check Index 4 (End)',
+      explanation: 'At `i = 4`, value is 5. Correct index is 4. It is in place. `i` increments to 5, which is out of bounds. The array is now fully sorted.',
+      state: { array: [1, 2, 3, 4, 5], current: 5, action: 'Sorted!', found: true },
     },
   ],
 
@@ -430,27 +494,39 @@ export const customSort = {
   steps: [
     {
       id: 0,
-      title: 'The Problem',
-      explanation: 'Given numbers [3, 30, 34, 5, 9], arrange them to form the largest number. Result: "9534330".',
-      state: {
-        array: ['3', '30', '34', '5', '9'], action: 'We need to sort them.',
-      },
+      title: 'Convert to Strings',
+      explanation: 'Given numbers [3, 30, 34, 5, 9]. We want to form the largest number. First, we convert them to strings: ["3", "30", "34", "5", "9"]. WHY: We cannot simply sort by numerical value (e.g., 9 > 34, but "9" + "34" = "934" is larger than "34" + "9" = "349"). String concatenation allows us to test the combinations directly.',
+      state: { array: ['3', '30', '34', '5', '9'], action: 'Converted to strings.' },
     },
     {
       id: 1,
-      title: 'Define Comparator',
-      explanation: 'Compare string a and b. We prefer `a + b` over `b + a`. E.g., comparing "3" and "30": "330" > "303", so "3" comes first.',
-      state: {
-        array: ['9', '5', '34', '3', '30'], action: 'Sorted by a+b > b+a rule.',
-      },
+      title: 'Comparator Logic: 3 vs 30',
+      explanation: 'We compare "3" and "30". We check "330" vs "303". Since "330" > "303", "3" should come BEFORE "30". WHY: The comparator chooses the order that results in the larger concatenated string.',
+      state: { array: ['3', '30', '34', '5', '9'], action: '3 before 30 ("330" > "303").' },
     },
     {
       id: 2,
-      title: 'Result',
-      explanation: 'Concatenate the sorted array. Result: "9534330".',
-      state: {
-        array: ['9', '5', '34', '3', '30'], action: 'Final string: 9534330', found: true,
-      },
+      title: 'Comparator Logic: 9 vs 5',
+      explanation: 'We compare "9" and "5". "95" > "59", so "9" comes before "5".',
+      state: { array: ['9', '5', '34', '3', '30'], action: '9 before 5 ("95" > "59").' },
+    },
+    {
+      id: 3,
+      title: 'Comparator Logic: 34 vs 3',
+      explanation: 'We compare "34" and "3". "343" > "334", so "34" comes before "3".',
+      state: { array: ['9', '5', '34', '3', '30'], action: '34 before 3 ("343" > "334").' },
+    },
+    {
+      id: 4,
+      title: 'Final Sorted Array',
+      explanation: 'After sorting with this custom comparator, the array becomes ["9", "5", "34", "3", "30"]. WHY: This specific order guarantees that any adjacent pair `a, b` satisfies `a + b > b + a`, which is the condition for the lexicographically largest concatenation.',
+      state: { array: ['9', '5', '34', '3', '30'], action: 'Sorted array.' },
+    },
+    {
+      id: 5,
+      title: 'Concatenate Result',
+      explanation: 'We concatenate the sorted strings to form the final answer: "9534330".',
+      state: { array: ['9', '5', '34', '3', '30'], action: 'Result: 9534330', found: true },
     },
   ],
 

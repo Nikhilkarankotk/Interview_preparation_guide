@@ -33,51 +33,87 @@ export const subsets = {
   steps: [
     {
       id: 0,
-      title: 'Start with Empty',
-      explanation: 'We start with an empty subset []. We are at index 0 (value 1).',
-      state: {
-        array: [1, 2, 3], path: [], result: [[]], currentIdx: 0, action: 'Start with empty subset.',
-      },
+      title: 'Start with Empty Path',
+      explanation: 'We begin the recursion at index 0. The current path is empty []. We add this empty subset to our result immediately. WHY: The empty set is always a valid subset.',
+      state: { array: [1, 2, 3], path: [], result: [[]], currentIdx: 0, action: 'Start. Add [].' },
     },
     {
       id: 1,
       title: 'Include 1',
-      explanation: 'We INCLUDE 1. The path becomes [1]. We add it to the result. Then we go deeper to index 1.',
-      state: {
-        array: [1, 2, 3], path: [1], result: [[], [1]], currentIdx: 1, action: 'Include 1. Path: [1].',
-      },
+      explanation: 'We loop from index 0. We make the choice to INCLUDE the value 1. Path becomes [1]. We add it to the result. WHY: Every new path formed is a valid subset.',
+      state: { array: [1, 2, 3], path: [1], result: [[], [1]], currentIdx: 0, action: 'Include 1. Add [1].' },
     },
     {
       id: 2,
       title: 'Include 2',
-      explanation: 'Include 2. Path becomes [1, 2]. Add to result. Go to index 2.',
-      state: {
-        array: [1, 2, 3], path: [1, 2], result: [[], [1], [1, 2]], currentIdx: 2, action: 'Include 2. Path: [1, 2].',
-      },
+      explanation: 'We recurse deeper with the next start index (1). We INCLUDE the value 2. Path becomes [1, 2]. Add to result.',
+      state: { array: [1, 2, 3], path: [1, 2], result: [[], [1], [1, 2]], currentIdx: 1, action: 'Include 2. Add [1, 2].' },
     },
     {
       id: 3,
       title: 'Include 3',
-      explanation: 'Include 3. Path becomes [1, 2, 3]. Add to result. We hit the end of the array, so we BACKTRACK (pop 3).',
-      state: {
-        array: [1, 2, 3], path: [1, 2, 3], result: [[], [1], [1, 2], [1, 2, 3]], currentIdx: 3, action: 'Include 3. Backtrack.',
-      },
+      explanation: 'We recurse deeper with start index 2. We INCLUDE the value 3. Path becomes [1, 2, 3]. Add to result.',
+      state: { array: [1, 2, 3], path: [1, 2, 3], result: [[], [1], [1, 2], [1, 2, 3]], currentIdx: 2, action: 'Include 3. Add [1, 2, 3].' },
     },
     {
       id: 4,
-      title: 'Exclude 3',
-      explanation: 'After backtracking, we EXCLUDE 3. The path goes back to [1, 2].',
-      state: {
-        array: [1, 2, 3], path: [1, 2], result: [[], [1], [1, 2], [1, 2, 3]], currentIdx: 3, action: 'Exclude 3. Back to [1, 2].',
-      },
+      title: 'Backtrack 3',
+      explanation: 'We recurse deeper, but the loop hits the end of the array. We return and BACKTRACK: remove the 3 from the path. Path goes back to [1, 2]. WHY: We must undo the choice to explore other branches from this level.',
+      state: { array: [1, 2, 3], path: [1, 2], result: [[], [1], [1, 2], [1, 2, 3]], currentIdx: 2, action: 'Backtrack. Path -> [1, 2].' },
     },
     {
       id: 5,
+      title: 'Backtrack 2',
+      explanation: 'The loop at index 1 finishes. We return and BACKTRACK: remove the 2 from the path. Path goes back to [1]. WHY: We have exhausted all subsets that start with [1, 2].',
+      state: { array: [1, 2, 3], path: [1], result: [[], [1], [1, 2], [1, 2, 3]], currentIdx: 1, action: 'Backtrack. Path -> [1].' },
+    },
+    {
+      id: 6,
+      title: 'Include 3 (from 1)',
+      explanation: 'Still at the [1] level. The loop advances to the next index (2, value 3). We INCLUDE 3. Path becomes [1, 3]. Add to result.',
+      state: { array: [1, 2, 3], path: [1, 3], result: [[], [1], [1, 2], [1, 2, 3], [1, 3]], currentIdx: 2, action: 'Include 3. Add [1, 3].' },
+    },
+    {
+      id: 7,
+      title: 'Backtrack to Empty',
+      explanation: 'We backtrack again. Remove 3, then remove 1. Path is now back to []. WHY: We have exhausted all subsets that begin with 1. We must start exploring subsets that begin with 2.',
+      state: { array: [1, 2, 3], path: [], result: [[], [1], [1, 2], [1, 2, 3], [1, 3]], currentIdx: 0, action: 'Backtrack. Path -> [].' },
+    },
+    {
+      id: 8,
+      title: 'Include 2 (New Branch)',
+      explanation: 'The outer loop advances to index 1. We INCLUDE 2. Path becomes [2]. Add to result.',
+      state: { array: [1, 2, 3], path: [2], result: [[], [1], [1, 2], [1, 2, 3], [1, 3], [2]], currentIdx: 1, action: 'Include 2. Add [2].' },
+    },
+    {
+      id: 9,
+      title: 'Include 3 (from 2)',
+      explanation: 'We recurse with start index 2. We INCLUDE 3. Path becomes [2, 3]. Add to result.',
+      state: { array: [1, 2, 3], path: [2, 3], result: [[], [1], [1, 2], [1, 2, 3], [1, 3], [2], [2, 3]], currentIdx: 2, action: 'Include 3. Add [2, 3].' },
+    },
+    {
+      id: 10,
       title: 'Backtrack to 2',
-      explanation: 'We backtrack all the way up to the decision for 2. We pop 2. Path is [1]. Then we exclude 2.',
-      state: {
-        array: [1, 2, 3], path: [1], result: [[], [1], [1, 2], [1, 2, 3]], currentIdx: 1, action: 'Backtrack to 1. Path: [1].',
-      },
+      explanation: 'Loop finishes. Backtrack by removing 3. Path becomes [2].',
+      state: { array: [1, 2, 3], path: [2], result: [[], [1], [1, 2], [1, 2, 3], [1, 3], [2], [2, 3]], currentIdx: 1, action: 'Backtrack. Path -> [2].' },
+    },
+    {
+      id: 11,
+      title: 'Backtrack to Empty (Again)',
+      explanation: 'We backtrack and remove 2. Path becomes []. WHY: We have exhausted all subsets that begin with 2.',
+      state: { array: [1, 2, 3], path: [], result: [[], [1], [1, 2], [1, 2, 3], [1, 3], [2], [2, 3]], currentIdx: 0, action: 'Backtrack. Path -> [].' },
+    },
+    {
+      id: 12,
+      title: 'Include 3 (Final Branch)',
+      explanation: 'The outer loop advances to index 2. We INCLUDE 3. Path becomes [3]. Add to result.',
+      state: { array: [1, 2, 3], path: [3], result: [[], [1], [1, 2], [1, 2, 3], [1, 3], [2], [2, 3], [3]], currentIdx: 2, action: 'Include 3. Add [3].' },
+    },
+    {
+      id: 13,
+      title: 'End of Recursion',
+      explanation: 'We backtrack all the way to the root. All 8 subsets (2^3) have been generated. The algorithm terminates.',
+      state: { array: [1, 2, 3], path: [], result: [[], [1], [1, 2], [1, 2, 3], [1, 3], [2], [2, 3], [3]], currentIdx: 3, action: 'Done. 8 subsets found.', found: true },
     },
   ],
 
@@ -174,44 +210,76 @@ export const permutations = {
   steps: [
     {
       id: 0,
-      title: 'Empty Path',
-      explanation: 'We start with an empty path. Available elements: [1, 2, 3].',
-      state: {
-        array: [1, 2, 3], path: [], result: [], used: [false, false, false], action: 'Start empty.',
-      },
+      title: 'Start with Empty Path',
+      explanation: 'We begin with an empty path [] and all elements unmarked (used = [false, false, false]). WHY: Every element is available to be chosen at the first position.',
+      state: { array: [1, 2, 3], path: [], result: [], used: [false, false, false], action: 'Start. Path: [].' },
     },
     {
       id: 1,
       title: 'Pick 1',
-      explanation: 'Pick 1. Mark it as used. Path is [1].',
-      state: {
-        array: [1, 2, 3], path: [1], result: [], used: [true, false, false], action: 'Pick 1.',
-      },
+      explanation: 'We loop through available elements. We pick 1. We mark it as used so it cannot be picked again in this path. Path is [1].',
+      state: { array: [1, 2, 3], path: [1], result: [], used: [true, false, false], action: 'Pick 1. Mark used.' },
     },
     {
       id: 2,
       title: 'Pick 2',
-      explanation: 'Pick 2. Mark as used. Path is [1, 2].',
-      state: {
-        array: [1, 2, 3], path: [1, 2], result: [], used: [true, true, false], action: 'Pick 2.',
-      },
+      explanation: 'We recurse. Element 1 is used, so we skip it. We pick 2. Mark it used. Path is [1, 2].',
+      state: { array: [1, 2, 3], path: [1, 2], result: [], used: [true, true, false], action: 'Pick 2. Mark used.' },
     },
     {
       id: 3,
       title: 'Pick 3 (Complete)',
-      explanation: 'Pick 3. Path is [1, 2, 3]. This is a full permutation! Add to result. Backtrack.',
-      state: {
-        array: [1, 2, 3], path: [1, 2, 3], result: [[1, 2, 3]], used: [true, true, true], action: 'Complete! Backtrack.',
-      },
+      explanation: 'We recurse. 1 and 2 are used. We pick 3. Path is [1, 2, 3]. The path size equals the array length, so we found a full permutation! Add to result.',
+      state: { array: [1, 2, 3], path: [1, 2, 3], result: [[1, 2, 3]], used: [true, true, true], action: 'Complete! Add [1, 2, 3].' },
     },
     {
       id: 4,
-      title: 'Try Next Option',
-      explanation: 'Backtrack: remove 3, unmark it. Backtrack: remove 2, unmark it. Try picking 3 instead.',
-      state: {
-        array: [1, 2, 3], path: [1], result: [[1, 2, 3]], used: [true, false, false], action: 'Backtracked to [1]. Try picking 3 next.',
-      },
+      title: 'Backtrack 3',
+      explanation: 'We return from the base case. We must undo the choice of 3: remove it from the path and unmark it as used. Path is [1, 2]. WHY: We need to explore other possibilities at the 3rd position (though none exist here).',
+      state: { array: [1, 2, 3], path: [1, 2], result: [[1, 2, 3]], used: [true, true, false], action: 'Backtrack 3. Unmark.' },
     },
+    {
+      id: 5,
+      title: 'Backtrack 2',
+      explanation: 'The loop for the 2nd position finishes. We undo the choice of 2: remove it and unmark it. Path is [1].',
+      state: { array: [1, 2, 3], path: [1], result: [[1, 2, 3]], used: [true, false, false], action: 'Backtrack 2. Unmark.' },
+    },
+    {
+      id: 6,
+      title: 'Pick 3 (Instead of 2)',
+      explanation: 'Back at the [1] level, the loop advances. We pick 3 instead of 2. Mark used. Path is [1, 3].',
+      state: { array: [1, 2, 3], path: [1, 3], result: [[1, 2, 3]], used: [true, false, true], action: 'Pick 3. Mark used.' },
+    },
+    {
+      id: 7,
+      title: 'Pick 2 (Complete)',
+      explanation: 'We recurse. 1 and 3 are used. We pick 2. Path is [1, 3, 2]. Full permutation! Add to result.',
+      state: { array: [1, 2, 3], path: [1, 3, 2], result: [[1, 2, 3], [1, 3, 2]], used: [true, true, true], action: 'Complete! Add [1, 3, 2].' },
+    },
+    {
+      id: 8,
+      title: 'Backtrack to Start',
+      explanation: 'We backtrack 2, then 3, then 1. Path becomes empty and all elements are unmarked. WHY: We have exhausted all permutations starting with 1.',
+      state: { array: [1, 2, 3], path: [], result: [[1, 2, 3], [1, 3, 2]], used: [false, false, false], action: 'Backtrack to [].' },
+    },
+    {
+      id: 9,
+      title: 'Pick 2 (New Branch)',
+      explanation: 'The outer loop advances to the next element. We pick 2. Mark used. Path is [2].',
+      state: { array: [1, 2, 3], path: [2], result: [[1, 2, 3], [1, 3, 2]], used: [false, true, false], action: 'Pick 2. Mark used.' },
+    },
+    {
+      id: 10,
+      title: 'Pick 1',
+      explanation: 'We recurse. 2 is used. We pick 1. Path is [2, 1].',
+      state: { array: [1, 2, 3], path: [2, 1], result: [[1, 2, 3], [1, 3, 2]], used: [true, true, false], action: 'Pick 1. Mark used.' },
+    },
+    {
+      id: 11,
+      title: 'Pick 3 (Complete)',
+      explanation: 'We pick 3. Path is [2, 1, 3]. Full permutation! Add to result.',
+      state: { array: [1, 2, 3], path: [2, 1, 3], result: [[1, 2, 3], [1, 3, 2], [2, 1, 3]], used: [true, true, true], action: 'Complete! Add [2, 1, 3].' },
+    }
   ],
 
   javaCode: `import java.util.*;
@@ -319,43 +387,75 @@ export const combinationSum = {
   steps: [
     {
       id: 0,
-      title: 'Target: 5',
-      explanation: 'Candidates: [2, 3, 5]. Target is 5. Start at index 0 (value 2).',
-      state: {
-        array: [2, 3, 5], target: 5, path: [], result: [], currentIdx: 0, action: 'Target 5. Try 2.',
-      },
+      title: 'Start with Target 5',
+      explanation: 'We start with an empty path [] and a remaining target of 5. The current start index is 0 (value 2). WHY: The start index ensures we do not generate duplicate combinations in different orders.',
+      state: { array: [2, 3, 5], target: 5, path: [], result: [], currentIdx: 0, action: 'Start. Target: 5.' },
     },
     {
       id: 1,
       title: 'Pick 2',
-      explanation: 'Pick 2. Target becomes 5 - 2 = 3. Path: [2].',
-      state: {
-        array: [2, 3, 5], target: 3, path: [2], result: [], currentIdx: 0, action: 'Remaining target: 3.',
-      },
+      explanation: 'We include 2. The remaining target becomes 5 - 2 = 3. Path is [2].',
+      state: { array: [2, 3, 5], target: 3, path: [2], result: [], currentIdx: 0, action: 'Pick 2. Remain: 3.' },
     },
     {
       id: 2,
       title: 'Pick 2 Again',
-      explanation: 'Pick 2 again. Target becomes 3 - 2 = 1. Path: [2, 2].',
-      state: {
-        array: [2, 3, 5], target: 1, path: [2, 2], result: [], currentIdx: 0, action: 'Remaining target: 1.',
-      },
+      explanation: 'We can reuse 2. We include 2 again. The remaining target becomes 3 - 2 = 1. Path is [2, 2].',
+      state: { array: [2, 3, 5], target: 1, path: [2, 2], result: [], currentIdx: 0, action: 'Pick 2. Remain: 1.' },
     },
     {
       id: 3,
-      title: 'Prune!',
-      explanation: 'Target is 1. If we try to pick 2 again, target becomes -1. Since the array is sorted, all future numbers will also be too big. We PRUNE this branch.',
-      state: {
-        array: [2, 3, 5], target: -1, path: [2, 2, 2], result: [], currentIdx: 0, action: 'Pruned! Target < 0.',
-      },
+      title: 'Prune Target 1',
+      explanation: 'We try to pick 2 again. The remaining target becomes 1 - 2 = -1. Since the target is negative, no combination here can succeed. We PRUNE this entire branch immediately and do not recurse further. WHY: Pruning prevents exploring infinitely deep and invalid paths.',
+      state: { array: [2, 3, 5], target: -1, path: [2, 2, 2], result: [], currentIdx: 0, action: 'Prune! Target -1.' },
     },
     {
       id: 4,
       title: 'Backtrack & Try 3',
-      explanation: 'We backtrack to path [2] (target 3). Try picking 3. Target becomes 0! Path [2, 3] is valid.',
-      state: {
-        array: [2, 3, 5], target: 0, path: [2, 3], result: [[2, 3]], currentIdx: 1, action: 'Found [2, 3]! Backtrack.',
-      },
+      explanation: 'We backtrack to the path [2, 2] (target 1). We try the next number in the array, which is 3. Target becomes 1 - 3 = -2. We prune immediately.',
+      state: { array: [2, 3, 5], target: -2, path: [2, 2, 3], result: [], currentIdx: 1, action: 'Prune! Target -2.' },
+    },
+    {
+      id: 5,
+      title: 'Backtrack to [2]',
+      explanation: 'We backtrack up to the path [2] (target 3). We try the next number, 3. The remaining target becomes 3 - 3 = 0. We have found a valid combination!',
+      state: { array: [2, 3, 5], target: 0, path: [2, 3], result: [[2, 3]], currentIdx: 1, action: 'Found [2, 3]! Remain: 0.' },
+    },
+    {
+      id: 6,
+      title: 'Backtrack to Root',
+      explanation: 'We backtrack up to the empty path [] (target 5). We have exhausted all combinations starting with 2. We move to the next start index (1, value 3).',
+      state: { array: [2, 3, 5], target: 5, path: [], result: [[2, 3]], currentIdx: 1, action: 'Backtrack. Try 3.' },
+    },
+    {
+      id: 7,
+      title: 'Pick 3',
+      explanation: 'We include 3. The remaining target becomes 5 - 3 = 2. Path is [3].',
+      state: { array: [2, 3, 5], target: 2, path: [3], result: [[2, 3]], currentIdx: 1, action: 'Pick 3. Remain: 2.' },
+    },
+    {
+      id: 8,
+      title: 'Prune Next 3',
+      explanation: 'We try to include 3 again. Target becomes 2 - 3 = -1. Prune. Because the array is sorted, we know all further numbers will also be too large.',
+      state: { array: [2, 3, 5], target: -1, path: [3, 3], result: [[2, 3]], currentIdx: 1, action: 'Prune! Target -1.' },
+    },
+    {
+      id: 9,
+      title: 'Backtrack to Root (Again)',
+      explanation: 'We backtrack to the empty path [] (target 5). We move to the next start index (2, value 5).',
+      state: { array: [2, 3, 5], target: 5, path: [], result: [[2, 3]], currentIdx: 2, action: 'Backtrack. Try 5.' },
+    },
+    {
+      id: 10,
+      title: 'Pick 5',
+      explanation: 'We include 5. The remaining target becomes 5 - 5 = 0. We found another valid combination!',
+      state: { array: [2, 3, 5], target: 0, path: [5], result: [[2, 3], [5]], currentIdx: 2, action: 'Found [5]! Remain: 0.' },
+    },
+    {
+      id: 11,
+      title: 'End of Array',
+      explanation: 'We backtrack to the root. The loop finishes. The algorithm terminates. The final result is [[2, 3], [5]].',
+      state: { array: [2, 3, 5], target: 5, path: [], result: [[2, 3], [5]], currentIdx: 3, action: 'Done. 2 combinations found.', found: true },
     },
   ],
 

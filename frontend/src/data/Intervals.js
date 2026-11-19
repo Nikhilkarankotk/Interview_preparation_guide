@@ -33,35 +33,33 @@ export const mergeIntervals = {
   steps: [
     {
       id: 0,
-      title: 'Start with First Interval',
-      explanation: 'Intervals sorted by start time: [[1,3], [2,6], [8,10], [15,18]]. We start with [1,3] as our current interval.',
-      state: {
-        intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 0, merged: [[1,3]], action: 'Current interval: [1,3].',
-      },
+      title: 'Sort by Start Time',
+      explanation: 'Intervals: [[1,3], [2,6], [8,10], [15,18]]. We sort them by their start times. In this case, they are already sorted. WHY: Sorting ensures that we only need to compare the current interval with the immediately preceding one. If they don\'t overlap, no later interval will overlap with the preceding one either.',
+      state: { intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 0, merged: [[1,3]], action: 'Sorted. Current interval: [1,3].' },
     },
     {
       id: 1,
-      title: 'Check Overlap',
-      explanation: 'Next is [2,6]. It starts at 2, which is <= the end of the current interval (3). They overlap! We merge them by taking max(3, 6) = 6. Current becomes [1,6].',
-      state: {
-        intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 1, merged: [[1,6]], action: 'Merge [1,3] and [2,6] -> [1,6].',
-      },
+      title: 'Check [2,6] for Overlap',
+      explanation: 'We compare the next interval [2,6] with our current merged interval [1,3]. The next start (2) is <= the current end (3). They overlap! We merge them by updating the end to `max(3, 6) = 6`. The merged interval becomes [1,6]. WHY: Since 2 falls inside the range of [1,3], the two intervals form one continuous block from 1 to 6.',
+      state: { intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 1, merged: [[1,6]], action: 'Overlap! Merge [1,3] and [2,6] -> [1,6].' },
     },
     {
       id: 2,
-      title: 'No Overlap',
-      explanation: 'Next is [8,10]. It starts at 8, which is > the end of current (6). No overlap. We add current to the result, and make [8,10] the new current.',
-      state: {
-        intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 2, merged: [[1,6], [8,10]], action: 'Add [1,6], move to [8,10].',
-      },
+      title: 'Check [8,10] for Overlap',
+      explanation: 'We compare [8,10] with the current merged interval [1,6]. The next start (8) is > the current end (6). There is no overlap. We finalize [1,6] in our result list and make [8,10] the new current interval.',
+      state: { intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 2, merged: [[1,6], [8,10]], action: 'No overlap. Add [1,6], current is [8,10].' },
     },
     {
       id: 3,
-      title: 'Finish',
-      explanation: 'Next is [15,18]. 15 > 10. Add [8,10] to result. [15,18] is the last interval. Final result: [[1,6], [8,10], [15,18]].',
-      state: {
-        intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 3, merged: [[1,6], [8,10], [15,18]], action: 'Final merged intervals.', found: true,
-      },
+      title: 'Check [15,18] for Overlap',
+      explanation: 'We compare [15,18] with [8,10]. The start (15) is > the end (10). No overlap. We finalize [8,10] and make [15,18] the current interval.',
+      state: { intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 3, merged: [[1,6], [8,10], [15,18]], action: 'No overlap. Add [8,10], current is [15,18].' },
+    },
+    {
+      id: 4,
+      title: 'Finalize Last Interval',
+      explanation: 'We have processed all intervals. We must remember to add the final current interval [15,18] to our result list. The final merged list is [[1,6], [8,10], [15,18]].',
+      state: { intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 4, merged: [[1,6], [8,10], [15,18]], action: 'Done.', found: true },
     },
   ],
 
@@ -166,43 +164,39 @@ export const insertInterval = {
   steps: [
     {
       id: 0,
-      title: 'Phase 1: Before',
-      explanation: 'New interval is [4,8]. We add all intervals that end before the new interval starts. [1,2] ends before 4. Add it.',
-      state: {
-        intervals: [[1,2], [3,5], [6,7], [8,10], [12,16]], newInterval: [4,8], currentIdx: 0, merged: [[1,2]], action: 'Add [1,2].',
-      },
+      title: 'Phase 1: Add Intervals Before',
+      explanation: 'New interval is [4,8]. We scan existing intervals. [1,2] ends at 2, which is strictly less than the new start (4). It does not overlap. We add [1,2] directly to our result. WHY: Phase 1 handles all intervals that are completely to the left of the new interval.',
+      state: { intervals: [[1,2], [3,5], [6,7], [8,10], [12,16]], newInterval: [4,8], currentIdx: 1, merged: [[1,2]], action: 'Add [1,2] directly.' },
     },
     {
       id: 1,
-      title: 'Phase 2: Merge Overlaps',
-      explanation: '[3,5] overlaps with [4,8] (5 >= 4). We merge them: start = min(3,4)=3, end = max(5,8)=8. New interval becomes [3,8].',
-      state: {
-        intervals: [[1,2], [3,5], [6,7], [8,10], [12,16]], newInterval: [3,8], currentIdx: 1, merged: [[1,2]], action: 'Merge [3,5] and [4,8] -> [3,8].',
-      },
+      title: 'Phase 2: Merge Overlaps (Start)',
+      explanation: 'Next is [3,5]. Its end (5) is >= new start (4), so they overlap. We begin Phase 2. We merge them by taking `start = min(3,4) = 3` and `end = max(5,8) = 8`. The new interval expands to [3,8].',
+      state: { intervals: [[1,2], [3,5], [6,7], [8,10], [12,16]], newInterval: [3,8], currentIdx: 2, merged: [[1,2]], action: 'Merge [3,5] into new -> [3,8].' },
     },
     {
       id: 2,
-      title: 'Keep Merging',
-      explanation: '[6,7] overlaps with [3,8] (7 >= 3). Merge: start = min(3,6)=3, end = max(8,7)=8. Interval remains [3,8].',
-      state: {
-        intervals: [[1,2], [3,5], [6,7], [8,10], [12,16]], newInterval: [3,8], currentIdx: 2, merged: [[1,2]], action: 'Merge [6,7] -> [3,8].',
-      },
+      title: 'Phase 2: Merge Overlaps (Continue)',
+      explanation: 'Next is [6,7]. Its start (6) is <= the new end (8), so it overlaps. We expand the new interval again: `start = min(3,6) = 3`, `end = max(8,7) = 8`. It remains [3,8].',
+      state: { intervals: [[1,2], [3,5], [6,7], [8,10], [12,16]], newInterval: [3,8], currentIdx: 3, merged: [[1,2]], action: 'Merge [6,7] into new -> [3,8].' },
     },
     {
       id: 3,
-      title: 'Merge Final',
-      explanation: '[8,10] overlaps with [3,8] (10 >= 3). Merge: start=3, end=max(8,10)=10. New interval is [3,10].',
-      state: {
-        intervals: [[1,2], [3,5], [6,7], [8,10], [12,16]], newInterval: [3,10], currentIdx: 3, merged: [[1,2]], action: 'Merge [8,10] -> [3,10].',
-      },
+      title: 'Phase 2: Merge Overlaps (End)',
+      explanation: 'Next is [8,10]. Its start (8) is <= the new end (8), so they overlap. We expand the new interval: `start = min(3,8) = 3`, `end = max(8,10) = 10`. The new interval is now [3,10].',
+      state: { intervals: [[1,2], [3,5], [6,7], [8,10], [12,16]], newInterval: [3,10], currentIdx: 4, merged: [[1,2]], action: 'Merge [8,10] into new -> [3,10].' },
     },
     {
       id: 4,
-      title: 'Phase 3: After',
-      explanation: '[12,16] starts after the merged interval ends (12 > 10). Add [3,10] to result. Add [12,16].',
-      state: {
-        intervals: [[1,2], [3,5], [6,7], [8,10], [12,16]], newInterval: [3,10], currentIdx: 4, merged: [[1,2], [3,10], [12,16]], action: 'Add [3,10] and [12,16].', found: true,
-      },
+      title: 'Phase 3: Add Remaining',
+      explanation: 'Next is [12,16]. Its start (12) is > the new end (10). The overlap phase ends! We add the fully merged new interval [3,10] to our result list.',
+      state: { intervals: [[1,2], [3,5], [6,7], [8,10], [12,16]], newInterval: [3,10], currentIdx: 5, merged: [[1,2], [3,10]], action: 'Overlap ended. Add [3,10].' },
+    },
+    {
+      id: 5,
+      title: 'Phase 3: Add Remaining (Done)',
+      explanation: 'We are in Phase 3 now. We simply append the rest of the existing intervals directly to the result. We add [12,16]. The final result is [[1,2], [3,10], [12,16]].',
+      state: { intervals: [[1,2], [3,5], [6,7], [8,10], [12,16]], newInterval: [3,10], currentIdx: 5, merged: [[1,2], [3,10], [12,16]], action: 'Add [12,16]. Done.', found: true },
     },
   ],
 
@@ -309,34 +303,32 @@ export const nonOverlappingIntervals = {
     {
       id: 0,
       title: 'Sort by End Time',
-      explanation: 'Intervals: [[1,2], [2,3], [3,4], [1,3]]. Sort by end time: [[1,2], [2,3], [1,3], [3,4]].',
-      state: {
-        intervals: [[1,2], [2,3], [1,3], [3,4]], currentIdx: 0, removed: 0, lastEnd: 2, action: 'Keep [1,2]. Last End = 2.',
-      },
+      explanation: 'Intervals: [[1,2], [2,3], [1,3], [3,4]]. We sort them by their END times. The array becomes [[1,2], [2,3], [1,3], [3,4]]. WHY: By keeping intervals that end earliest, we leave the maximum possible room for subsequent intervals. We start by keeping [1,2] and set `lastEnd = 2`.',
+      state: { intervals: [[1,2], [2,3], [1,3], [3,4]], currentIdx: 0, removed: 0, lastEnd: 2, action: 'Keep [1,2]. Last End = 2.' },
     },
     {
       id: 1,
-      title: 'Check Next',
-      explanation: 'Next is [2,3]. Start is 2, Last End is 2. No overlap (2 >= 2). Keep it. Last End = 3.',
-      state: {
-        intervals: [[1,2], [2,3], [1,3], [3,4]], currentIdx: 1, removed: 0, lastEnd: 3, action: 'Keep [2,3]. Last End = 3.',
-      },
+      title: 'Check [2,3]',
+      explanation: 'Next is [2,3]. Its start (2) is >= `lastEnd` (2). They do not overlap. We keep this interval and update `lastEnd` to 3.',
+      state: { intervals: [[1,2], [2,3], [1,3], [3,4]], currentIdx: 1, removed: 0, lastEnd: 3, action: 'Keep [2,3]. Last End = 3.' },
     },
     {
       id: 2,
-      title: 'Overlap Detected',
-      explanation: 'Next is [1,3]. Start is 1, which is < Last End (3). Overlap! We must remove it. Removed count = 1.',
-      state: {
-        intervals: [[1,2], [2,3], [1,3], [3,4]], currentIdx: 2, removed: 1, lastEnd: 3, action: 'Remove [1,3]. Count = 1.',
-      },
+      title: 'Check [1,3] (Overlap)',
+      explanation: 'Next is [1,3]. Its start (1) is < `lastEnd` (3). This means it overlaps with the last kept interval. We must remove it. We increment our `removed` count to 1. WHY: We choose to remove [1,3] because it started earlier and covers more ground, making it more likely to cause future conflicts.',
+      state: { intervals: [[1,2], [2,3], [1,3], [3,4]], currentIdx: 2, removed: 1, lastEnd: 3, action: 'Overlap! Remove [1,3]. Count = 1.' },
     },
     {
       id: 3,
-      title: 'Continue',
-      explanation: 'Next is [3,4]. Start is 3, Last End is 3. No overlap. Keep it. Total removed: 1.',
-      state: {
-        intervals: [[1,2], [2,3], [1,3], [3,4]], currentIdx: 3, removed: 1, lastEnd: 4, action: 'Keep [3,4]. Final count: 1.', found: true,
-      },
+      title: 'Check [3,4]',
+      explanation: 'Next is [3,4]. Its start (3) is >= `lastEnd` (3). No overlap. We keep it and update `lastEnd` to 4. WHY: The previous overlap was successfully resolved by removing one interval, and now this one fits perfectly.',
+      state: { intervals: [[1,2], [2,3], [1,3], [3,4]], currentIdx: 3, removed: 1, lastEnd: 4, action: 'Keep [3,4]. Last End = 4.' },
+    },
+    {
+      id: 4,
+      title: 'Final Count',
+      explanation: 'We have processed all intervals. The total number of intervals we had to remove is 1.',
+      state: { intervals: [[1,2], [2,3], [1,3], [3,4]], currentIdx: 4, removed: 1, lastEnd: 4, action: 'Done. Removed 1 interval.', found: true },
     },
   ],
 

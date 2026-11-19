@@ -33,43 +33,45 @@ export const topKElements = {
   steps: [
     {
       id: 0,
-      title: 'Add First Elements',
-      explanation: 'Array: [3, 2, 1, 5, 6, 4]. K = 2. We want the 2nd largest. We push 3 and 2 into our Min-Heap.',
-      state: {
-        array: [3, 2, 1, 5, 6, 4], k: 2, heap: [2, 3], currentIdx: 1, result: 0, action: 'Heap size is 2. Min is 2.',
-      },
+      title: 'Push 3',
+      explanation: 'Array: [3, 2, 1, 5, 6, 4]. K = 2. We want the 2nd largest. We start a Min-Heap. We push 3. Heap is [3]. WHY: A Min-Heap keeps the smallest element of our K-sized group at the root. This "weakest link" is the easiest to replace if we find a bigger number.',
+      state: { array: [3, 2, 1, 5, 6, 4], k: 2, heap: [3], currentIdx: 0, result: 0, action: 'Push 3.' },
     },
     {
       id: 1,
-      title: 'Next is Smaller',
-      explanation: 'Next is 1. It is smaller than the root (2). We ignore it because we only care about the largest elements.',
-      state: {
-        array: [3, 2, 1, 5, 6, 4], k: 2, heap: [2, 3], currentIdx: 2, result: 0, action: '1 < 2. Ignore.',
-      },
+      title: 'Push 2',
+      explanation: 'Next is 2. We push it. Heap is [2, 3]. The size is now exactly K (2). The root (2) is the smallest of the top 2 numbers we have seen so far.',
+      state: { array: [3, 2, 1, 5, 6, 4], k: 2, heap: [2, 3], currentIdx: 1, result: 0, action: 'Push 2. Heap size = K.' },
     },
     {
       id: 2,
-      title: 'Bigger Element Arrives',
-      explanation: 'Next is 5. 5 > 2. We pop the 2 (weakest link) and push 5. Heap becomes [3, 5]. Root is now 3.',
-      state: {
-        array: [3, 2, 1, 5, 6, 4], k: 2, heap: [3, 5], currentIdx: 3, result: 0, action: 'Pop 2, Push 5. Min is 3.',
-      },
+      title: 'Push 1 and Evict',
+      explanation: 'Next is 1. We push 1. Heap becomes [1, 2, 3]. The size (3) exceeds K. We must remove the smallest element (the root) to maintain a size of 2. We pop 1. Heap becomes [2, 3]. WHY: 1 is too small to be part of the top 2 largest elements.',
+      state: { array: [3, 2, 1, 5, 6, 4], k: 2, heap: [2, 3], currentIdx: 2, result: 0, action: 'Push 1, evict 1.' },
     },
     {
       id: 3,
-      title: 'New Max Arrives',
-      explanation: 'Next is 6. 6 > 3. Pop 3, push 6. Heap becomes [5, 6]. Root is 5.',
-      state: {
-        array: [3, 2, 1, 5, 6, 4], k: 2, heap: [5, 6], currentIdx: 4, result: 0, action: 'Pop 3, Push 6. Min is 5.',
-      },
+      title: 'Push 5 and Evict',
+      explanation: 'Next is 5. We push 5. Heap becomes [2, 3, 5]. Size exceeds K. We pop the root, 2. Heap becomes [3, 5]. WHY: 5 is larger than 2, so 2 is evicted from our VIP club.',
+      state: { array: [3, 2, 1, 5, 6, 4], k: 2, heap: [3, 5], currentIdx: 3, result: 0, action: 'Push 5, evict 2.' },
     },
     {
       id: 4,
+      title: 'Push 6 and Evict',
+      explanation: 'Next is 6. We push 6. Heap becomes [3, 5, 6]. Size exceeds K. We pop the root, 3. Heap becomes [5, 6]. WHY: 6 is larger than 3, so 3 is evicted.',
+      state: { array: [3, 2, 1, 5, 6, 4], k: 2, heap: [5, 6], currentIdx: 4, result: 0, action: 'Push 6, evict 3.' },
+    },
+    {
+      id: 5,
+      title: 'Push 4 and Evict',
+      explanation: 'Next is 4. We push 4. Heap becomes [4, 5, 6]. Size exceeds K. We pop the root, 4. Heap becomes [5, 6]. WHY: 4 is smaller than 5, so it cannot enter the top 2.',
+      state: { array: [3, 2, 1, 5, 6, 4], k: 2, heap: [5, 6], currentIdx: 5, result: 0, action: 'Push 4, evict 4.' },
+    },
+    {
+      id: 6,
       title: 'Final Answer',
-      explanation: 'Next is 4. 4 < 5. Ignore. End of array. The root of the heap (5) is the 2nd largest element!',
-      state: {
-        array: [3, 2, 1, 5, 6, 4], k: 2, heap: [5, 6], currentIdx: 5, result: 5, action: '2nd largest is 5.', found: true,
-      },
+      explanation: 'We have processed all numbers. The Min-Heap holds exactly the 2 largest numbers: [5, 6]. The root of the heap is 5, which is the 2nd largest element. WHY: Because the heap only keeps the top K, the smallest in this group is exactly the Kth largest overall.',
+      state: { array: [3, 2, 1, 5, 6, 4], k: 2, heap: [5, 6], currentIdx: 6, result: 5, action: 'Return root: 5.', found: true },
     },
   ],
 
@@ -163,35 +165,45 @@ export const mergeKLists = {
   steps: [
     {
       id: 0,
-      title: 'Initialize Heap',
-      explanation: 'We have 3 lists: [1->4], [1->3], [2->6]. We put the head of each list into the Min-Heap.',
-      state: {
-        lists: [[1, 4], [1, 3], [2, 6]], heap: [1, 1, 2], result: [], action: 'Push heads: 1, 1, 2.',
-      },
+      title: 'Initialize Heap with Heads',
+      explanation: 'We have 3 lists: L1: [1->4], L2: [1->3], L3: [2->6]. We push the head of each list into a Min-Heap. Heap is [1, 1, 2]. WHY: The global minimum must be the smallest among the current heads of the K lists.',
+      state: { lists: [[1, 4], [1, 3], [2, 6]], heap: [1, 1, 2], result: [], action: 'Push heads: 1, 1, 2.' },
     },
     {
       id: 1,
-      title: 'Extract Min',
-      explanation: 'Pop the smallest (1 from List 1). Add to result. Push its next node (4) to the heap.',
-      state: {
-        lists: [[1, 4], [1, 3], [2, 6]], heap: [1, 2, 4], result: [1], action: 'Pop 1 (L1). Push 4.',
-      },
+      title: 'Pop 1 (L1) & Push Next',
+      explanation: 'We pop the smallest element (1 from L1). Add it to the result. We then push L1\'s next node (4) into the heap. Heap becomes [1, 2, 4]. Result is [1].',
+      state: { lists: [[1, 4], [1, 3], [2, 6]], heap: [1, 2, 4], result: [1], action: 'Pop 1 (L1). Push 4.' },
     },
     {
       id: 2,
-      title: 'Extract Min Again',
-      explanation: 'Pop 1 (from List 2). Add to result. Push its next node (3) to the heap.',
-      state: {
-        lists: [[1, 4], [1, 3], [2, 6]], heap: [2, 3, 4], result: [1, 1], action: 'Pop 1 (L2). Push 3.',
-      },
+      title: 'Pop 1 (L2) & Push Next',
+      explanation: 'We pop the next smallest element (1 from L2). Add to result. We push L2\'s next node (3) into the heap. Heap becomes [2, 3, 4]. Result is [1, 1].',
+      state: { lists: [[1, 4], [1, 3], [2, 6]], heap: [2, 3, 4], result: [1, 1], action: 'Pop 1 (L2). Push 3.' },
     },
     {
       id: 3,
-      title: 'Continue Merging',
-      explanation: 'Pop 2. Push 6. Pop 3. Pop 4. Pop 6. The result is fully sorted.',
-      state: {
-        lists: [[1, 4], [1, 3], [2, 6]], heap: [], result: [1, 1, 2, 3, 4, 6], action: 'Merged all!', found: true,
-      },
+      title: 'Pop 2 (L3) & Push Next',
+      explanation: 'We pop 2 (from L3). Add to result. We push L3\'s next node (6). Heap becomes [3, 4, 6]. Result is [1, 1, 2].',
+      state: { lists: [[1, 4], [1, 3], [2, 6]], heap: [3, 4, 6], result: [1, 1, 2], action: 'Pop 2 (L3). Push 6.' },
+    },
+    {
+      id: 4,
+      title: 'Pop 3 (Empty List)',
+      explanation: 'We pop 3. Since 3 is the last node in L2, there is no next node to push. Heap becomes [4, 6]. Result is [1, 1, 2, 3].',
+      state: { lists: [[1, 4], [1, 3], [2, 6]], heap: [4, 6], result: [1, 1, 2, 3], action: 'Pop 3. No next node.' },
+    },
+    {
+      id: 5,
+      title: 'Pop 4 (Empty List)',
+      explanation: 'We pop 4. 4 is the last node in L1. No next node to push. Heap becomes [6]. Result is [1, 1, 2, 3, 4].',
+      state: { lists: [[1, 4], [1, 3], [2, 6]], heap: [6], result: [1, 1, 2, 3, 4], action: 'Pop 4. No next node.' },
+    },
+    {
+      id: 6,
+      title: 'Pop Final Node',
+      explanation: 'We pop 6. 6 is the last node in L3. Heap is now empty. Result becomes [1, 1, 2, 3, 4, 6]. WHY: The heap is empty, meaning every node from all K lists has been processed in perfect ascending order.',
+      state: { lists: [[1, 4], [1, 3], [2, 6]], heap: [], result: [1, 1, 2, 3, 4, 6], action: 'Pop 6. Done.', found: true },
     },
   ],
 
@@ -299,34 +311,26 @@ export const twoHeaps = {
     {
       id: 0,
       title: 'Add 1',
-      explanation: 'Add 1 to Max-Heap. Max-Heap: [1], Min-Heap: [].',
-      state: {
-        stream: [1, 2, 3, 4], maxHeap: [1], minHeap: [], median: 1, action: 'Add 1 to Max-Heap.',
-      },
+      explanation: 'Stream starts with 1. We add it to the Max-Heap. Max-Heap: [1], Min-Heap: []. The sizes differ by 1. The median is the top of the Max-Heap, which is 1. WHY: The Max-Heap stores the smaller half of the numbers. When there is only one number, it is the median.',
+      state: { stream: [1, 2, 3, 4], maxHeap: [1], minHeap: [], median: 1, action: 'Add 1 to Max-Heap.' },
     },
     {
       id: 1,
       title: 'Add 2',
-      explanation: 'Add 2 to Max-Heap. Max-Heap: [2, 1]. Rebalance: move top (2) to Min-Heap. Max: [1], Min: [2]. Median is (1+2)/2 = 1.5.',
-      state: {
-        stream: [1, 2, 3, 4], maxHeap: [1], minHeap: [2], median: 1.5, action: 'Balance heaps. Median 1.5.',
-      },
+      explanation: 'Add 2 to Max-Heap. Max-Heap becomes [2, 1]. Now we must balance: we push the largest element from the smaller half (2) over to the Min-Heap. Max-Heap: [1], Min-Heap: [2]. The heaps are equal in size. Median is (1+2)/2 = 1.5. WHY: The Max-Heap holds the bottom half, the Min-Heap holds the top half.',
+      state: { stream: [1, 2, 3, 4], maxHeap: [1], minHeap: [2], median: 1.5, action: 'Balance heaps. Median 1.5.' },
     },
     {
       id: 2,
       title: 'Add 3',
-      explanation: 'Add 3 to Max-Heap. Max: [3, 1]. Rebalance: move top (3) to Min-Heap. Max: [1], Min: [2, 3]. Move top (2) back to Max. Max: [2, 1], Min: [3]. Median is 2.',
-      state: {
-        stream: [1, 2, 3, 4], maxHeap: [2, 1], minHeap: [3], median: 2, action: 'Balance. Median 2.',
-      },
+      explanation: 'Add 3 to Max-Heap. Max-Heap becomes [3, 1]. Push the largest (3) to Min-Heap. Max-Heap: [1], Min-Heap: [2, 3]. Min-Heap is now larger (size 2 vs 1). We must rebalance: push the smallest from the larger half (2) back to Max-Heap. Max-Heap: [2, 1], Min-Heap: [3]. Median is 2.',
+      state: { stream: [1, 2, 3, 4], maxHeap: [2, 1], minHeap: [3], median: 2, action: 'Balance. Median 2.' },
     },
     {
       id: 3,
       title: 'Add 4',
-      explanation: 'Add 4 to Max-Heap. Max: [4, 2, 1]. Rebalance: move 4 to Min. Max: [2, 1], Min: [3, 4]. Median is (2+3)/2 = 2.5.',
-      state: {
-        stream: [1, 2, 3, 4], maxHeap: [2, 1], minHeap: [3, 4], median: 2.5, action: 'Median 2.5.', found: true,
-      },
+      explanation: 'Add 4 to Max-Heap. Max-Heap becomes [4, 2, 1]. Push the largest (4) to Min-Heap. Max-Heap: [2, 1], Min-Heap: [3, 4]. The heaps are equal in size. Median is (2+3)/2 = 2.5.',
+      state: { stream: [1, 2, 3, 4], maxHeap: [2, 1], minHeap: [3, 4], median: 2.5, action: 'Median 2.5.', found: true },
     },
   ],
 

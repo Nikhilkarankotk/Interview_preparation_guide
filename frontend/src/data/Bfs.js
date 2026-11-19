@@ -34,34 +34,56 @@ export const levelOrder = {
     {
       id: 0,
       title: 'Initialize Queue',
-      explanation: 'We start by pushing the root node (3) into the queue.',
-      state: {
-        tree: [3, 9, 20, null, null, 15, 7], currentVal: 3, queue: [3], level: 0, result: [], action: 'Push root to queue.',
-      },
+      explanation: 'We start by pushing the root node (3) into the queue. WHY: BFS always starts at the root and explores outwards. The queue will manage the order of nodes to visit.',
+      state: { tree: [3, 9, 20, null, null, 15, 7], currentVal: 3, queue: [3], level: 0, result: [], action: 'Push root to queue.' },
     },
     {
       id: 1,
-      title: 'Process Level 0',
-      explanation: 'The queue has 1 item. We pop 3. It has children 9 and 20, so we push them to the queue. Level 0 is done.',
-      state: {
-        tree: [3, 9, 20, null, null, 15, 7], currentVal: 3, queue: [9, 20], level: 0, result: [[3]], action: 'Pop 3, push children 9, 20.',
-      },
+      title: 'Level 0: Snapshot Size',
+      explanation: 'We enter the while loop. We take a snapshot of the queue size: `levelSize = 1`. WHY: This snapshot is critical. As we process node 3, we will add its children to the queue. If we didn\'t snapshot the size, our loop would accidentally process the children in the same level.',
+      state: { tree: [3, 9, 20, null, null, 15, 7], currentVal: 3, queue: [3], level: 0, result: [], action: 'Level 0 size = 1.' },
     },
     {
       id: 2,
-      title: 'Process Level 1',
-      explanation: 'The queue has 2 items (9 and 20). We pop 9 (no children). We pop 20 (children 15 and 7). We push them.',
-      state: {
-        tree: [3, 9, 20, null, null, 15, 7], currentVal: 20, queue: [15, 7], level: 1, result: [[3], [9, 20]], action: 'Pop 9, 20. Push 15, 7.',
-      },
+      title: 'Level 0: Process Node 3',
+      explanation: 'We pop 3 from the queue. We add 3 to our current level list. Since 3 has a left (9) and right (20) child, we push both to the queue.',
+      state: { tree: [3, 9, 20, null, null, 15, 7], currentVal: 3, queue: [9, 20], level: 0, result: [[3]], action: 'Pop 3, push 9, 20.' },
     },
     {
       id: 3,
-      title: 'Process Level 2',
-      explanation: 'The queue has 2 items (15 and 7). We pop both. No more children. Done.',
-      state: {
-        tree: [3, 9, 20, null, null, 15, 7], currentVal: 7, queue: [], level: 2, result: [[3], [9, 20], [15, 7]], action: 'Pop 15, 7.', found: true,
-      },
+      title: 'Level 1: Snapshot Size',
+      explanation: 'Level 0 is complete and added to the result. The queue now has 2 nodes. We snapshot the size: `levelSize = 2`. These are the nodes for Level 1.',
+      state: { tree: [3, 9, 20, null, null, 15, 7], currentVal: 9, queue: [9, 20], level: 1, result: [[3]], action: 'Level 1 size = 2.' },
+    },
+    {
+      id: 4,
+      title: 'Level 1: Process Node 9',
+      explanation: 'We pop 9. 9 has no children, so we do nothing else.',
+      state: { tree: [3, 9, 20, null, null, 15, 7], currentVal: 9, queue: [20], level: 1, result: [[3]], action: 'Pop 9. No children.' },
+    },
+    {
+      id: 5,
+      title: 'Level 1: Process Node 20',
+      explanation: 'We pop 20. 20 has left (15) and right (7) children. We push both to the queue. The levelSize was 2, so the for-loop ends. We add [9, 20] to the result.',
+      state: { tree: [3, 9, 20, null, null, 15, 7], currentVal: 20, queue: [15, 7], level: 1, result: [[3], [9, 20]], action: 'Pop 20, push 15, 7.' },
+    },
+    {
+      id: 6,
+      title: 'Level 2: Snapshot Size',
+      explanation: 'Level 1 is complete. The queue has 2 nodes (15, 7). We snapshot the size: `levelSize = 2`.',
+      state: { tree: [3, 9, 20, null, null, 15, 7], currentVal: 15, queue: [15, 7], level: 2, result: [[3], [9, 20]], action: 'Level 2 size = 2.' },
+    },
+    {
+      id: 7,
+      title: 'Level 2: Process Nodes',
+      explanation: 'We pop 15 (no children). We pop 7 (no children). We add [15, 7] to the result.',
+      state: { tree: [3, 9, 20, null, null, 15, 7], currentVal: 7, queue: [], level: 2, result: [[3], [9, 20], [15, 7]], action: 'Pop 15, 7.' },
+    },
+    {
+      id: 8,
+      title: 'Final Result',
+      explanation: 'The queue is empty. The while loop terminates. The final result is [[3], [9, 20], [15, 7]].',
+      state: { tree: [3, 9, 20, null, null, 15, 7], currentVal: 7, queue: [], level: 2, result: [[3], [9, 20], [15, 7]], action: 'Done.', found: true },
     },
   ],
 
@@ -164,35 +186,39 @@ export const shortestPath = {
   steps: [
     {
       id: 0,
-      title: 'Start at (0,0)',
-      explanation: 'We start at the top-left corner. We add (0,0) to the queue with distance 1.',
-      state: {
-        grid: [[0,0,0],[1,1,0],[1,1,0]], row: 0, col: 0, queue: [{r:0,c:0,dist:1}], action: 'Start at (0,0).',
-      },
+      title: 'Initialize Queue',
+      explanation: 'Grid is 3x3. We start at (0,0) with distance 1. We push `(0,0,1)` into the queue and mark (0,0) as visited by changing it to 1. WHY: Marking visited immediately prevents adding the same cell to the queue multiple times, which saves memory.',
+      state: { grid: [[0,0,0],[1,1,0],[1,1,0]], row: 0, col: 0, queue: [{r:0,c:0,dist:1}], action: 'Start at (0,0) dist=1.' },
     },
     {
       id: 1,
-      title: 'Explore Neighbors',
-      explanation: 'From (0,0), we can only move right to (0,1) since (1,0) is a wall (1). Queue: (0,1) dist 2.',
-      state: {
-        grid: [[0,0,0],[1,1,0],[1,1,0]], row: 0, col: 1, queue: [{r:0,c:1,dist:2}], action: 'Move right to (0,1).',
-      },
+      title: 'Explore (0,0)',
+      explanation: 'We pop `(0,0,1)`. We check its neighbors. Right is (0,1) which is 0 (open). We push `(0,1,2)` and mark it 1. Down is (1,0) which is 1 (wall), so we skip it.',
+      state: { grid: [[1,1,0],[1,1,0],[1,1,0]], row: 0, col: 1, queue: [{r:0,c:1,dist:2}], action: 'Push (0,1) dist=2.' },
     },
     {
       id: 2,
-      title: 'Continue Down',
-      explanation: 'From (0,1), move right to (0,2), then down to (1,2), then down to (2,2).',
-      state: {
-        grid: [[0,0,0],[1,1,0],[1,1,0]], row: 2, col: 2, queue: [{r:0,c:2,dist:3},{r:1,c:2,dist:4},{r:2,c:2,dist:5}], action: 'Exploring path...',
-      },
+      title: 'Explore (0,1)',
+      explanation: 'We pop `(0,1,2)`. Right is (0,2) which is 0. We push `(0,2,3)` and mark it. Down is (1,1) which is 1 (wall), skip.',
+      state: { grid: [[1,1,1],[1,1,0],[1,1,0]], row: 0, col: 2, queue: [{r:0,c:2,dist:3}], action: 'Push (0,2) dist=3.' },
     },
     {
       id: 3,
+      title: 'Explore (0,2)',
+      explanation: 'We pop `(0,2,3)`. Down is (1,2) which is 0. We push `(1,2,4)` and mark it. (Left and right are out of bounds).',
+      state: { grid: [[1,1,1],[1,1,1],[1,1,0]], row: 1, col: 2, queue: [{r:1,c:2,dist:4}], action: 'Push (1,2) dist=4.' },
+    },
+    {
+      id: 4,
+      title: 'Explore (1,2)',
+      explanation: 'We pop `(1,2,4)`. Down is (2,2) which is 0. We push `(2,2,5)` and mark it.',
+      state: { grid: [[1,1,1],[1,1,1],[1,1,1]], row: 2, col: 2, queue: [{r:2,c:2,dist:5}], action: 'Push (2,2) dist=5.' },
+    },
+    {
+      id: 5,
       title: 'Reached Target',
-      explanation: 'We reached the bottom-right corner (2,2) in 5 steps.',
-      state: {
-        grid: [[0,0,0],[1,1,0],[1,1,0]], row: 2, col: 2, queue: [], distance: 5, action: 'Shortest path is 5.', found: true,
-      },
+      explanation: 'We pop `(2,2,5)`. We check if it is the bottom-right corner. It is! We return the distance 5. WHY: Because BFS explores level by level, the first time we pop the target, we are guaranteed it is the shortest path.',
+      state: { grid: [[1,1,1],[1,1,1],[1,1,1]], row: 2, col: 2, queue: [], distance: 5, action: 'Target reached. Return 5.', found: true },
     },
   ],
 
@@ -297,34 +323,50 @@ export const multiSourceBFS = {
     {
       id: 0,
       title: 'Find All Sources',
-      explanation: 'We push all rotten oranges (value 2) into the queue at once. We also count fresh oranges (value 1).',
-      state: {
-        grid: [[2,1,1],[1,1,0],[0,1,1]], queue: [{r:0,c:0}], fresh: 6, time: 0, action: 'Push all rotten oranges to queue.',
-      },
+      explanation: 'We scan the grid. We find one rotten orange at (0,0). We push it to the queue. We also count the fresh oranges (value 1): there are 6. WHY: Pushing all sources at once allows them to spread simultaneously.',
+      state: { grid: [[2,1,1],[1,1,0],[0,1,1]], queue: [{r:0,c:0}], fresh: 6, time: 0, action: 'Push (0,0). Fresh=6.' },
     },
     {
       id: 1,
-      title: 'Spread Time 1',
-      explanation: 'Pop (0,0). It infects its neighbors (0,1) and (1,0). They become rotten and are added to the queue.',
-      state: {
-        grid: [[2,2,1],[2,1,0],[0,1,1]], queue: [{r:0,c:1},{r:1,c:0}], fresh: 4, time: 1, action: 'Infect neighbors. Time=1.',
-      },
+      title: 'Time 0: Process Level',
+      explanation: 'We snapshot the queue size (1). We pop (0,0). It infects its neighbors: right to (0,1) and down to (1,0). We change them to 2, decrement `fresh` to 4, and push them to the queue.',
+      state: { grid: [[2,2,1],[2,1,0],[0,1,1]], queue: [{r:0,c:1},{r:1,c:0}], fresh: 4, time: 1, action: 'Infect right and down.' },
     },
     {
       id: 2,
-      title: 'Spread Time 2',
-      explanation: 'Process the next level. The newly rotten oranges infect their neighbors.',
-      state: {
-        grid: [[2,2,2],[2,2,0],[0,1,1]], queue: [{r:1,c:1}], fresh: 2, time: 2, action: 'Infect more. Time=2.',
-      },
+      title: 'Time 1: Process (0,1)',
+      explanation: 'We enter the next minute. We snapshot the queue size (2). We pop (0,1). It infects its right neighbor (0,2). `fresh` becomes 3.',
+      state: { grid: [[2,2,2],[2,1,0],[0,1,1]], queue: [{r:1,c:0},{r:0,c:2}], fresh: 3, time: 2, action: 'Infect (0,2).' },
     },
     {
       id: 3,
-      title: 'Finish Spread',
-      explanation: 'All reachable oranges are rotten. fresh == 0. Total time = 3.',
-      state: {
-        grid: [[2,2,2],[2,2,0],[0,2,2]], queue: [], fresh: 0, time: 3, action: 'All rotten! Time=3.', found: true,
-      },
+      title: 'Time 1: Process (1,0)',
+      explanation: 'Still processing the same minute. We pop (1,0). It infects its right neighbor (1,1). `fresh` becomes 2. This minute is complete.',
+      state: { grid: [[2,2,2],[2,2,0],[0,1,1]], queue: [{r:0,c:2},{r:1,c:1}], fresh: 2, time: 2, action: 'Infect (1,1).' },
+    },
+    {
+      id: 4,
+      title: 'Time 2: Process (0,2)',
+      explanation: 'Next minute. Snapshot size (2). Pop (0,2). It has no valid fresh neighbors.',
+      state: { grid: [[2,2,2],[2,2,0],[0,1,1]], queue: [{r:1,c:1}], fresh: 2, time: 3, action: 'No neighbors.' },
+    },
+    {
+      id: 5,
+      title: 'Time 2: Process (1,1)',
+      explanation: 'Pop (1,1). It infects its down neighbor (2,1). `fresh` becomes 1.',
+      state: { grid: [[2,2,2],[2,2,0],[0,2,1]], queue: [{r:2,c:1}], fresh: 1, time: 3, action: 'Infect (2,1).' },
+    },
+    {
+      id: 6,
+      title: 'Time 3: Process (2,1)',
+      explanation: 'Next minute. Snapshot size (1). Pop (2,1). It infects its right neighbor (2,2). `fresh` becomes 0.',
+      state: { grid: [[2,2,2],[2,2,0],[0,2,2]], queue: [{r:2,c:2}], fresh: 0, time: 4, action: 'Infect (2,2).' },
+    },
+    {
+      id: 7,
+      title: 'Early Termination',
+      explanation: 'The queue still has (2,2), but `fresh == 0`. The while loop condition `fresh > 0` fails. The loop stops early. We return `time` (which is 3, as the time was incremented at the end of the previous iteration).',
+      state: { grid: [[2,2,2],[2,2,0],[0,2,2]], queue: [{r:2,c:2}], fresh: 0, time: 3, action: 'All rotten! Time=3.', found: true },
     },
   ],
 

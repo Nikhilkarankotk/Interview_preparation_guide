@@ -1,5 +1,5 @@
 // ============================================================
-// BASIC BINARY SEARCH — Find Exact Target
+// BASIC BINARY SEARCH — LeetCode 704: Binary Search
 // ============================================================
 export const basicBinarySearch = {
   id: 'basic-binary-search',
@@ -33,38 +33,38 @@ export const basicBinarySearch = {
   steps: [
     {
       id: 0,
-      title: 'Define the Boundaries',
-      explanation: 'We want to find 9. L starts at 0, R starts at the end (5). The target is somewhere in this interval.',
+      title: 'LC 704 — Binary Search',
+      explanation: 'Input: `nums = [-1, 0, 3, 5, 9, 12]`, `target = 9`. We want index 4.\n\nL = 0 and R = 5 mark where the target could be. Since the array is sorted, every probe can eliminate half of what remains.',
       state: {
         array: [-1, 0, 3, 5, 9, 12], left: 0, right: 5, mid: null, target: 9,
-        action: 'Initialize L=0, R=5.',
+        action: 'Search space [0, 5].',
       },
     },
     {
       id: 1,
-      title: 'Find the Middle',
-      explanation: 'Calculate mid = (0 + 5) / 2 = 2. The value at index 2 is 3. Target (9) is greater than 3. The target must be in the right half.',
+      title: 'Probe 1 — Too Small',
+      explanation: 'mid = 2. nums[2] = 3 < 9. Because the array is sorted, everything at index ≤ 2 is also < 9. The target cannot be in the left half.',
       state: {
         array: [-1, 0, 3, 5, 9, 12], left: 0, right: 5, mid: 2, target: 9,
-        action: 'nums[2] = 3 < 9. Move L past mid.',
+        action: 'nums[2]=3 < 9 → go right.',
       },
     },
     {
       id: 2,
-      title: 'Eliminate Left Half',
-      explanation: 'L moves to mid + 1 (index 3). The new search interval is [3, 5].',
+      title: 'Move L Past mid',
+      explanation: 'L = mid + 1 = 3. We skip index 2 because we already know it isn\'t the target. Search space is now [3, 5].',
       state: {
         array: [-1, 0, 3, 5, 9, 12], left: 3, right: 5, mid: null, target: 9,
-        action: 'L=3, R=5.',
+        action: 'L = 3. Search space [3, 5].',
       },
     },
     {
       id: 3,
-      title: 'New Middle',
-      explanation: 'Calculate mid = (3 + 5) / 2 = 4. The value at index 4 is 9. We found the target!',
+      title: 'Probe 2 — Exact Match',
+      explanation: 'mid = 4. nums[4] = 9 == target. Return 4. Two probes total — linear search would have taken 5.',
       state: {
         array: [-1, 0, 3, 5, 9, 12], left: 3, right: 5, mid: 4, target: 9, found: true,
-        action: 'nums[4] = 9 == target. Found!',
+        action: 'nums[4]=9 == target. Return 4.',
       },
     },
   ],
@@ -129,7 +129,7 @@ export const basicBinarySearch = {
 };
 
 // ============================================================
-// LOWER / UPPER BOUND — First / Last Occurrence
+// LOWER / UPPER BOUND — LeetCode 34: Find First and Last Position
 // ============================================================
 export const lowerUpperBound = {
   id: 'lower-upper-bound',
@@ -163,47 +163,47 @@ export const lowerUpperBound = {
   steps: [
     {
       id: 0,
-      title: 'Lower Bound Setup',
-      explanation: 'We want to find the first occurrence of 4. Set L=0, R=N (not N-1). The search space is [0, N].',
+      title: 'LC 34 — Find First and Last Position',
+      explanation: 'Input: `nums = [5, 7, 7, 8, 8, 10]`, `target = 8`. We want `[3, 4]` — the first and last 8.\n\nStandard binary search would return 3 or 4 arbitrarily. We need Lower Bound (first index where nums[i] ≥ 8). Note R = 6, not 5 — we allow a virtual slot past the end in case the target doesn\'t exist.',
       state: {
-        array: [1, 2, 4, 4, 5, 6], left: 0, right: 6, mid: null, target: 4,
-        action: 'L=0, R=6.',
+        array: [5, 7, 7, 8, 8, 10], left: 0, right: 6, mid: null, target: 8,
+        action: 'Lower Bound setup: L=0, R=6.',
       },
     },
     {
       id: 1,
-      title: 'Find Mid',
-      explanation: 'mid = (0 + 6) / 2 = 3. nums[3] = 4. It equals the target. But we want the *first* occurrence, so we record this potential answer and move R left to see if there is an earlier one.',
+      title: 'Probe 1 — Match, But Keep Going',
+      explanation: 'mid = 3. nums[3] = 8 — a match. But is it the FIRST 8? We don\'t know. Record ans = 3, then search left: R = mid = 3 (keep index 3 as a valid candidate).',
       state: {
-        array: [1, 2, 4, 4, 5, 6], left: 0, right: 3, mid: 3, target: 4, ans: 3,
-        action: 'nums[3] == 4. Record ans=3. R=mid.',
+        array: [5, 7, 7, 8, 8, 10], left: 0, right: 3, mid: 3, target: 8, ans: 3,
+        action: 'nums[3]=8. ans=3. R=mid.',
       },
     },
     {
       id: 2,
-      title: 'Move Left',
-      explanation: 'L=0, R=3. mid = 1. nums[1] = 2. 2 < 4. The first occurrence must be to the right. Move L to mid + 1.',
+      title: 'Probe 2 — Too Small',
+      explanation: 'mid = 1. nums[1] = 7 < 8. Everything at index ≤ 1 is < 8. Discard them: L = 2.',
       state: {
-        array: [1, 2, 4, 4, 5, 6], left: 2, right: 3, mid: 1, target: 4, ans: 3,
-        action: 'nums[1] < 4. L = 2.',
+        array: [5, 7, 7, 8, 8, 10], left: 2, right: 3, mid: 1, target: 8, ans: 3,
+        action: 'nums[1]=7 < 8 → L=2.',
       },
     },
     {
       id: 3,
-      title: 'Converge',
-      explanation: 'L=2, R=3. mid = 2. nums[2] = 4. Equals target. Record ans=2. Move R to mid.',
+      title: 'Probe 3 — Too Small Again',
+      explanation: 'mid = 2. nums[2] = 7 < 8. Move L = 3. Interval collapses to [3, 3].',
       state: {
-        array: [1, 2, 4, 4, 5, 6], left: 2, right: 2, mid: 2, target: 4, ans: 2,
-        action: 'nums[2] == 4. Record ans=2. R=2.',
+        array: [5, 7, 7, 8, 8, 10], left: 3, right: 3, mid: 2, target: 8, ans: 3,
+        action: 'nums[2]=7 < 8 → L=3.',
       },
     },
     {
       id: 4,
-      title: 'Found!',
-      explanation: 'L == R == 2. The loop ends. The first occurrence is index 2.',
+      title: 'First Occurrence = 3',
+      explanation: 'L == R == 3. First 8 is at index 3. To get the last 8, run Upper Bound (flip `<` to `<=`) → converges to 5, so last = 4. Answer: `[3, 4]`.',
       state: {
-        array: [1, 2, 4, 4, 5, 6], left: 2, right: 2, mid: 2, target: 4, ans: 2, found: true,
-        action: 'First occurrence is at index 2.',
+        array: [5, 7, 7, 8, 8, 10], left: 3, right: 3, mid: 3, target: 8, ans: 3, found: true,
+        action: 'First = 3. Upper Bound gives last = 4. Return [3,4].',
       },
     },
   ],
@@ -265,7 +265,7 @@ export const lowerUpperBound = {
 };
 
 // ============================================================
-// BINARY SEARCH ON ANSWER — Koko Eating Bananas
+// BINARY SEARCH ON ANSWER — LeetCode 875: Koko Eating Bananas
 // ============================================================
 export const binarySearchOnAnswer = {
   id: 'binary-search-on-answer',
@@ -299,47 +299,47 @@ export const binarySearchOnAnswer = {
   steps: [
     {
       id: 0,
-      title: 'Define the Answer Space',
-      explanation: 'Koko has piles [3, 6, 7, 11] and 8 hours. We want the minimum eating speed K. Minimum possible speed is 1. Maximum possible speed is the largest pile (11). L=1, R=11.',
+      title: 'LC 875 — What Are We Looking For?',
+      explanation: 'Input: `piles = [3, 6, 7, 11]`, `h = 8`.\n\n🎯 Goal: Find the SMALLEST eating speed K so Koko finishes all 4 piles within 8 hours.\n\nWhy "smallest"? Any speed big enough works — we want the minimum that still meets the deadline.\n\n🔍 Search space: K can range from 1 (slowest) to 11 (largest pile). Going faster than 11 is pointless — Koko can\'t finish an 11-banana pile in less than 1 hour no matter what. So we binary search K in [1, 11].\n\nNext step → Check the middle speed K = 6.',
       state: {
         array: [3, 6, 7, 11], left: 1, right: 11, mid: null, hours: 8,
-        action: 'Answer space: [1, 11].',
+        action: 'Goal: smallest K where total hours ≤ 8. Search K in [1, 11].',
       },
     },
     {
       id: 1,
-      title: 'Test Mid Speed',
-      explanation: 'mid = 6. At speed 6, time to eat: ceil(3/6)=1, ceil(6/6)=1, ceil(7/6)=2, ceil(11/6)=2. Total = 6 hours. 6 <= 8. Speed 6 works! Try smaller.',
+      title: 'Probe 1 — Check K = 6',
+      explanation: '🔍 What we\'re doing: Guess K = 6. Compute total hours.\n\n🍌 Hours = ceil(3/6) + ceil(6/6) + ceil(7/6) + ceil(11/6) = 1 + 1 + 2 + 2 = 6 hours.\n\n✅ Verdict: 6 ≤ 8 → K = 6 WORKS.\n\n➡️ Next move: Since it works, maybe a smaller K also works. Shrink toward smaller by setting R = 6. We keep 6 in the space — if nothing smaller works, 6 is our fallback answer.\n\nNext step → Check K = 3 (middle of [1, 6]).',
       state: {
         array: [3, 6, 7, 11], left: 1, right: 6, mid: 6, hours: 8, currentHours: 6,
-        action: 'Speed 6 works. Try R = mid.',
+        action: 'K=6 → 6h ≤ 8h. Valid. Shrink right (R=6). Next: check smaller.',
       },
     },
     {
       id: 2,
-      title: 'Try Smaller Speed',
-      explanation: 'L=1, R=6. mid = 3. At speed 3: ceil(3/3)=1, ceil(6/3)=2, ceil(7/3)=3, ceil(11/3)=4. Total = 10 hours. 10 > 8. Speed 3 is too slow.',
+      title: 'Probe 2 — Check K = 3',
+      explanation: '🔍 What we\'re doing: Guess K = 3 (middle of [1, 6]).\n\n🍌 Hours = ceil(3/3) + ceil(6/3) + ceil(7/3) + ceil(11/3) = 1 + 2 + 3 + 4 = 10 hours.\n\n❌ Verdict: 10 > 8 → K = 3 FAILS.\n\n➡️ Next move: Since K = 3 fails, any speed ≤ 3 also fails (slower = more hours). The whole left half [1, 3] is useless. Discard it: L = 4.\n\nNext step → Check K = 5 (middle of [4, 6]).',
       state: {
-        array: [3, 6, 7, 11], left: 3, right: 6, mid: 3, hours: 8, currentHours: 10,
-        action: 'Speed 3 fails. L = mid + 1.',
+        array: [3, 6, 7, 11], left: 4, right: 6, mid: 3, hours: 8, currentHours: 10,
+        action: 'K=3 → 10h > 8h. Invalid. Discard left (L=4). Next: check bigger.',
       },
     },
     {
       id: 3,
-      title: 'Test Mid Again',
-      explanation: 'L=4, R=6. mid = 5. At speed 5: ceil(3/5)=1, ceil(6/5)=2, ceil(7/5)=2, ceil(11/5)=3. Total = 8 hours. Speed 5 works!',
+      title: 'Probe 3 — Check K = 5',
+      explanation: '🔍 What we\'re doing: Guess K = 5 (middle of [4, 6]).\n\n🍌 Hours = ceil(3/5) + ceil(6/5) + ceil(7/5) + ceil(11/5) = 1 + 2 + 2 + 3 = 8 hours.\n\n✅ Verdict: 8 ≤ 8 → K = 5 WORKS.\n\n➡️ Next move: Better than K = 6. Maybe K = 4 also works. Shrink right: R = 5.\n\nNext step → Check K = 4 (middle of [4, 5]).',
       state: {
         array: [3, 6, 7, 11], left: 4, right: 5, mid: 5, hours: 8, currentHours: 8,
-        action: 'Speed 5 works. Try R = mid.',
+        action: 'K=5 → 8h ≤ 8h. Valid. Shrink right (R=5). Next: check smaller.',
       },
     },
     {
       id: 4,
-      title: 'Converge',
-      explanation: 'L=4, R=5. mid = 4. At speed 4: ceil(3/4)=1, ceil(6/4)=2, ceil(7/4)=2, ceil(11/4)=3. Total = 8 hours. Speed 4 works! R = mid.',
+      title: 'Probe 4 — Check K = 4 → Answer Found',
+      explanation: '🔍 What we\'re doing: Guess K = 4 (middle of [4, 5]).\n\n🍌 Hours = ceil(3/4) + ceil(6/4) + ceil(7/4) + ceil(11/4) = 1 + 2 + 2 + 3 = 8 hours.\n\n✅ Verdict: 8 ≤ 8 → K = 4 WORKS.\n\n➡️ Next move: R = 4. Now L == R == 4 — no more guesses possible.\n\n🎯 Answer: K = 4. Every smaller K was either proven to fail (K = 3) or excluded by logic (K = 1, 2 are even slower). This is the smallest valid speed.',
       state: {
         array: [3, 6, 7, 11], left: 4, right: 4, mid: 4, hours: 8, currentHours: 8,
-        action: 'Speed 4 works. L == R. Minimum speed is 4.', found: true,
+        action: 'K=4 → 8h ≤ 8h. Valid. L==R==4. Answer = 4.', found: true,
       },
     },
   ],

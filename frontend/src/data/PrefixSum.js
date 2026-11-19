@@ -1,5 +1,5 @@
 // ============================================================
-// BASIC PREFIX SUM — Range Sum Query
+// BASIC PREFIX SUM — LeetCode 303: Range Sum Query - Immutable
 // ============================================================
 export const basicPrefixSum = {
   id: 'basic-prefix-sum',
@@ -33,26 +33,95 @@ export const basicPrefixSum = {
   steps: [
     {
       id: 0,
-      title: 'Original Array',
-      explanation: 'We have our original array. We want to answer queries like: "What is the sum from index 2 to 4?"',
+      title: 'LC 303 — Setup',
+      explanation: 'Input: `nums = [-2, 0, 3, -5, 2, -1]`.\n\n🎯 Goal: Build a `prefix` array so any "sum from L to R" query becomes O(1).\n\n💡 Rule: `prefix[i] = sum of nums[0..i]`.\n\nStart: `prefix = []` — we\'ll build it one entry at a time.',
       state: {
-        array: [3, 1, 4, 1, 5, 9], prefix: [], left: 2, right: 4, action: 'Target: Sum from index 2 to 4.',
+        array: [-2, 0, 3, -5, 2, -1], prefix: [], left: null, right: null,
+        action: 'Start with empty prefix array.',
       },
     },
     {
       id: 1,
-      title: 'Build Prefix Array',
-      explanation: 'We build the prefix array. Each element is the sum of all elements up to that point. Prefix[0] = 3. Prefix[1] = 3+1 = 4. Prefix[2] = 3+1+4 = 8, and so on.',
+      title: 'Build prefix[0]',
+      explanation: '🔍 Build prefix[0] using nums[0].\n\n🧮 prefix[0] = nums[0] = **−2**.\n\n📊 `prefix = [−2]`. This means the sum of nums[0..0] is −2.',
       state: {
-        array: [3, 1, 4, 1, 5, 9], prefix: [3, 4, 8, 9, 14, 23], left: 2, right: 4, action: 'Prefix array built.',
+        array: [-2, 0, 3, -5, 2, -1], prefix: [-2], left: 0, right: 0,
+        action: 'prefix[0] = nums[0] = −2.',
       },
     },
     {
       id: 2,
-      title: 'Calculate Range Sum',
-      explanation: 'To find the sum from index 2 to 4: we take the sum up to index 4 (14) and subtract the sum up to index 1 (4). 14 - 4 = 10. (Which is 4 + 1 + 5).',
+      title: 'Build prefix[1]',
+      explanation: '🔍 Build prefix[1] using prefix[0] + nums[1].\n\n🧮 prefix[1] = prefix[0] + nums[1] = −2 + 0 = **−2**.\n\n📊 `prefix = [−2, −2]`. We reuse prefix[0] instead of re-summing from scratch.',
       state: {
-        array: [3, 1, 4, 1, 5, 9], prefix: [3, 4, 8, 9, 14, 23], left: 2, right: 4, result: 10, action: 'prefix[4] - prefix[1] = 14 - 4 = 10', found: true,
+        array: [-2, 0, 3, -5, 2, -1], prefix: [-2, -2], left: 1, right: 1,
+        action: 'prefix[1] = prefix[0] + nums[1] = −2 + 0 = −2.',
+      },
+    },
+    {
+      id: 3,
+      title: 'Build prefix[2]',
+      explanation: '🔍 Build prefix[2].\n\n🧮 prefix[2] = prefix[1] + nums[2] = −2 + 3 = **1**.\n\n📊 `prefix = [−2, −2, 1]`. Sum of nums[0..2] is 1.',
+      state: {
+        array: [-2, 0, 3, -5, 2, -1], prefix: [-2, -2, 1], left: 2, right: 2,
+        action: 'prefix[2] = prefix[1] + nums[2] = −2 + 3 = 1.',
+      },
+    },
+    {
+      id: 4,
+      title: 'Build prefix[3]',
+      explanation: '🔍 Build prefix[3].\n\n🧮 prefix[3] = prefix[2] + nums[3] = 1 + (−5) = **−4**.\n\n📊 `prefix = [−2, −2, 1, −4]`. Values can decrease — prefix sums are cumulative, not monotonic.',
+      state: {
+        array: [-2, 0, 3, -5, 2, -1], prefix: [-2, -2, 1, -4], left: 3, right: 3,
+        action: 'prefix[3] = prefix[2] + nums[3] = 1 + (−5) = −4.',
+      },
+    },
+    {
+      id: 5,
+      title: 'Build prefix[4]',
+      explanation: '🔍 Build prefix[4].\n\n🧮 prefix[4] = prefix[3] + nums[4] = −4 + 2 = **−2**.\n\n📊 `prefix = [−2, −2, 1, −4, −2]`.',
+      state: {
+        array: [-2, 0, 3, -5, 2, -1], prefix: [-2, -2, 1, -4, -2], left: 4, right: 4,
+        action: 'prefix[4] = prefix[3] + nums[4] = −4 + 2 = −2.',
+      },
+    },
+    {
+      id: 6,
+      title: 'Build prefix[5] — Done',
+      explanation: '🔍 Build prefix[5].\n\n🧮 prefix[5] = prefix[4] + nums[5] = −2 + (−1) = **−3**.\n\n✅ Complete: `prefix = [−2, −2, 1, −4, −2, −3]`. Every query is now one subtraction away.',
+      state: {
+        array: [-2, 0, 3, -5, 2, -1], prefix: [-2, -2, 1, -4, -2, -3], left: 5, right: 5,
+        action: 'prefix[5] = prefix[4] + nums[5] = −2 + (−1) = −3. Prefix array complete.',
+      },
+    },
+    {
+      id: 7,
+      title: 'Query 1 — sum(0, 2)',
+      explanation: '🔍 Query: sum of nums[0..2].\n\n🧮 Since L = 0, we cannot subtract prefix[−1]. Just return prefix[2].\n\n`sum(0, 2) = prefix[2] = **1**`.\n\n✅ Verify by hand: −2 + 0 + 3 = 1 ✅',
+      state: {
+        array: [-2, 0, 3, -5, 2, -1], prefix: [-2, -2, 1, -4, -2, -3], left: 0, right: 2,
+        result: 1,
+        action: 'sum(0,2) = prefix[2] = 1.',
+      },
+    },
+    {
+      id: 8,
+      title: 'Query 2 — sum(2, 5)',
+      explanation: '🔍 Query: sum of nums[2..5].\n\n🧮 Since L > 0: `sum(2, 5) = prefix[5] − prefix[1]`.\n\n= (−3) − (−2) = **−1**.\n\n📖 Why: prefix[5] covers indices 0..5; prefix[1] covers indices 0..1. Subtracting removes the 0..1 part, leaving 2..5.\n\n✅ Verify: 3 + (−5) + 2 + (−1) = −1 ✅',
+      state: {
+        array: [-2, 0, 3, -5, 2, -1], prefix: [-2, -2, 1, -4, -2, -3], left: 2, right: 5,
+        result: -1,
+        action: 'sum(2,5) = prefix[5] − prefix[1] = −3 − (−2) = −1.',
+      },
+    },
+    {
+      id: 9,
+      title: 'Query 3 — sum(0, 5) + Done',
+      explanation: '🔍 Query: sum of the entire array (L = 0).\n\n🧮 `sum(0, 5) = prefix[5] = **−3**`.\n\n🎯 All LC 303 queries answered: `[1, −1, −3]` — matches expected output.\n\n📌 Building cost was O(N) once. Every query after is O(1). Without prefix sums, each query would be O(N) → total O(Q × N) for Q queries.',
+      state: {
+        array: [-2, 0, 3, -5, 2, -1], prefix: [-2, -2, 1, -4, -2, -3], left: 0, right: 5,
+        result: -3, found: true,
+        action: 'sum(0,5) = prefix[5] = −3. All queries answered.',
       },
     },
   ],
@@ -110,7 +179,7 @@ export const basicPrefixSum = {
 };
 
 // ============================================================
-// HASH MAP + PREFIX SUM — Subarray Sum Equals K
+// HASH MAP + PREFIX SUM — LeetCode 560: Subarray Sum Equals K
 // ============================================================
 export const hashMapPrefixSum = {
   id: 'hashmap-prefix-sum',
@@ -144,34 +213,47 @@ export const hashMapPrefixSum = {
   steps: [
     {
       id: 0,
-      title: 'Initialize the Ledger',
-      explanation: 'We want subarrays summing to K=2. We start with a map containing {0: 1}, meaning a sum of 0 has been seen 1 time (before we start).',
+      title: 'LC 560 — Setup',
+      explanation: 'Input: `nums = [1, 1, 1]`, `k = 2`.\n\n🎯 Goal: Count how many contiguous subarrays sum to exactly 2. Expected: **2** — `[1,1]` at indices 0..1, and `[1,1]` at indices 1..2.\n\n💡 Key trick: If `prefix[j] − prefix[i] = k`, then subarray i+1..j sums to k. Rearrange: `prefix[i] = prefix[j] − k`. So as we walk, we ask: "Have we seen `currentSum − k` before?"\n\nStart: `map = {0: 1}` — this seeds "the running sum before we started was 0, seen 1 time." Without this, subarrays starting at index 0 would be missed.',
       state: {
-        array: [1, 1, 1], k: 2, currentSum: 0, map: {0: 1}, count: 0, action: 'Initialize map with {0: 1}.',
+        array: [1, 1, 1], k: 2, currentSum: 0, map: {0: 1}, count: 0,
+        action: 'Init map={0:1}, currentSum=0, count=0.',
       },
     },
     {
       id: 1,
-      title: 'First Element',
-      explanation: 'Add 1 to currentSum -> sum = 1. We check if `sum - k` (1 - 2 = -1) is in the map. It is not. Add {1: 1} to the map.',
+      title: 'i=0 — Sum = 1, No Match',
+      explanation: '🔍 Process nums[0] = 1.\n\n🧮 currentSum = 0 + 1 = **1**.\ntarget = currentSum − k = 1 − 2 = **−1**.\n\n❌ Look up −1 in map → not present. No subarray ends here summing to 2.\n\n➡️ Store currentSum into map: `{1: 1}`.\n\n📊 `map = {0:1, 1:1}`, `count = 0`.',
       state: {
-        array: [1, 1, 1], k: 2, currentSum: 1, map: {0: 1, 1: 1}, count: 0, action: 'sum=1. 1-2=-1 (not found). Add 1 to map.',
+        array: [1, 1, 1], k: 2, currentSum: 1, map: {0: 1, 1: 1}, count: 0,
+        action: 'sum=1, target=−1 (miss). Store {1:1}.',
       },
     },
     {
       id: 2,
-      title: 'Second Element',
-      explanation: 'Add 1 to currentSum -> sum = 2. Check if `sum - k` (2 - 2 = 0) is in the map. Yes, it appears 1 time! Add 1 to count.',
+      title: 'i=1 — Sum = 2, Found #1',
+      explanation: '🔍 Process nums[1] = 1.\n\n🧮 currentSum = 1 + 1 = **2**.\ntarget = 2 − 2 = **0**.\n\n✅ Look up 0 in map → found with count **1**.\n\n💭 Meaning: a prefix sum of 0 was seen before we started. So `currentSum − 0 = 2` → the subarray from index 0 to index 1 sums to 2 → `[1, 1]`.\n\n🧮 count += 1 → **1**.\n\n➡️ Store currentSum: `{2: 1}`.\n\n📊 `map = {0:1, 1:1, 2:1}`, `count = 1`.',
       state: {
-        array: [1, 1, 1], k: 2, currentSum: 2, map: {0: 1, 1: 1, 2: 1}, count: 1, action: 'sum=2. 2-2=0 (Found 1). count=1.',
+        array: [1, 1, 1], k: 2, currentSum: 2, map: {0: 1, 1: 1, 2: 1}, count: 1,
+        action: 'sum=2, target=0 (found 1×). count=1. Store {2:1}.',
       },
     },
     {
       id: 3,
-      title: 'Third Element',
-      explanation: 'Add 1 to currentSum -> sum = 3. Check if `sum - k` (3 - 2 = 1) is in the map. Yes, it appears 1 time! Add 1 to count. Final count = 2.',
+      title: 'i=2 — Sum = 3, Found #2',
+      explanation: '🔍 Process nums[2] = 1.\n\n🧮 currentSum = 2 + 1 = **3**.\ntarget = 3 − 2 = **1**.\n\n✅ Look up 1 in map → found with count **1**.\n\n💭 Meaning: a prefix sum of 1 was seen at index 0. So `currentSum − 1 = 2` → the subarray from index 1 to index 2 sums to 2 → `[1, 1]`.\n\n🧮 count += 1 → **2**.\n\n➡️ Store currentSum: `{3: 1}`.\n\n📊 `map = {0:1, 1:1, 2:1, 3:1}`, `count = 2`.',
       state: {
-        array: [1, 1, 1], k: 2, currentSum: 3, map: {0: 1, 1: 1, 2: 1, 3: 1}, count: 2, action: 'sum=3. 3-2=1 (Found 1). count=2.', found: true,
+        array: [1, 1, 1], k: 2, currentSum: 3, map: {0: 1, 1: 1, 2: 1, 3: 1}, count: 2,
+        action: 'sum=3, target=1 (found 1×). count=2. Store {3:1}.',
+      },
+    },
+    {
+      id: 4,
+      title: 'Answer — 2 Subarrays',
+      explanation: '🎯 Answer: **2** — matches LC 560\'s expected output.\n\n✅ The two subarrays:\n1. `nums[0..1] = [1, 1]` — found at i=1 via `map[0]` (seeded before start)\n2. `nums[1..2] = [1, 1]` — found at i=2 via `map[1]` (set at i=0)\n\n📌 One pass through the array. Each map lookup is O(1) average. Total: **O(N) time, O(N) space**. Brute force would scan every subarray → O(N²).',
+      state: {
+        array: [1, 1, 1], k: 2, currentSum: 3, map: {0: 1, 1: 1, 2: 1, 3: 1}, count: 2, found: true,
+        action: 'Return count = 2.',
       },
     },
   ],
@@ -241,7 +323,7 @@ public class SubarraySumEqualsK {
 };
 
 // ============================================================
-// DIFFERENCE ARRAY — Range Addition
+// DIFFERENCE ARRAY — LeetCode 370: Range Addition
 // ============================================================
 export const differenceArray = {
   id: 'difference-array',
@@ -275,34 +357,92 @@ export const differenceArray = {
   steps: [
     {
       id: 0,
-      title: 'Start with Zeros',
-      explanation: 'We have an array of zeros. We want to add 2 to the range [1, 3] and add 3 to the range [2, 4]. We use a difference array to mark the boundaries.',
+      title: 'LC 370 — Setup',
+      explanation: 'Input: `length = 5`, `updates = [[1,3,2], [2,4,3], [0,2,-2]]`.\n\n🎯 Goal: Start with `[0,0,0,0,0]`. Apply all 3 range updates. Return the final array — expected **[-2, 0, 3, 5, 3]**.\n\n💡 Trick: Instead of adding `val` to every element in [L, R], we mark "start +val at L" and "stop +val at R+1". A single prefix sum later turns those marks into real values.\n\nStart: `diff = [0, 0, 0, 0, 0]`.',
       state: {
-        diff: [0, 0, 0, 0, 0], action: 'Initial diff array.',
+        diff: [0, 0, 0, 0, 0],
+        action: 'Init diff=[0,0,0,0,0]. Apply 3 range updates.',
       },
     },
     {
       id: 1,
-      title: 'First Update [1, 3]',
-      explanation: 'Add 2 to diff[1]. Subtract 2 from diff[4] (which is R+1).',
+      title: 'Update 1 — [1, 3] += 2',
+      explanation: '🔍 Apply update `[L=1, R=3, val=2]`.\n\n🧮 Two marks:\n- `diff[1] += 2` → start adding 2 at index 1\n- `diff[3+1] = diff[4] -= 2` → stop adding 2 at index 4\n\n📊 `diff = [0, 2, 0, 0, −2]`.\n\n💭 During prefix sum later: index 1 jumps +2, indices 2 and 3 inherit it, index 4 sees −2 which cancels the +2 and returns to baseline.',
       state: {
-        diff: [0, 2, 0, 0, -2], action: 'diff[1] += 2, diff[4] -= 2.',
+        diff: [0, 2, 0, 0, -2],
+        action: '[1,3,2]: diff[1]+=2, diff[4]-=2 → [0,2,0,0,−2].',
       },
     },
     {
       id: 2,
-      title: 'Second Update [2, 4]',
-      explanation: 'Add 3 to diff[2]. Subtract 3 from diff[5] (out of bounds here, so ignore or extend array).',
+      title: 'Update 2 — [2, 4] += 3',
+      explanation: '🔍 Apply update `[L=2, R=4, val=3]`.\n\n🧮 Two marks:\n- `diff[2] += 3` → start adding 3 at index 2\n- `diff[4+1] = diff[5] -= 3` → **out of bounds** (length 5, valid indices 0–4). Skip — the addition just runs to the end.\n\n📊 `diff = [0, 2, 3, 0, −2]`.',
       state: {
-        diff: [0, 2, 3, 0, -2], action: 'diff[2] += 3.',
+        diff: [0, 2, 3, 0, -2],
+        action: '[2,4,3]: diff[2]+=3, diff[5] OOB (skip) → [0,2,3,0,−2].',
       },
     },
     {
       id: 3,
-      title: 'Reconstruct via Prefix Sum',
-      explanation: 'Take the prefix sum of the diff array: 0, 2, 5, 5, 3. This is the final array after all updates!',
+      title: 'Update 3 — [0, 2] += −2',
+      explanation: '🔍 Apply update `[L=0, R=2, val=−2]` — subtract 2 from indices 0–2.\n\n🧮 Two marks:\n- `diff[0] += −2` → start subtracting 2 at index 0\n- `diff[2+1] = diff[3] -= −2 = +2` → stop subtracting after index 2\n\n📊 `diff = [−2, 2, 3, 2, −2]`.\n\n✅ All updates marked. Now reconstruct the real array.',
       state: {
-        diff: [0, 2, 3, 0, -2], result: [0, 2, 5, 5, 3], action: 'Prefix sum of diff = [0, 2, 5, 5, 3]', found: true,
+        diff: [-2, 2, 3, 2, -2],
+        action: '[0,2,−2]: diff[0]−=2, diff[3]+=2 → [−2,2,3,2,−2].',
+      },
+    },
+    {
+      id: 4,
+      title: 'Reconstruct i=0',
+      explanation: '🔍 Reconstruct index 0: running total starts at 0, add `diff[0]`.\n\n🧮 result[0] = 0 + diff[0] = 0 + (−2) = **−2**.\n\n📊 `result = [−2]`.',
+      state: {
+        diff: [-2, 2, 3, 2, -2], result: [-2],
+        action: 'result[0] = diff[0] = −2.',
+      },
+    },
+    {
+      id: 5,
+      title: 'Reconstruct i=1',
+      explanation: '🔍 Reconstruct index 1.\n\n🧮 result[1] = result[0] + diff[1] = (−2) + 2 = **0**.\n\n📊 `result = [−2, 0]`.',
+      state: {
+        diff: [-2, 2, 3, 2, -2], result: [-2, 0],
+        action: 'result[1] = result[0] + diff[1] = −2 + 2 = 0.',
+      },
+    },
+    {
+      id: 6,
+      title: 'Reconstruct i=2',
+      explanation: '🔍 Reconstruct index 2.\n\n🧮 result[2] = result[1] + diff[2] = 0 + 3 = **3**.\n\n📊 `result = [−2, 0, 3]`.',
+      state: {
+        diff: [-2, 2, 3, 2, -2], result: [-2, 0, 3],
+        action: 'result[2] = result[1] + diff[2] = 0 + 3 = 3.',
+      },
+    },
+    {
+      id: 7,
+      title: 'Reconstruct i=3',
+      explanation: '🔍 Reconstruct index 3.\n\n🧮 result[3] = result[2] + diff[3] = 3 + 2 = **5**.\n\n📊 `result = [−2, 0, 3, 5]`.',
+      state: {
+        diff: [-2, 2, 3, 2, -2], result: [-2, 0, 3, 5],
+        action: 'result[3] = result[2] + diff[3] = 3 + 2 = 5.',
+      },
+    },
+    {
+      id: 8,
+      title: 'Reconstruct i=4 — Done',
+      explanation: '🔍 Reconstruct index 4 (last).\n\n🧮 result[4] = result[3] + diff[4] = 5 + (−2) = **3**.\n\n✅ Final: `result = [−2, 0, 3, 5, 3]` — matches LC 370\'s expected output.',
+      state: {
+        diff: [-2, 2, 3, 2, -2], result: [-2, 0, 3, 5, 3],
+        action: 'result[4] = result[3] + diff[4] = 5 + (−2) = 3. Done.',
+      },
+    },
+    {
+      id: 9,
+      title: 'Verify + Complexity',
+      explanation: '🎯 Verification by hand (naive approach):\n- Start: `[0, 0, 0, 0, 0]`\n- Apply [1,3]+=2: `[0, 2, 2, 2, 0]`\n- Apply [2,4]+=3: `[0, 2, 5, 5, 3]`\n- Apply [0,2]+=−2: `[−2, 0, 3, 5, 3]` ✅\n\n📌 Complexity:\n- K updates → O(K) time (each = 2 O(1) marks)\n- 1 prefix sum pass → O(N) time\n- Total: **O(K + N)**, space O(N)\n\nBrute force (loop over each range per update) = O(K × N). For K = 10K updates, N = 10K elements: 100M ops vs 20K — 5,000× speedup.',
+      state: {
+        diff: [-2, 2, 3, 2, -2], result: [-2, 0, 3, 5, 3], found: true,
+        action: 'Verified. Time O(K+N), space O(N).',
       },
     },
   ],

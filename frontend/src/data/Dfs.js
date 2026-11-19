@@ -34,42 +34,50 @@ export const treeDFS = {
     {
       id: 0,
       title: 'Start at Root',
-      explanation: 'We start at the root node (1). In Pre-order, we process the node immediately, then go left.',
-      state: {
-        tree: [1, 2, 3, 4, 5], currentVal: 1, path: [1], stack: [1], action: 'Visit Root 1. Go Left.',
-      },
+      explanation: 'We start at the root node (1). In Pre-order traversal, we process the node immediately, then go left. WHY: Pre-order means "Root, Left, Right". We record the root as visited and add it to our stack to remember where we are.',
+      state: { tree: [1, 2, 3, 4, 5], currentVal: 1, path: [1], stack: [1], action: 'Visit Root 1.' },
     },
     {
       id: 1,
-      title: 'Dive Left',
-      explanation: 'We go to the left child (2). Process it. Then go to its left child (4).',
-      state: {
-        tree: [1, 2, 3, 4, 5], currentVal: 2, path: [1, 2, 4], stack: [1, 2], action: 'Visit 2. Go Left to 4.',
-      },
+      title: 'Dive Left to 2',
+      explanation: 'We go to the left child (2). We process it immediately and push it to the stack. WHY: DFS goes as deep as possible on the left side before exploring the right.',
+      state: { tree: [1, 2, 3, 4, 5], currentVal: 2, path: [1, 2], stack: [1, 2], action: 'Visit 2.' },
     },
     {
       id: 2,
-      title: 'Hit a Leaf',
-      explanation: 'Node 4 has no children. We hit a dead end. We must backtrack to 2, and then explore its right child (5).',
-      state: {
-        tree: [1, 2, 3, 4, 5], currentVal: 4, path: [1, 2, 4], stack: [1, 2, 4], action: '4 is a leaf. Backtrack to 2.',
-      },
+      title: 'Dive Left to 4 (Leaf)',
+      explanation: 'We go to the left child of 2, which is 4. We process it and push it to the stack. Node 4 has no left or right children, so it is a leaf.',
+      state: { tree: [1, 2, 3, 4, 5], currentVal: 4, path: [1, 2, 4], stack: [1, 2, 4], action: 'Visit 4 (Leaf).' },
     },
     {
       id: 3,
-      title: 'Explore Right',
-      explanation: 'We explore the right child of 2, which is 5. Then we backtrack all the way to 1, and go to its right child (3).',
-      state: {
-        tree: [1, 2, 3, 4, 5], currentVal: 5, path: [1, 2, 4, 5], stack: [1, 2], action: 'Visit 5. Backtrack to 1.',
-      },
+      title: 'Backtrack from 4',
+      explanation: 'Since 4 is a leaf, we hit a dead end. The recursive call returns. We pop 4 from our stack and backtrack to its parent, 2.',
+      state: { tree: [1, 2, 3, 4, 5], currentVal: 2, path: [1, 2], stack: [1, 2], action: 'Backtrack to 2.' },
     },
     {
       id: 4,
-      title: 'Finish Right Subtree',
-      explanation: 'Visit 3. All nodes are visited.',
-      state: {
-        tree: [1, 2, 3, 4, 5], currentVal: 3, path: [1, 2, 4, 5, 3], stack: [1], action: 'Visit 3. Done.', found: true,
-      },
+      title: 'Explore Right to 5 (Leaf)',
+      explanation: 'We have finished the left side of 2. We now explore its right child (5). We process it and push it to the stack. 5 is also a leaf.',
+      state: { tree: [1, 2, 3, 4, 5], currentVal: 5, path: [1, 2, 5], stack: [1, 2, 5], action: 'Visit 5 (Leaf).' },
+    },
+    {
+      id: 5,
+      title: 'Backtrack to 1',
+      explanation: '5 is a leaf, so we backtrack. We pop 5, return to 2, pop 2, and return to 1. We have fully explored the left subtree of 1.',
+      state: { tree: [1, 2, 3, 4, 5], currentVal: 1, path: [1], stack: [1], action: 'Backtrack to 1.' },
+    },
+    {
+      id: 6,
+      title: 'Explore Right to 3 (Leaf)',
+      explanation: 'Now we explore the right child of 1, which is 3. We process it and push it to the stack.',
+      state: { tree: [1, 2, 3, 4, 5], currentVal: 3, path: [1, 3], stack: [1, 3], action: 'Visit 3 (Leaf).' },
+    },
+    {
+      id: 7,
+      title: 'Final Backtrack',
+      explanation: '3 is a leaf. We backtrack to 1, and pop 1. The stack is empty. All nodes have been visited.',
+      state: { tree: [1, 2, 3, 4, 5], currentVal: 1, path: [1], stack: [], action: 'Done.', found: true },
     },
   ],
 
@@ -161,35 +169,39 @@ export const pathSum = {
   steps: [
     {
       id: 0,
-      title: 'Start with Target',
-      explanation: 'We want a path sum of 22. Start at root (5). We subtract 5 from the target: 22 - 5 = 17.',
-      state: {
-        tree: [5, 4, 8, 11, null, 13, 4, 7, 2], currentVal: 5, remaining: 17, path: [5], action: 'Target 22. Remaining: 17.',
-      },
+      title: 'Start at Root (5)',
+      explanation: 'We want a path sum of 22. We start at the root (5). We subtract 5 from the target: 22 - 5 = 17. WHY: Instead of adding up the path, we subtract each node value from the target. If we hit a leaf and the remaining target is 0, we found our path.',
+      state: { tree: [5, 4, 8, 11, null, 13, 4, 7, 2], currentVal: 5, remaining: 17, path: [5], action: 'Remaining target: 17.' },
     },
     {
       id: 1,
-      title: 'Go Left',
-      explanation: 'Go left to 4. Remaining: 17 - 4 = 13.',
-      state: {
-        tree: [5, 4, 8, 11, null, 13, 4, 7, 2], currentVal: 4, remaining: 13, path: [5, 4], action: 'Remaining: 13.',
-      },
+      title: 'Go Left to 4',
+      explanation: 'We go left to node 4. Remaining target: 17 - 4 = 13.',
+      state: { tree: [5, 4, 8, 11, null, 13, 4, 7, 2], currentVal: 4, remaining: 13, path: [5, 4], action: 'Remaining target: 13.' },
     },
     {
       id: 2,
-      title: 'Go Deeper Left',
-      explanation: 'Go left to 11. Remaining: 13 - 11 = 2.',
-      state: {
-        tree: [5, 4, 8, 11, null, 13, 4, 7, 2], currentVal: 11, remaining: 2, path: [5, 4, 11], action: 'Remaining: 2.',
-      },
+      title: 'Go Left to 11',
+      explanation: 'We go left to node 11. Remaining target: 13 - 11 = 2.',
+      state: { tree: [5, 4, 8, 11, null, 13, 4, 7, 2], currentVal: 11, remaining: 2, path: [5, 4, 11], action: 'Remaining target: 2.' },
     },
     {
       id: 3,
-      title: 'Find the Treasure',
-      explanation: 'Go left to 7. Remaining: 2 - 7 = -5. Not a leaf or wrong sum. Backtrack. Go right to 2. Remaining: 2 - 2 = 0. We are at a leaf and remaining is 0! Found a valid path.',
-      state: {
-        tree: [5, 4, 8, 11, null, 13, 4, 7, 2], currentVal: 2, remaining: 0, path: [5, 4, 11, 2], action: 'Remaining 0 at leaf. Found!', found: true,
-      },
+      title: 'Check Left Leaf (7)',
+      explanation: 'We go left to node 7. Remaining target: 2 - 7 = -5. Node 7 is a leaf. Since the remaining target is not 0, this path fails. We must backtrack.',
+      state: { tree: [5, 4, 8, 11, null, 13, 4, 7, 2], currentVal: 7, remaining: -5, path: [5, 4, 11, 7], action: 'Leaf 7 fails. Backtrack.' },
+    },
+    {
+      id: 4,
+      title: 'Backtrack to 11',
+      explanation: 'We return to node 11. The remaining target is restored to 2.',
+      state: { tree: [5, 4, 8, 11, null, 13, 4, 7, 2], currentVal: 11, remaining: 2, path: [5, 4, 11], action: 'Backtracked to 11.' },
+    },
+    {
+      id: 5,
+      title: 'Check Right Leaf (2)',
+      explanation: 'We go right to node 2. Remaining target: 2 - 2 = 0. Node 2 is a leaf, and the remaining target is exactly 0! We found a valid path.',
+      state: { tree: [5, 4, 8, 11, null, 13, 4, 7, 2], currentVal: 2, remaining: 0, path: [5, 4, 11, 2], action: 'Remaining 0 at leaf. Found!', found: true },
     },
   ],
 
@@ -282,35 +294,51 @@ export const gridDFS = {
   steps: [
     {
       id: 0,
-      title: 'Scan the Grid',
-      explanation: 'We scan the grid. We find a "1" (land). We increment our island count to 1, and trigger DFS to "sink" this entire island.',
-      state: {
-        grid: [[1,1,0,0],[1,0,0,1],[0,0,1,1]], row: 0, col: 0, islands: 1, action: 'Found land at (0,0). Islands = 1.',
-      },
+      title: 'Scan Grid - Find Land',
+      explanation: 'We scan the grid row by row. At (0,0), we find a "1". This is a new island. We increment our island count to 1 and trigger DFS to sink this whole island. WHY: DFS will spread from this cell to all connected land, marking them as visited so we don\'t count them as a new island later.',
+      state: { grid: [[1,1,0],[1,0,0],[0,0,1]], row: 0, col: 0, islands: 1, action: 'Found land at (0,0). Islands = 1.' },
     },
     {
       id: 1,
-      title: 'DFS: Sink Left and Right',
-      explanation: 'From (0,0), we sink the land at (0,1) and (1,0).',
-      state: {
-        grid: [[0,0,0,0],[0,0,0,1],[0,0,1,1]], row: 0, col: 1, islands: 1, action: 'Sinking (0,0), (0,1), (1,0).',
-      },
+      title: 'DFS: Sink (0,0)',
+      explanation: 'DFS starts at (0,0). We sink the land by changing it to "0". We then recursively check its neighbors (up, down, left, right).',
+      state: { grid: [[0,1,0],[1,0,0],[0,0,1]], row: 0, col: 0, islands: 1, action: 'Sink (0,0).' },
     },
     {
       id: 2,
-      title: 'Found Another Island',
-      explanation: 'DFS finishes sinking the first island. We continue scanning. We find a "1" at (1,3). Islands = 2. DFS sinks it.',
-      state: {
-        grid: [[0,0,0,0],[0,0,0,0],[0,0,1,1]], row: 1, col: 3, islands: 2, action: 'Found land at (1,3). Islands = 2.',
-      },
+      title: 'DFS: Explore Right (0,1)',
+      explanation: 'The right neighbor (0,1) is a "1". We sink it to "0" and recurse from there.',
+      state: { grid: [[0,0,0],[1,0,0],[0,0,1]], row: 0, col: 1, islands: 1, action: 'Sink (0,1).' },
     },
     {
       id: 3,
-      title: 'Last Island',
-      explanation: 'Scanning continues. Find a "1" at (2,2). Islands = 3. DFS sinks the connected (2,3).',
-      state: {
-        grid: [[0,0,0,0],[0,0,0,0],[0,0,0,0]], row: 2, col: 3, islands: 3, action: 'Found land at (2,2). Islands = 3.', found: true,
-      },
+      title: 'DFS: Explore Down (1,0)',
+      explanation: 'The right neighbor of (0,1) is out of bounds, and its down neighbor (1,1) is "0" (water). It returns. Back at (0,0), we explore its down neighbor (1,0). It is a "1". We sink it and recurse.',
+      state: { grid: [[0,0,0],[0,0,0],[0,0,1]], row: 1, col: 0, islands: 1, action: 'Sink (1,0).' },
+    },
+    {
+      id: 4,
+      title: 'DFS: Neighbors of (1,0)',
+      explanation: '(1,0) checks its neighbors. Up is (0,0) which is now "0". Down is (2,0) which is "0". Right is (1,1) which is "0". All water. DFS returns completely. The first island is fully sunk.',
+      state: { grid: [[0,0,0],[0,0,0],[0,0,1]], row: 1, col: 0, islands: 1, action: 'Island 1 sunk.' },
+    },
+    {
+      id: 5,
+      title: 'Scan Grid - Find Second Island',
+      explanation: 'The scan continues. Cells (0,1), (0,2), (1,0), (1,1), (1,2), (2,0), (2,1) are all "0". At (2,2), we find a "1". This is a new island. Islands = 2.',
+      state: { grid: [[0,0,0],[0,0,0],[0,0,1]], row: 2, col: 2, islands: 2, action: 'Found land at (2,2). Islands = 2.' },
+    },
+    {
+      id: 6,
+      title: 'DFS: Sink (2,2)',
+      explanation: 'DFS starts at (2,2). We sink it to "0". All of its neighbors are out of bounds or water. DFS returns immediately.',
+      state: { grid: [[0,0,0],[0,0,0],[0,0,0]], row: 2, col: 2, islands: 2, action: 'Sink (2,2).' },
+    },
+    {
+      id: 7,
+      title: 'Final Count',
+      explanation: 'The grid scan is complete. We have found and sunk all islands. The total number of islands is 2.',
+      state: { grid: [[0,0,0],[0,0,0],[0,0,0]], row: 2, col: 2, islands: 2, action: 'Done. Total islands = 2.', found: true },
     },
   ],
 

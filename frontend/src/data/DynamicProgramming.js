@@ -33,43 +33,39 @@ export const climbingStairs = {
   steps: [
     {
       id: 0,
-      title: 'Base Cases',
-      explanation: 'N = 5. We start at step 0 (1 way to stay) and step 1 (1 way to reach).',
-      state: {
-        dp: [1, 1, 0, 0, 0, 0], currentIdx: 1, action: 'Base cases: dp[0]=1, dp[1]=1.',
-      },
+      title: 'Initialize Base Cases',
+      explanation: 'We want to reach step 5. We create a DP array of size 6 (index 0 to 5). We set `dp[0] = 1` (1 way to stay on the ground) and `dp[1] = 1` (1 way to reach step 1). WHY: These base cases are the foundation for the recurrence relation. Every subsequent step relies on the values before it.',
+      state: { dp: [1, 1, 0, 0, 0, 0], currentIdx: 1, action: 'Base cases: dp[0]=1, dp[1]=1.' },
     },
     {
       id: 1,
-      title: 'Step 2',
-      explanation: 'dp[2] = dp[1] + dp[0] = 1 + 1 = 2.',
-      state: {
-        dp: [1, 1, 2, 0, 0, 0], currentIdx: 2, prev1: 1, prev2: 0, action: 'dp[2] = 1 + 1 = 2.',
-      },
+      title: 'Calculate Step 2',
+      explanation: 'To reach step 2, we can come from step 1 (take 1 step) or step 0 (take 2 steps). So, `dp[2] = dp[1] + dp[0] = 1 + 1 = 2`. WHY: The total ways to reach step 2 is the sum of the ways to reach its two possible predecessors.',
+      state: { dp: [1, 1, 2, 0, 0, 0], currentIdx: 2, action: 'dp[2] = dp[1] + dp[0] = 2.' },
     },
     {
       id: 2,
-      title: 'Step 3',
-      explanation: 'dp[3] = dp[2] + dp[1] = 2 + 1 = 3.',
-      state: {
-        dp: [1, 1, 2, 3, 0, 0], currentIdx: 3, prev1: 2, prev2: 1, action: 'dp[3] = 2 + 1 = 3.',
-      },
+      title: 'Calculate Step 3',
+      explanation: 'To reach step 3, we can come from step 2 or step 1. `dp[3] = dp[2] + dp[1] = 2 + 1 = 3`.',
+      state: { dp: [1, 1, 2, 3, 0, 0], currentIdx: 3, action: 'dp[3] = dp[2] + dp[1] = 3.' },
     },
     {
       id: 3,
-      title: 'Step 4',
-      explanation: 'dp[4] = dp[3] + dp[2] = 3 + 2 = 5.',
-      state: {
-        dp: [1, 1, 2, 3, 5, 0], currentIdx: 4, prev1: 3, prev2: 2, action: 'dp[4] = 3 + 2 = 5.',
-      },
+      title: 'Calculate Step 4',
+      explanation: 'To reach step 4, we can come from step 3 or step 2. `dp[4] = dp[3] + dp[2] = 3 + 2 = 5`.',
+      state: { dp: [1, 1, 2, 3, 5, 0], currentIdx: 4, action: 'dp[4] = dp[3] + dp[2] = 5.' },
     },
     {
       id: 4,
-      title: 'Step 5',
-      explanation: 'dp[5] = dp[4] + dp[3] = 5 + 3 = 8. The answer is 8.',
-      state: {
-        dp: [1, 1, 2, 3, 5, 8], currentIdx: 5, prev1: 5, prev2: 3, action: 'dp[5] = 5 + 3 = 8.', found: true,
-      },
+      title: 'Calculate Step 5',
+      explanation: 'To reach step 5, we come from step 4 or step 3. `dp[5] = dp[4] + dp[3] = 5 + 3 = 8`. The total number of ways to reach the top is 8.',
+      state: { dp: [1, 1, 2, 3, 5, 8], currentIdx: 5, action: 'dp[5] = dp[4] + dp[3] = 8.', found: true },
+    },
+    {
+      id: 5,
+      title: 'Space Optimization',
+      explanation: 'Notice that to calculate `dp[i]`, we only ever need `dp[i-1]` and `dp[i-2]`. We don\'t need the whole array. We can optimize the space to O(1) by keeping just two variables: `prev1` (representing dp[i-1]) and `prev2` (representing dp[i-2]). We update them in a sliding window fashion.',
+      state: { dp: [1, 1, 2, 3, 5, 8], currentIdx: 5, action: 'We only need the last 2 states to compute the next.' },
     },
   ],
 
@@ -160,48 +156,45 @@ export const knapsack = {
   steps: [
     {
       id: 0,
-      title: 'Initialize Matrix',
-      explanation: 'Items: weights [1, 3, 4, 5], values [1, 4, 5, 7]. Capacity = 7. We create a DP table filled with 0s.',
-      state: {
-        dp: [[0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0]],
-        row: 0, col: 0, item: '', action: 'Initialize 5x8 matrix with 0s.',
-      },
+      title: 'Initialize DP Matrix',
+      explanation: 'Items: weights [1, 3, 4, 5], values [1, 4, 5, 7]. Capacity W = 7. We create a matrix `dp[5][8]` (5 rows for items 0-4, 8 columns for capacity 0-7). We initialize all cells to 0. WHY: Row 0 means "0 items available" and Column 0 means "0 capacity". The maximum value in these cases is naturally 0.',
+      state: { dp: [[0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0]], row: 0, col: 0, item: 'Init', action: 'All zeros.' },
     },
     {
       id: 1,
-      title: 'Process Item 1',
-      explanation: 'Item 1 (weight 1, value 1). For capacities 1 to 7, we can take it. dp[1][1] = 1.',
-      state: {
-        dp: [[0,0,0,0,0,0,0,0], [0,1,1,1,1,1,1,1], [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0]],
-        row: 1, col: 1, item: 'Item 1', action: 'Take item 1.',
-      },
+      title: 'Process Item 1 (w=1, v=1)',
+      explanation: 'We consider item 1 (weight 1, value 1). For capacity 1, the item fits. We calculate `max(skip, take)`. Skip: `dp[0][1] = 0`. Take: `v + dp[0][1-1] = 1 + 0 = 1`. Max is 1. We fill row 1 for all capacities 1..7 with value 1.',
+      state: { dp: [[0,0,0,0,0,0,0,0], [0,1,1,1,1,1,1,1], [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0]], row: 1, col: 1, item: 'Item 1 (w=1, v=1)', action: 'Fill row 1 with 1s.' },
     },
     {
       id: 2,
-      title: 'Process Item 2',
-      explanation: 'Item 2 (weight 3, value 4). At capacity 3, we can take it. dp[2][3] = max(dp[1][3], dp[1][0] + 4) = max(1, 4) = 4.',
-      state: {
-        dp: [[0,0,0,0,0,0,0,0], [0,1,1,1,1,1,1,1], [0,1,1,4,5,5,5,5], [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0]],
-        row: 2, col: 3, item: 'Item 2', action: 'dp[2][3] = max(1, 4) = 4.',
-      },
+      title: 'Process Item 2 (w=3, v=4)',
+      explanation: 'Item 2 has weight 3, value 4. For capacities 1 and 2, it doesn\'t fit, so we inherit values from row 1 (1, 1). For capacity 3, it fits. Skip: `dp[1][3] = 1`. Take: `4 + dp[1][3-3] = 4 + 0 = 4`. Max is 4.',
+      state: { dp: [[0,0,0,0,0,0,0,0], [0,1,1,1,1,1,1,1], [0,1,1,4,5,5,5,5], [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0]], row: 2, col: 3, item: 'Item 2 (w=3, v=4)', action: 'dp[2][3] = max(1, 4) = 4.' },
     },
     {
       id: 3,
-      title: 'Process Item 3',
-      explanation: 'Item 3 (weight 4, value 5). At capacity 4, dp[3][4] = max(dp[2][4], dp[2][0] + 5) = max(5, 5) = 5.',
-      state: {
-        dp: [[0,0,0,0,0,0,0,0], [0,1,1,1,1,1,1,1], [0,1,1,4,5,5,5,5], [0,1,1,4,5,6,6,9], [0,0,0,0,0,0,0,0]],
-        row: 3, col: 4, item: 'Item 3', action: 'dp[3][4] = max(5, 5) = 5.',
-      },
+      title: 'Process Item 2 (Continue)',
+      explanation: 'For capacity 4, we can take item 2 and still have capacity 1 left. Take: `4 + dp[1][1] = 4 + 1 = 5`. Skip: `dp[1][4] = 1`. Max is 5. This logic continues for capacities 5, 6, 7.',
+      state: { dp: [[0,0,0,0,0,0,0,0], [0,1,1,1,1,1,1,1], [0,1,1,4,5,5,5,5], [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0]], row: 2, col: 4, item: 'Item 2 (w=3, v=4)', action: 'dp[2][4] = max(1, 4+1) = 5.' },
     },
     {
       id: 4,
-      title: 'Process Item 4',
-      explanation: 'Item 4 (weight 5, value 7). The final answer at dp[4][7] is 9.',
-      state: {
-        dp: [[0,0,0,0,0,0,0,0], [0,1,1,1,1,1,1,1], [0,1,1,4,5,5,5,5], [0,1,1,4,5,6,6,9], [0,1,1,4,5,7,8,9]],
-        row: 4, col: 7, item: 'Item 4', action: 'Final max value is 9.', found: true,
-      },
+      title: 'Process Item 3 (w=4, v=5)',
+      explanation: 'Item 3 has weight 4, value 5. At capacity 4, it fits. Skip: `dp[2][4] = 5`. Take: `5 + dp[2][0] = 5 + 0 = 5`. Max is 5. At capacity 7, skip is `dp[2][7] = 5`. Take: `5 + dp[2][3] = 5 + 4 = 9`. Max is 9.',
+      state: { dp: [[0,0,0,0,0,0,0,0], [0,1,1,1,1,1,1,1], [0,1,1,4,5,5,5,5], [0,1,1,4,5,6,6,9], [0,0,0,0,0,0,0,0]], row: 3, col: 4, item: 'Item 3 (w=4, v=5)', action: 'dp[3][4] = 5, dp[3][7] = 9.' },
+    },
+    {
+      id: 5,
+      title: 'Process Item 4 (w=5, v=7)',
+      explanation: 'Item 4 has weight 5, value 7. At capacity 7, skip is `dp[3][7] = 9`. Take: `7 + dp[3][7-5] = 7 + dp[3][2] = 7 + 1 = 8`. Max is 9. The item is too heavy or not valuable enough to beat the previous options.',
+      state: { dp: [[0,0,0,0,0,0,0,0], [0,1,1,1,1,1,1,1], [0,1,1,4,5,5,5,5], [0,1,1,4,5,6,6,9], [0,1,1,4,5,7,8,9]], row: 4, col: 7, item: 'Item 4 (w=5, v=7)', action: 'dp[4][7] = max(9, 8) = 9.' },
+    },
+    {
+      id: 6,
+      title: 'Final Answer',
+      explanation: 'We have processed all items. The maximum value we can fit in capacity 7 is found in `dp[4][7]`, which is 9.',
+      state: { dp: [[0,0,0,0,0,0,0,0], [0,1,1,1,1,1,1,1], [0,1,1,4,5,5,5,5], [0,1,1,4,5,6,6,9], [0,1,1,4,5,7,8,9]], row: 4, col: 7, item: 'Done', action: 'Max value is 9.', found: true },
     },
   ],
 
@@ -300,47 +293,38 @@ export const lcs = {
     {
       id: 0,
       title: 'Initialize Matrix',
-      explanation: 'String 1: "abcde", String 2: "ace". We create a 6x4 matrix of 0s.',
-      state: {
-        dp: [[0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]],
-        row: 0, col: 0, str1: 'abcde', str2: 'ace', action: 'Initialize matrix.',
-      },
+      explanation: 'String 1: "abcde", String 2: "ace". We create a matrix `dp[6][4]` (6 rows, 4 cols). Row 0 represents the empty string for "abcde", Col 0 represents the empty string for "ace". Any comparison with an empty string yields an LCS of 0. WHY: This base case sets up the grid so we can build the solution incrementally.',
+      state: { dp: [[0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]], row: 0, col: 0, str1: 'abcde', str2: 'ace', action: 'Init 6x4 grid with 0s.' },
     },
     {
       id: 1,
-      title: 'Match "a"',
-      explanation: 'str1[1] = "a", str2[1] = "a". They match! dp[1][1] = dp[0][0] + 1 = 1.',
-      state: {
-        dp: [[0,0,0,0], [0,1,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]],
-        row: 1, col: 1, str1: 'abcde', str2: 'ace', action: 'Match "a". dp[1][1] = 1.',
-      },
+      title: 'Row 1: "a" vs "a"',
+      explanation: 'We compare "a" (str1[1]) with "a" (str2[1]). They match! We take the diagonal value (`dp[0][0] = 0`) and add 1. `dp[1][1] = 1`. For "a" vs "c" and "a" vs "e", there is no match, so we take the max of the top (`dp[0][2]=0`) and left (`dp[1][1]=1`), which is 1.',
+      state: { dp: [[0,0,0,0], [0,1,1,1], [0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]], row: 1, col: 1, str1: 'abcde', str2: 'ace', action: 'Match "a"! dp[1][1] = 1.' },
     },
     {
       id: 2,
-      title: 'No Match "b" vs "c"',
-      explanation: 'str1[2] = "b", str2[2] = "c". No match. Take max of top (1) and left (0). dp[2][2] = 1.',
-      state: {
-        dp: [[0,0,0,0], [0,1,1,1], [0,1,1,1], [0,0,0,0], [0,0,0,0], [0,0,0,0]],
-        row: 2, col: 2, str1: 'abcde', str2: 'ace', action: 'No match. Take max(1, 1) = 1.',
-      },
+      title: 'Row 2: "b" vs "a", "c", "e"',
+      explanation: 'We compare "b" with all characters of "ace". No matches. We take the max of top and left. For `dp[2][1]`, max(0, 1) = 1. For `dp[2][2]`, max(0, 1) = 1. For `dp[2][3]`, max(0, 1) = 1.',
+      state: { dp: [[0,0,0,0], [0,1,1,1], [0,1,1,1], [0,0,0,0], [0,0,0,0], [0,0,0,0]], row: 2, col: 1, str1: 'abcde', str2: 'ace', action: 'No match. Propagate 1s.' },
     },
     {
       id: 3,
-      title: 'Match "c"',
-      explanation: 'str1[3] = "c", str2[2] = "c". Match! dp[3][2] = dp[2][1] + 1 = 2.',
-      state: {
-        dp: [[0,0,0,0], [0,1,1,1], [0,1,1,1], [0,1,2,2], [0,0,0,0], [0,0,0,0]],
-        row: 3, col: 2, str1: 'abcde', str2: 'ace', action: 'Match "c". dp[3][2] = 2.',
-      },
+      title: 'Row 3: "c" vs "c"',
+      explanation: 'Row 3 is "c". We check against "a" (no match, max is 1). Then against "c". They MATCH! `dp[3][2] = dp[2][1] + 1 = 1 + 1 = 2`. WHY: We found a common character, so we extend the LCS we found up to the previous characters.',
+      state: { dp: [[0,0,0,0], [0,1,1,1], [0,1,1,1], [0,1,2,2], [0,0,0,0], [0,0,0,0]], row: 3, col: 2, str1: 'abcde', str2: 'ace', action: 'Match "c"! dp[3][2] = 2.' },
     },
     {
       id: 4,
-      title: 'Match "e"',
-      explanation: 'str1[5] = "e", str2[3] = "e". Match! The final answer is 3.',
-      state: {
-        dp: [[0,0,0,0], [0,1,1,1], [0,1,1,1], [0,1,2,2], [0,1,2,2], [0,1,2,3]],
-        row: 5, col: 3, str1: 'abcde', str2: 'ace', action: 'Final LCS length is 3.', found: true,
-      },
+      title: 'Row 4: "d" vs "a", "c", "e"',
+      explanation: 'Row 4 is "d". No matches with any character. We just carry over the maximum values from above and to the left. The values become 1, 2, 2.',
+      state: { dp: [[0,0,0,0], [0,1,1,1], [0,1,1,1], [0,1,2,2], [0,1,2,2], [0,0,0,0]], row: 4, col: 1, str1: 'abcde', str2: 'ace', action: 'No match. Propagate 2s.' },
+    },
+    {
+      id: 5,
+      title: 'Row 5: "e" vs "e"',
+      explanation: 'Row 5 is "e". No match with "a" or "c". But it matches "e"! `dp[5][3] = dp[4][2] + 1 = 2 + 1 = 3`. The final LCS length is 3.',
+      state: { dp: [[0,0,0,0], [0,1,1,1], [0,1,1,1], [0,1,2,2], [0,1,2,2], [0,1,2,3]], row: 5, col: 3, str1: 'abcde', str2: 'ace', action: 'Match "e"! dp[5][3] = 3.', found: true },
     },
   ],
 

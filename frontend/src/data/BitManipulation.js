@@ -32,51 +32,45 @@ export const singleNumber = {
   steps: [
     {
       id: 0,
-      title: 'Initialize XOR',
-      explanation: 'We start with a result of 0. Array: [4, 1, 2, 1, 2].',
-      state: {
-        array: [4, 1, 2, 1, 2], currentIdx: 0, result: 0, action: 'Start XOR = 0.',
-      },
+      title: 'Initialize XOR Result',
+      explanation: 'We start with a running result of 0. The input array is [4, 1, 2, 1, 2]. WHY: 0 is the identity element for XOR. Any number XORed with 0 remains unchanged (x ^ 0 = x). This gives us a clean slate to start accumulating the XOR sum.',
+      state: { array: [4, 1, 2, 1, 2], currentIdx: 0, result: 0, action: 'Start XOR = 0.' },
     },
     {
       id: 1,
-      title: 'XOR 4',
-      explanation: '0 ^ 4 = 4.',
-      state: {
-        array: [4, 1, 2, 1, 2], currentIdx: 1, result: 4, action: '0 ^ 4 = 4.',
-      },
+      title: 'Process 4',
+      explanation: 'We XOR the current result (0) with the first element (4). 0 ^ 4 = 4. In binary: 000 ^ 100 = 100. The running result is now 4.',
+      state: { array: [4, 1, 2, 1, 2], currentIdx: 1, result: 4, action: '0 ^ 4 = 4.' },
     },
     {
       id: 2,
-      title: 'XOR 1',
-      explanation: '4 ^ 1 = 5.',
-      state: {
-        array: [4, 1, 2, 1, 2], currentIdx: 2, result: 5, action: '4 ^ 1 = 5.',
-      },
+      title: 'Process 1',
+      explanation: 'We XOR the current result (4) with the next element (1). 4 ^ 1 = 5. In binary: 100 ^ 001 = 101. The running result is now 5.',
+      state: { array: [4, 1, 2, 1, 2], currentIdx: 2, result: 5, action: '4 ^ 1 = 5.' },
     },
     {
       id: 3,
-      title: 'XOR 2',
-      explanation: '5 ^ 2 = 7.',
-      state: {
-        array: [4, 1, 2, 1, 2], currentIdx: 3, result: 7, action: '5 ^ 2 = 7.',
-      },
+      title: 'Process 2',
+      explanation: 'We XOR the current result (5) with the next element (2). 5 ^ 2 = 7. In binary: 101 ^ 010 = 111. The running result is now 7.',
+      state: { array: [4, 1, 2, 1, 2], currentIdx: 3, result: 7, action: '5 ^ 2 = 7.' },
     },
     {
       id: 4,
-      title: 'XOR 1 (Cancels out)',
-      explanation: '7 ^ 1 = 6. (Since 1 ^ 1 = 0, the 1s cancel).',
-      state: {
-        array: [4, 1, 2, 1, 2], currentIdx: 4, result: 6, action: '7 ^ 1 = 6.',
-      },
+      title: 'Process 1 (Cancellation)',
+      explanation: 'We XOR the current result (7) with the next element (1). 7 ^ 1 = 6. In binary: 111 ^ 001 = 110. WHY: Notice that the 1-bit from the previous step is now canceled out (1 ^ 1 = 0). The first instance of the duplicate "1" is neutralized.',
+      state: { array: [4, 1, 2, 1, 2], currentIdx: 4, result: 6, action: '7 ^ 1 = 6. (1 cancels out)' },
     },
     {
       id: 5,
-      title: 'XOR 2 (Cancels out)',
-      explanation: '6 ^ 2 = 4. The final result is 4, which is the single number.',
-      state: {
-        array: [4, 1, 2, 1, 2], currentIdx: 5, result: 4, action: '6 ^ 2 = 4. Result is 4!', found: true,
-      },
+      title: 'Process 2 (Cancellation)',
+      explanation: 'We XOR the current result (6) with the final element (2). 6 ^ 2 = 4. In binary: 110 ^ 010 = 100. WHY: The second instance of the duplicate "2" is neutralized. All duplicates have been canceled out.',
+      state: { array: [4, 1, 2, 1, 2], currentIdx: 5, result: 4, action: '6 ^ 2 = 4. Result is 4!' },
+    },
+    {
+      id: 6,
+      title: 'Return Final Result',
+      explanation: 'The array is fully processed. The only remaining value in our running result is 4, which is the unique element that appeared exactly once. We return 4.',
+      state: { array: [4, 1, 2, 1, 2], currentIdx: 5, result: 4, action: 'Done. Single number is 4.', found: true },
     },
   ],
 
@@ -139,7 +133,7 @@ export const numberOf1Bits = {
 
   coreConcept: {
     what: 'Count the number of set bits (1s) in a binary representation of a number.',
-    why: 'The operation `n = n & (n - 1)` clears the lowest set bit (the rightmost 1) in O(1) time. By repeating this until n becomes 0, we can count the 1s efficiently.',
+    why: 'The operation n = n & (n - 1) clears the lowest set bit (the rightmost 1) in O(1) time. By repeating this until n becomes 0, we can count the 1s efficiently.',
     when: 'Hamming weight, Hamming distance, or checking if a number is a power of 2.',
     properties: [
       'Time complexity is O(number of 1 bits).',
@@ -161,35 +155,51 @@ export const numberOf1Bits = {
   steps: [
     {
       id: 0,
-      title: 'Binary Init',
-      explanation: 'N = 11 (binary 1011). Count = 0.',
-      state: {
-        num: 11, binary: '1011', count: 0, action: 'Start with N=11 (1011).',
-      },
+      title: 'Initialize Count',
+      explanation: 'N = 11. In binary, 11 is 1011. We initialize our count to 0. WHY: We will repeatedly strip away the rightmost 1-bit until the number becomes 0.',
+      state: { num: 11, binary: '1011', count: 0, action: 'Start with N=11 (1011).' },
     },
     {
       id: 1,
-      title: 'Clear Lowest Bit',
-      explanation: 'N & (N-1) = 11 & 10 = 1011 & 1010 = 1010 (10). Count = 1.',
-      state: {
-        num: 10, binary: '1010', count: 1, action: '11 & 10 = 10. Count = 1.',
-      },
+      title: 'Calculate N - 1',
+      explanation: 'N - 1 = 10. In binary, 10 is 1010. WHY: Subtracting 1 from a number flips the lowest set bit (1) to 0, and all the 0s to its right become 1s.',
+      state: { num: 10, binary: '1010', count: 0, action: 'N - 1 = 10 (1010).' },
     },
     {
       id: 2,
-      title: 'Clear Next Bit',
-      explanation: 'N & (N-1) = 10 & 9 = 1010 & 1001 = 1000 (8). Count = 2.',
-      state: {
-        num: 8, binary: '1000', count: 2, action: '10 & 9 = 8. Count = 2.',
-      },
+      title: 'AND Operation (Clear 1st Bit)',
+      explanation: 'We perform N & (N-1). 11 & 10 = 1011 & 1010 = 1010 (10). We update N to 10 and increment count to 1. WHY: The AND operation clears the lowest set bit because we just flipped it to 0, and the rest of the bits remain unchanged.',
+      state: { num: 10, binary: '1010', count: 1, action: '11 & 10 = 10. Count = 1.' },
     },
     {
       id: 3,
-      title: 'Clear Final Bit',
-      explanation: 'N & (N-1) = 8 & 7 = 1000 & 0111 = 0000 (0). Count = 3.',
-      state: {
-        num: 0, binary: '0000', count: 3, action: '8 & 7 = 0. Count = 3. Done!', found: true,
-      },
+      title: 'Calculate N - 1',
+      explanation: 'Now N = 10 (1010). N - 1 = 9. In binary, 9 is 1001. The lowest set bit (the 1 in the 2s place) is flipped to 0, and the 0s to its right become 1s.',
+      state: { num: 9, binary: '1001', count: 1, action: '10 - 1 = 9 (1001).' },
+    },
+    {
+      id: 4,
+      title: 'AND Operation (Clear 2nd Bit)',
+      explanation: 'We perform N & (N-1). 10 & 9 = 1010 & 1001 = 1000 (8). We update N to 8 and increment count to 2.',
+      state: { num: 8, binary: '1000', count: 2, action: '10 & 9 = 8. Count = 2.' },
+    },
+    {
+      id: 5,
+      title: 'Calculate N - 1',
+      explanation: 'Now N = 8 (1000). N - 1 = 7. In binary, 7 is 0111. The only set bit is cleared, and all 0s to the right become 1s.',
+      state: { num: 7, binary: '0111', count: 2, action: '8 - 1 = 7 (0111).' },
+    },
+    {
+      id: 6,
+      title: 'AND Operation (Clear Final Bit)',
+      explanation: 'We perform N & (N-1). 8 & 7 = 1000 & 0111 = 0000 (0). We update N to 0 and increment count to 3.',
+      state: { num: 0, binary: '0000', count: 3, action: '8 & 7 = 0. Count = 3.' },
+    },
+    {
+      id: 7,
+      title: 'Loop Terminates',
+      explanation: 'N is now 0. The while loop terminates. We return the count, which is 3. All set bits have been successfully cleared and counted.',
+      state: { num: 0, binary: '0000', count: 3, action: 'Done. Total 1 bits = 3.', found: true },
     },
   ],
 
@@ -252,7 +262,7 @@ export const countingBits = {
 
   coreConcept: {
     what: 'Count the number of 1s for every number from 0 to N.',
-    why: 'Instead of recalculating bits for each number, we can use Dynamic Programming. The number of 1s in `i` is equal to the number of 1s in `i >> 1` (i divided by 2) plus `(i & 1)` (the last bit).',
+    why: 'Instead of recalculating bits for each number, we can use Dynamic Programming. The number of 1s in i is equal to the number of 1s in i >> 1 (i divided by 2) plus (i & 1) (the last bit).',
     when: 'Generating Hamming weights for a range of numbers.',
     properties: [
       'O(N) time.',
@@ -273,51 +283,45 @@ export const countingBits = {
   steps: [
     {
       id: 0,
-      title: 'Init Array',
-      explanation: 'N = 5. DP array: [0, 0, 0, 0, 0, 0].',
-      state: {
-        dp: [0, 0, 0, 0, 0, 0], currentIdx: 0, action: 'Init DP array.',
-      },
+      title: 'Initialize DP Array',
+      explanation: 'N = 5. We create a DP array of size 6 (indices 0 to 5) filled with 0s. WHY: `dp[i]` will store the number of 1-bits for the integer `i`. We know `dp[0] = 0` because the number 0 has zero 1-bits.',
+      state: { dp: [0, 0, 0, 0, 0, 0], currentIdx: 0, action: 'Init DP array. dp[0]=0.' },
     },
     {
       id: 1,
-      title: 'i = 1',
-      explanation: '1 >> 1 = 0. 0 has 0 bits. 1 & 1 = 1. Total = 0 + 1 = 1.',
-      state: {
-        dp: [0, 1, 0, 0, 0, 0], currentIdx: 1, action: 'dp[1] = dp[0] + 1 = 1.',
-      },
+      title: 'Calculate i = 1',
+      explanation: 'Number is 1 (binary 001). `1 >> 1` (right shift) gives 0. `dp[0]` is 0. The last bit is `1 & 1 = 1`. So, `dp[1] = dp[0] + 1 = 1`. WHY: The number 1 is just the number 0 shifted left with a 1 appended.',
+      state: { dp: [0, 1, 0, 0, 0, 0], currentIdx: 1, action: 'dp[1] = dp[0] + 1 = 1.' },
     },
     {
       id: 2,
-      title: 'i = 2',
-      explanation: '2 >> 1 = 1. 1 has 1 bit. 2 & 1 = 0. Total = 1 + 0 = 1.',
-      state: {
-        dp: [0, 1, 1, 0, 0, 0], currentIdx: 2, action: 'dp[2] = dp[1] + 0 = 1.',
-      },
+      title: 'Calculate i = 2',
+      explanation: 'Number is 2 (binary 010). `2 >> 1` gives 1. `dp[1]` is 1. The last bit is `2 & 1 = 0`. So, `dp[2] = dp[1] + 0 = 1`. WHY: 2 is just 1 shifted left, so it has the exact same number of 1-bits as 1.',
+      state: { dp: [0, 1, 1, 0, 0, 0], currentIdx: 2, action: 'dp[2] = dp[1] + 0 = 1.' },
     },
     {
       id: 3,
-      title: 'i = 3',
-      explanation: '3 >> 1 = 1. 1 has 1 bit. 3 & 1 = 1. Total = 1 + 1 = 2.',
-      state: {
-        dp: [0, 1, 1, 2, 0, 0], currentIdx: 3, action: 'dp[3] = dp[1] + 1 = 2.',
-      },
+      title: 'Calculate i = 3',
+      explanation: 'Number is 3 (binary 011). `3 >> 1` gives 1. `dp[1]` is 1. The last bit is `3 & 1 = 1`. So, `dp[3] = dp[1] + 1 = 2`. WHY: 3 is 1 shifted left, plus a 1-bit at the end.',
+      state: { dp: [0, 1, 1, 2, 0, 0], currentIdx: 3, action: 'dp[3] = dp[1] + 1 = 2.' },
     },
     {
       id: 4,
-      title: 'i = 4',
-      explanation: '4 >> 1 = 2. 2 has 1 bit. 4 & 1 = 0. Total = 1 + 0 = 1.',
-      state: {
-        dp: [0, 1, 1, 2, 1, 0], currentIdx: 4, action: 'dp[4] = dp[2] + 0 = 1.',
-      },
+      title: 'Calculate i = 4',
+      explanation: 'Number is 4 (binary 100). `4 >> 1` gives 2. `dp[2]` is 1. The last bit is `4 & 1 = 0`. So, `dp[4] = dp[2] + 0 = 1`. WHY: 4 is 2 shifted left.',
+      state: { dp: [0, 1, 1, 2, 1, 0], currentIdx: 4, action: 'dp[4] = dp[2] + 0 = 1.' },
     },
     {
       id: 5,
-      title: 'i = 5',
-      explanation: '5 >> 1 = 2. 2 has 1 bit. 5 & 1 = 1. Total = 1 + 1 = 2.',
-      state: {
-        dp: [0, 1, 1, 2, 1, 2], currentIdx: 5, action: 'dp[5] = dp[2] + 1 = 2.', found: true,
-      },
+      title: 'Calculate i = 5',
+      explanation: 'Number is 5 (binary 101). `5 >> 1` gives 2. `dp[2]` is 1. The last bit is `5 & 1 = 1`. So, `dp[5] = dp[2] + 1 = 2`. WHY: 5 is 2 shifted left, plus a 1-bit at the end.',
+      state: { dp: [0, 1, 1, 2, 1, 2], currentIdx: 5, action: 'dp[5] = dp[2] + 1 = 2.' },
+    },
+    {
+      id: 6,
+      title: 'Return Final Array',
+      explanation: 'We have processed all numbers from 0 to N=5. The DP array is fully populated. We return the array [0, 1, 1, 2, 1, 2], which represents the number of 1-bits for each number.',
+      state: { dp: [0, 1, 1, 2, 1, 2], currentIdx: 5, action: 'Done. Result: [0, 1, 1, 2, 1, 2].', found: true },
     },
   ],
 

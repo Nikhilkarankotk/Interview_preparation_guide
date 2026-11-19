@@ -33,27 +33,21 @@ export const jumpGame = {
   steps: [
     {
       id: 0,
-      title: 'Start at 0',
-      explanation: 'Array: [2, 3, 1, 1, 4]. We start at index 0. Our max reach is 0 + 2 = 2. We can reach index 1 or 2.',
-      state: {
-        array: [2, 3, 1, 1, 4], currentIdx: 0, maxReach: 2, action: 'Max reach is 2.',
-      },
+      title: 'Initialize Max Reach',
+      explanation: 'Array: [2, 3, 1, 1, 4]. We start with `maxReach = 0` and `i = 0`. At index 0, the jump length is 2. We update `maxReach = max(0, 0 + 2) = 2`. WHY: From index 0, the furthest we can possibly reach is index 2.',
+      state: { array: [2, 3, 1, 1, 4], currentIdx: 0, maxReach: 2, action: 'i=0, val=2. maxReach updated to 2.' },
     },
     {
       id: 1,
-      title: 'Move to 1',
-      explanation: 'We move to index 1. We can jump up to 3 steps, which reaches index 1 + 3 = 4. Our max reach is updated to 4. We can now reach the end!',
-      state: {
-        array: [2, 3, 1, 1, 4], currentIdx: 1, maxReach: 4, action: 'Max reach updated to 4.',
-      },
+      title: 'Check Index 1',
+      explanation: 'We move to `i = 1`. The current jump length is 3. We check if `i > maxReach`. Since 1 <= 2, we can reach this index. We update `maxReach = max(2, 1 + 3) = 4`. WHY: From index 1, we can jump up to 3 steps, which puts us at index 4 (the end of the array).',
+      state: { array: [2, 3, 1, 1, 4], currentIdx: 1, maxReach: 4, action: 'i=1, val=3. maxReach updated to 4.' },
     },
     {
       id: 2,
-      title: 'Success',
-      explanation: 'Since max reach (4) >= last index (4), we return true.',
-      state: {
-        array: [2, 3, 1, 1, 4], currentIdx: 1, maxReach: 4, action: 'Can reach the end!', found: true,
-      },
+      title: 'Early Exit',
+      explanation: 'Our `maxReach` is now 4. The last index of the array is 4. Since `maxReach >= nums.length - 1`, we know we can reach the end. We can immediately return `true` without processing the rest of the array. WHY: Greedy algorithms stop as soon as the global condition is satisfied.',
+      state: { array: [2, 3, 1, 1, 4], currentIdx: 1, maxReach: 4, action: 'maxReach (4) >= last index (4). Return true.', found: true },
     },
   ],
 
@@ -147,35 +141,33 @@ export const mergeIntervals = {
   steps: [
     {
       id: 0,
-      title: 'Sort Intervals',
-      explanation: 'Intervals: [[1,3], [2,6], [8,10], [15,18]]. We sort them by start time (they are already sorted here).',
-      state: {
-        intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 0, merged: [[1,3]], action: 'Start with [1,3].',
-      },
+      title: 'Sort by Start Time',
+      explanation: 'Intervals: [[1,3], [2,6], [8,10], [15,18]]. We sort them by start time. Since they are already sorted, the order remains the same. WHY: Sorting ensures that we only ever need to compare an interval with the one immediately preceding it.',
+      state: { intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 0, merged: [[1,3]], action: 'Sort complete. Start with [1,3].' },
     },
     {
       id: 1,
-      title: 'Check Overlap',
-      explanation: 'Next interval is [2,6]. It starts at 2, which is <= the end of the last merged interval (3). So they overlap! We merge them into [1, max(3,6)] = [1,6].',
-      state: {
-        intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 1, merged: [[1,6]], action: 'Merge [1,3] and [2,6] -> [1,6].',
-      },
+      title: 'Compare [2,6]',
+      explanation: 'Next interval is [2,6]. We check if its start (2) is <= the end of the last merged interval (3). 2 <= 3 is true. They overlap! We merge them by updating the end to `max(3, 6) = 6`. The merged interval becomes [1,6].',
+      state: { intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 1, merged: [[1,6]], action: 'Overlap! Merge [1,3] and [2,6] -> [1,6].' },
     },
     {
       id: 2,
-      title: 'No Overlap',
-      explanation: 'Next interval is [8,10]. It starts at 8, which is > the end of the last merged interval (6). No overlap. Add it to the list.',
-      state: {
-        intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 2, merged: [[1,6], [8,10]], action: 'Add [8,10].',
-      },
+      title: 'Compare [8,10]',
+      explanation: 'Next interval is [8,10]. Its start (8) is > the end of the last merged interval (6). 8 > 6 is true. There is no overlap. We add [8,10] as a new separate interval. WHY: The start time is strictly greater than the previous end time, so there is a gap.',
+      state: { intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 2, merged: [[1,6], [8,10]], action: 'No overlap. Add [8,10].' },
     },
     {
       id: 3,
-      title: 'Finish',
-      explanation: 'Next is [15,18]. 15 > 10. Add it. Final result: [[1,6], [8,10], [15,18]].',
-      state: {
-        intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 3, merged: [[1,6], [8,10], [15,18]], action: 'Final result.', found: true,
-      },
+      title: 'Compare [15,18]',
+      explanation: 'Next interval is [15,18]. Its start (15) > the end of the last merged interval (10). No overlap. We add it as a new interval.',
+      state: { intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 3, merged: [[1,6], [8,10], [15,18]], action: 'No overlap. Add [15,18].' },
+    },
+    {
+      id: 4,
+      title: 'Final Result',
+      explanation: 'We have processed all intervals. The final merged list is [[1,6], [8,10], [15,18]]. No more overlaps exist.',
+      state: { intervals: [[1,3], [2,6], [8,10], [15,18]], currentIdx: 3, merged: [[1,6], [8,10], [15,18]], action: 'Done.', found: true },
     },
   ],
 
@@ -281,43 +273,45 @@ export const gasStation = {
   steps: [
     {
       id: 0,
-      title: 'Check Gas vs Cost',
-      explanation: 'Gas: [1,2,3,4,5], Cost: [3,4,5,1,2]. Total gas = 15, Total cost = 15. It is possible!',
-      state: {
-        gas: [1,2,3,4,5], cost: [3,4,5,1,2], start: 0, tank: 0, total: 0, action: 'Total is possible.',
-      },
+      title: 'Initial Check',
+      explanation: 'Gas: [1,2,3,4,5], Cost: [3,4,5,1,2]. Total gas = 15. Total cost = 15. Since total gas >= total cost, a solution exists. We initialize `start = 0`, `tank = 0`. WHY: If the total gas was less than the total cost, it would be mathematically impossible to complete the circuit.',
+      state: { gas: [1,2,3,4,5], cost: [3,4,5,1,2], start: 0, tank: 0, total: 0, action: 'Total is possible. Start = 0.' },
     },
     {
       id: 1,
-      title: 'Start at 0',
-      explanation: 'At index 0: gas is 1, cost is 3. Tank becomes -2. We can\'t start here. The next possible start is index 1. Reset tank to 0.',
-      state: {
-        gas: [1,2,3,4,5], cost: [3,4,5,1,2], start: 1, tank: 0, total: -2, action: 'Tank < 0. Start = 1.',
-      },
+      title: 'Station 0 Fails',
+      explanation: 'Station 0: gas=1, cost=3. `tank = 0 + 1 - 3 = -2`. Since the tank is negative, we cannot reach station 1 from station 0. We reset the start point to 1, and reset the tank to 0. WHY: If station 0 fails, it means any path starting at 0 or before it will also fail because they would hit the same deficit.',
+      state: { gas: [1,2,3,4,5], cost: [3,4,5,1,2], start: 1, tank: 0, total: -2, action: 'Tank < 0. Start = 1.' },
     },
     {
       id: 2,
-      title: 'Start at 1',
-      explanation: 'At index 1: gas is 2, cost is 4. Tank becomes -2. Can\'t start here. Start = 2.',
-      state: {
-        gas: [1,2,3,4,5], cost: [3,4,5,1,2], start: 2, tank: 0, total: -4, action: 'Tank < 0. Start = 2.',
-      },
+      title: 'Station 1 Fails',
+      explanation: 'Station 1: gas=2, cost=4. `tank = 0 + 2 - 4 = -2`. Tank is negative. We cannot start at 1. We update `start = 2` and reset `tank = 0`.',
+      state: { gas: [1,2,3,4,5], cost: [3,4,5,1,2], start: 2, tank: 0, total: -4, action: 'Tank < 0. Start = 2.' },
     },
     {
       id: 3,
-      title: 'Start at 2',
-      explanation: 'At index 2: gas is 3, cost is 5. Tank becomes -2. Can\'t start here. Start = 3.',
-      state: {
-        gas: [1,2,3,4,5], cost: [3,4,5,1,2], start: 3, tank: 0, total: -6, action: 'Tank < 0. Start = 3.',
-      },
+      title: 'Station 2 Fails',
+      explanation: 'Station 2: gas=3, cost=5. `tank = 0 + 3 - 5 = -2`. Tank is negative. We cannot start at 2. We update `start = 3` and reset `tank = 0`.',
+      state: { gas: [1,2,3,4,5], cost: [3,4,5,1,2], start: 3, tank: 0, total: -6, action: 'Tank < 0. Start = 3.' },
     },
     {
       id: 4,
-      title: 'Start at 3',
-      explanation: 'Index 3: gas 4, cost 1, tank +3. Index 4: gas 5, cost 2, tank +3. Total tank = 6. Start 3 works!',
-      state: {
-        gas: [1,2,3,4,5], cost: [3,4,5,1,2], start: 3, tank: 6, total: 0, action: 'Start 3 works!', found: true,
-      },
+      title: 'Station 3 Succeeds',
+      explanation: 'Station 3: gas=4, cost=1. `tank = 0 + 4 - 1 = 3`. The tank is positive! We can keep going. We do not update the start point.',
+      state: { gas: [1,2,3,4,5], cost: [3,4,5,1,2], start: 3, tank: 3, total: -3, action: 'Tank = 3. Continue from 3.' },
+    },
+    {
+      id: 5,
+      title: 'Station 4 Succeeds',
+      explanation: 'Station 4: gas=5, cost=2. `tank = 3 + 5 - 2 = 6`. The tank remains positive. We have successfully completed the circuit.',
+      state: { gas: [1,2,3,4,5], cost: [3,4,5,1,2], start: 3, tank: 6, total: 0, action: 'Tank = 6. Circuit complete.' },
+    },
+    {
+      id: 6,
+      title: 'Return Start',
+      explanation: 'The loop finishes. The `total` gas is 0 (which is >= 0). Since a solution exists, the `start` index (3) is guaranteed to be the correct answer.',
+      state: { gas: [1,2,3,4,5], cost: [3,4,5,1,2], start: 3, tank: 6, total: 0, action: 'Return start index: 3.', found: true },
     },
   ],
 

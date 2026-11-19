@@ -33,35 +33,57 @@ export const basicQueue = {
   steps: [
     {
       id: 0,
-      title: 'Enqueue Task A',
-      explanation: 'Queue is empty. We add A to the back.',
-      state: {
-        queue: ['A'], front: 0, back: 0, action: 'Enqueue A.',
-      },
+      title: 'Initialize Empty Queue',
+      explanation: 'We start with an empty queue. The front and back pointers are set to -1. WHY: A queue uses two pointers to achieve O(1) enqueue (add to back) and dequeue (remove from front) operations. Initializing to -1 indicates the queue has no elements yet.',
+      state: { queue: [], front: -1, back: -1, action: 'Queue initialized empty.' },
     },
     {
       id: 1,
-      title: 'Enqueue Task B',
-      explanation: 'We add B to the back. A is still at the front.',
-      state: {
-        queue: ['A', 'B'], front: 0, back: 1, action: 'Enqueue B.',
-      },
+      title: 'Enqueue 10',
+      explanation: 'We add the value 10. Since the queue was empty, both the front and back pointers now point to the first element at index 0. WHY: The front pointer marks where we will remove elements, and the back pointer marks where we will add them.',
+      state: { queue: [10], front: 0, back: 0, action: 'Enqueued 10.' },
     },
     {
       id: 2,
-      title: 'Dequeue',
-      explanation: 'We process the front element (A). It leaves the queue.',
-      state: {
-        queue: ['B'], front: 0, back: 0, action: 'Dequeue A.',
-      },
+      title: 'Enqueue 20',
+      explanation: 'We add the value 20. The back pointer advances to the new element at index 1. The front pointer stays at 0. WHY: The First-In-First-Out (FIFO) property dictates that 10 is still at the front waiting to be processed, while 20 joins the back of the line.',
+      state: { queue: [10, 20], front: 0, back: 1, action: 'Enqueued 20.' },
     },
     {
       id: 3,
-      title: 'Enqueue Task C',
-      explanation: 'We add C to the back. Queue is now [B, C].',
-      state: {
-        queue: ['B', 'C'], front: 0, back: 1, action: 'Enqueue C.',
-      },
+      title: 'Peek Front',
+      explanation: 'We look at the front element without removing it. The front pointer is at index 0, so we see 10. The queue remains unchanged.',
+      state: { queue: [10, 20], front: 0, back: 1, action: 'Peek returns 10.' },
+    },
+    {
+      id: 4,
+      title: 'Dequeue',
+      explanation: 'We remove the front element (10). The front pointer advances to the next element (index 1). The back pointer remains at 1. WHY: We must process elements in the exact order they arrived. 10 has been served, so 20 is now next in line.',
+      state: { queue: [20], front: 0, back: 0, action: 'Dequeued 10.' },
+    },
+    {
+      id: 5,
+      title: 'Enqueue 30',
+      explanation: 'We add the value 30 to the back. The back pointer advances. The queue now holds [20, 30]. The front remains at index 0.',
+      state: { queue: [20, 30], front: 0, back: 1, action: 'Enqueued 30.' },
+    },
+    {
+      id: 6,
+      title: 'Dequeue',
+      explanation: 'We remove the front element (20). The front pointer advances. The queue now holds only [30].',
+      state: { queue: [30], front: 0, back: 0, action: 'Dequeued 20.' },
+    },
+    {
+      id: 7,
+      title: 'Dequeue Last Element',
+      explanation: 'We remove the last element (30). Because the queue is now empty, both the front and back pointers reset to -1.',
+      state: { queue: [], front: -1, back: -1, action: 'Dequeued 30.' },
+    },
+    {
+      id: 8,
+      title: 'Check Empty',
+      explanation: 'The front pointer is -1. The queue is empty. If we called dequeue again, it would return an error or null.',
+      state: { queue: [], front: -1, back: -1, action: 'isEmpty returns true.', found: true },
     },
   ],
 
@@ -157,43 +179,57 @@ export const monotonicDeque = {
   steps: [
     {
       id: 0,
-      title: 'Process 1',
-      explanation: 'Window size = 3. First element is 1. Deque stores its index [0].',
-      state: {
-        array: [1, 3, -1, -3, 5, 3, 6, 7], deque: [0], currentIdx: 0, action: 'Push index 0 (value 1).',
-      },
+      title: 'i = 0, Value = 1',
+      explanation: 'We process the first element (1). The deque is empty, so we push its index (0). WHY: The deque stores indices, not values. Storing indices allows us to track exactly when an element falls out of the sliding window.',
+      state: { array: [1, 3, -1, -3, 5, 3, 6, 7], deque: [0], currentIdx: 0, k: 3, result: [], action: 'Push index 0.' },
     },
     {
       id: 1,
-      title: 'Process 3',
-      explanation: 'Value 3 > 1. Remove 1 from the back. Push index 1. Deque: [1].',
-      state: {
-        array: [1, 3, -1, -3, 5, 3, 6, 7], deque: [1], currentIdx: 1, action: '3 > 1. Pop 0. Push index 1.',
-      },
+      title: 'i = 1, Value = 3',
+      explanation: 'Value 3 is greater than the value at the back of the deque (1). We pop index 0. WHY: 1 is smaller than 3 and appears earlier, so it can never be the maximum of any future window that includes 3. We push index 1. Deque is [1].',
+      state: { array: [1, 3, -1, -3, 5, 3, 6, 7], deque: [1], currentIdx: 1, k: 3, result: [], action: 'Pop 0. Push index 1.' },
     },
     {
       id: 2,
-      title: 'Process -1',
-      explanation: 'Value -1 is smaller than 3. Keep it. Deque: [1, 2]. Window is full (size 3). Max is at front: 3.',
-      state: {
-        array: [1, 3, -1, -3, 5, 3, 6, 7], deque: [1, 2], currentIdx: 2, action: 'Push index 2. Max is 3.',
-      },
+      title: 'i = 2, Value = -1',
+      explanation: 'Value -1 is smaller than the value at the back (3). We simply push its index (2). The deque remains in decreasing order: [1, 2]. The window is now full (size 3), so the maximum is at the front of the deque: value 3.',
+      state: { array: [1, 3, -1, -3, 5, 3, 6, 7], deque: [1, 2], currentIdx: 2, k: 3, result: [3], action: 'Push index 2. Max is 3.' },
     },
     {
       id: 3,
-      title: 'Process -3',
-      explanation: 'Value -3 is smaller. Keep it. Deque: [1, 2, 3]. The index 0 is out of window, but it was already popped.',
-      state: {
-        array: [1, 3, -1, -3, 5, 3, 6, 7], deque: [1, 2, 3], currentIdx: 3, action: 'Push index 3. Max is 3.',
-      },
+      title: 'i = 3, Value = -3',
+      explanation: 'Value -3 is smaller than the back. We push index 3. Deque is [1, 2, 3]. The front index is 1. The current window is indices 1 to 3. The max is still at the front: 3.',
+      state: { array: [1, 3, -1, -3, 5, 3, 6, 7], deque: [1, 2, 3], currentIdx: 3, k: 3, result: [3, 3], action: 'Push index 3. Max is 3.' },
     },
     {
       id: 4,
-      title: 'Process 5',
-      explanation: 'Value 5 is bigger than everything. Pop indices 3, 2, 1. Push index 4. Deque: [4]. Max becomes 5.',
-      state: {
-        array: [1, 3, -1, -3, 5, 3, 6, 7], deque: [4], currentIdx: 4, action: 'Pop all smaller. Push 4. Max is 5.',
-      },
+      title: 'i = 4, Value = 5',
+      explanation: 'Value 5 is larger than everything currently in the deque. We pop indices 3, 2, and 1. WHY: Since 5 is larger and appears later, all previous elements are obsolete. We push index 4. Deque is [4]. Max becomes 5.',
+      state: { array: [1, 3, -1, -3, 5, 3, 6, 7], deque: [4], currentIdx: 4, k: 3, result: [3, 3, 5], action: 'Pop all. Push index 4. Max is 5.' },
+    },
+    {
+      id: 5,
+      title: 'i = 5, Value = 3',
+      explanation: 'Value 3 is smaller than the back (5). We push index 5. Deque is [4, 5]. The front remains 4, which is the max (5).',
+      state: { array: [1, 3, -1, -3, 5, 3, 6, 7], deque: [4, 5], currentIdx: 5, k: 3, result: [3, 3, 5, 5], action: 'Push index 5. Max is 5.' },
+    },
+    {
+      id: 6,
+      title: 'i = 6, Value = 6',
+      explanation: 'Value 6 is greater than 3 and 5. We pop indices 5 and 4. We push index 6. Deque is [6]. Max becomes 6.',
+      state: { array: [1, 3, -1, -3, 5, 3, 6, 7], deque: [6], currentIdx: 6, k: 3, result: [3, 3, 5, 5, 6], action: 'Pop 5, 4. Push index 6. Max is 6.' },
+    },
+    {
+      id: 7,
+      title: 'i = 7, Value = 7',
+      explanation: 'Value 7 is greater than 6. We pop 6. Push index 7. Deque is [7]. Max becomes 7. The window slides to the end.',
+      state: { array: [1, 3, -1, -3, 5, 3, 6, 7], deque: [7], currentIdx: 7, k: 3, result: [3, 3, 5, 5, 6, 7], action: 'Pop 6. Push index 7. Max is 7.' },
+    },
+    {
+      id: 8,
+      title: 'Final Result',
+      explanation: 'All elements processed. The final result array contains the maximums of all sliding windows: [3, 3, 5, 5, 6, 7].',
+      state: { array: [1, 3, -1, -3, 5, 3, 6, 7], deque: [7], currentIdx: 7, k: 3, result: [3, 3, 5, 5, 6, 7], action: 'Done.', found: true },
     },
   ],
 
@@ -284,8 +320,8 @@ export const circularQueue = {
     when: 'Embedded systems, buffering streams, or any situation with a fixed amount of memory.',
     properties: [
       'Uses a fixed-size array.',
-      'Tracks `head` (front) and `tail` (back).',
-      'Uses modulo `% capacity` to wrap around.',
+      'Tracks head (front) and tail (back).',
+      'Uses modulo % capacity to wrap around.',
     ],
   },
 
@@ -302,43 +338,69 @@ export const circularQueue = {
   steps: [
     {
       id: 0,
-      title: 'Enqueue 1',
-      explanation: 'Capacity = 3. Head = 0, Tail = 0. Insert 1 at Tail. Tail becomes 1.',
-      state: {
-        queue: [1, null, null], head: 0, tail: 1, action: 'Enqueue 1.',
-      },
+      title: 'Initialize Circular Queue',
+      explanation: 'We create an array of fixed capacity 3. Both the head and tail start at 0, and the size is 0. WHY: By tracking the size explicitly, we can easily distinguish between a full queue and an empty queue. (In a naive implementation where head == tail, it is impossible to tell if it is empty or full without a size or boolean flag).',
+      state: { queue: [null, null, null], head: 0, tail: 0, size: 0, capacity: 3, action: 'Initialized empty queue.' },
     },
     {
       id: 1,
-      title: 'Enqueue 2',
-      explanation: 'Insert 2 at Tail (index 1). Tail becomes 2.',
-      state: {
-        queue: [1, 2, null], head: 0, tail: 2, action: 'Enqueue 2.',
-      },
+      title: 'Enqueue 10',
+      explanation: 'We place 10 at the tail index (0). The tail advances to (0 + 1) % 3 = 1. The size becomes 1.',
+      state: { queue: [10, null, null], head: 0, tail: 1, size: 1, capacity: 3, action: 'Enqueued 10.' },
     },
     {
       id: 2,
-      title: 'Enqueue 3',
-      explanation: 'Insert 3 at Tail (index 2). Tail wraps around to (2 + 1) % 3 = 0.',
-      state: {
-        queue: [1, 2, 3], head: 0, tail: 0, action: 'Enqueue 3. Tail wraps to 0.',
-      },
+      title: 'Enqueue 20',
+      explanation: 'We place 20 at the tail index (1). The tail advances to (1 + 1) % 3 = 2. The size becomes 2.',
+      state: { queue: [10, 20, null], head: 0, tail: 2, size: 2, capacity: 3, action: 'Enqueued 20.' },
     },
     {
       id: 3,
-      title: 'Dequeue',
-      explanation: 'Remove element at Head (1). Head becomes (0 + 1) % 3 = 1.',
-      state: {
-        queue: [null, 2, 3], head: 1, tail: 0, action: 'Dequeue 1.',
-      },
+      title: 'Enqueue 30',
+      explanation: 'We place 30 at the tail index (2). The tail advances to (2 + 1) % 3 = 0 (wraps around!). The size becomes 3. WHY: The modulo operator allows the queue to use the empty spaces at the beginning of the array.',
+      state: { queue: [10, 20, 30], head: 0, tail: 0, size: 3, capacity: 3, action: 'Enqueued 30. Tail wraps to 0.' },
     },
     {
       id: 4,
-      title: 'Enqueue 4',
-      explanation: 'Insert 4 at Tail (index 0). Tail becomes 1.',
-      state: {
-        queue: [4, 2, 3], head: 1, tail: 1, action: 'Enqueue 4 in the reusable space.',
-      },
+      title: 'Check isFull',
+      explanation: 'The size (3) equals the capacity (3). The queue is full. We cannot enqueue any more elements until we dequeue to free up space.',
+      state: { queue: [10, 20, 30], head: 0, tail: 0, size: 3, capacity: 3, action: 'isFull returns true.' },
+    },
+    {
+      id: 5,
+      title: 'Dequeue',
+      explanation: 'We remove the element at the head (index 0). The head advances to (0 + 1) % 3 = 1. The size becomes 2. The slot at index 0 is now free.',
+      state: { queue: [null, 20, 30], head: 1, tail: 0, size: 2, capacity: 3, action: 'Dequeued 10.' },
+    },
+    {
+      id: 6,
+      title: 'Enqueue 40',
+      explanation: 'We place 40 at the tail index (0). This reuses the space freed by the dequeue. The tail advances to (0 + 1) % 3 = 1. The size becomes 3. WHY: The ring buffer maximizes memory efficiency by wrapping around.',
+      state: { queue: [40, 20, 30], head: 1, tail: 1, size: 3, capacity: 3, action: 'Enqueued 40.' },
+    },
+    {
+      id: 7,
+      title: 'Check Front and Rear',
+      explanation: 'The Front is the element at the head (index 1) = 20. The Rear is the element at (tail - 1 + 3) % 3 = index 0 = 40.',
+      state: { queue: [40, 20, 30], head: 1, tail: 1, size: 3, capacity: 3, action: 'Front = 20, Rear = 40.' },
+    },
+    {
+      id: 8,
+      title: 'Dequeue',
+      explanation: 'We remove the element at the head (index 1). The head advances to 2. The size becomes 2.',
+      state: { queue: [40, null, 30], head: 2, tail: 1, size: 2, capacity: 3, action: 'Dequeued 20.' },
+    },
+    {
+      id: 9,
+      title: 'Dequeue',
+      explanation: 'We remove the element at the head (index 2). The head advances to (2 + 1) % 3 = 0. The size becomes 1.',
+      state: { queue: [40, null, null], head: 0, tail: 1, size: 1, capacity: 3, action: 'Dequeued 30.' },
+    },
+    {
+      id: 10,
+      title: 'Dequeue Last Element',
+      explanation: 'We remove the element at the head (index 0). The head advances to 1. The size becomes 0. The queue is now empty, but note that head and tail are both at 1.',
+      state: { queue: [null, null, null], head: 1, tail: 1, size: 0, capacity: 3, action: 'Dequeued 40.', found: true },
     },
   ],
 

@@ -34,34 +34,38 @@ export const dijkstra = {
     {
       id: 0,
       title: 'Initialization',
-      explanation: 'We start at node A (0). Distances are set to Infinity except for A. The Priority Queue has [0, A].',
-      state: {
-        distances: [0, Infinity, Infinity], queue: [[0, 0]], current: null, action: 'Init distances. PQ: [0, A].',
-      },
+      explanation: 'We start at source node A (index 0). We set the distance to A as 0, and all other nodes to Infinity. We push `(0, A)` to the Min-Heap (PQ). WHY: Dijkstra greedily expands the node with the smallest known distance. Since we are at A, its distance is 0.',
+      state: { distances: [0, Infinity, Infinity], queue: [[0, 0]], current: null, action: 'Init. PQ: [(0, A)].' },
     },
     {
       id: 1,
       title: 'Pop A(0)',
-      explanation: 'Pop (0, A). Update neighbors B (weight 4) and C (weight 6). Distances become [0, 4, 6]. Push to PQ.',
-      state: {
-        distances: [0, 4, 6], queue: [[4, 1], [6, 2]], current: 0, action: 'Update B and C. PQ: [(4,B), (6,C)].',
-      },
+      explanation: 'We pop `(0, A)` from the PQ. We look at its neighbors. Neighbor B has weight 4. The new distance is `0 + 4 = 4`, which is less than Infinity. We update B\'s distance to 4 and push `(4, B)` to the PQ.',
+      state: { distances: [0, 4, Infinity], queue: [[4, 1]], current: 0, action: 'Relax B. Dist=4.' },
     },
     {
       id: 2,
-      title: 'Pop B(4)',
-      explanation: 'Pop B(4). Neighbor C has weight 2. Current distance to C is 6. New path: 4 + 2 = 6. 6 is not less than 6, so we skip.',
-      state: {
-        distances: [0, 4, 6], queue: [[6, 2]], current: 1, action: 'Skip update to C. PQ: [(6,C)].',
-      },
+      title: 'Relax Neighbor C',
+      explanation: 'Neighbor C has weight 6. The new distance is `0 + 6 = 6`, which is less than Infinity. We update C\'s distance to 6 and push `(6, C)` to the PQ.',
+      state: { distances: [0, 4, 6], queue: [[4, 1], [6, 2]], current: 0, action: 'Relax C. Dist=6.' },
     },
     {
       id: 3,
+      title: 'Pop B(4)',
+      explanation: 'We pop the smallest distance node from the PQ, which is B(4). We look at its neighbor C. The edge weight is 2. The new path to C is `4 + 2 = 6`. We compare this with C\'s current distance, which is 6. Since 6 is not strictly less than 6, we do NOT update.',
+      state: { distances: [0, 4, 6], queue: [[6, 2]], current: 1, action: 'Path 4+2=6 is not < 6. Skip.' },
+    },
+    {
+      id: 4,
       title: 'Pop C(6)',
-      explanation: 'Pop C(6). No more nodes. The shortest distances are [0, 4, 6].',
-      state: {
-        distances: [0, 4, 6], queue: [], current: 2, action: 'Done. Shortest distance to C is 6.', found: true,
-      },
+      explanation: 'We pop the smallest distance node, C(6). It has no unvisited neighbors that can be relaxed. WHY: Once a node is popped, its shortest path is finalized. All edges are non-negative, so no future path can be shorter.',
+      state: { distances: [0, 4, 6], queue: [], current: 2, action: 'C is finalized. PQ is empty.' },
+    },
+    {
+      id: 5,
+      title: 'Final Distances',
+      explanation: 'The PQ is empty. The shortest distances from A to all nodes are: A=0, B=4, C=6.',
+      state: { distances: [0, 4, 6], queue: [], current: 2, action: 'Done. Shortest distances: [0, 4, 6].', found: true },
     },
   ],
 
@@ -170,27 +174,39 @@ export const bellmanFord = {
   steps: [
     {
       id: 0,
-      title: 'BF Initialization',
-      explanation: 'Bellman-Ford: Start at A. Distances: [0, inf, inf].',
-      state: {
-        distances: [0, Infinity, Infinity], edges: [[0, 1, 4], [1, 2, -2], [0, 2, 6]], action: 'Init distances.',
-      },
+      title: 'Initialize Distances',
+      explanation: 'Source is A (0). Distances: [0, Infinity, Infinity]. WHY: Like Dijkstra, we start with 0 at the source and Infinity everywhere else. The difference is we will loop over all edges multiple times.',
+      state: { distances: [0, Infinity, Infinity], edges: [[0, 1, 4], [1, 2, -2], [0, 2, 6]], action: 'Init distances.' },
     },
     {
       id: 1,
-      title: 'Pass 1',
-      explanation: 'Relax edge A->B (0+4=4). Relax edge A->C (0+6=6). Relax edge B->C (4-2=2). Update C to 2.',
-      state: {
-        distances: [0, 4, 2], edges: [[0, 1, 4], [1, 2, -2], [0, 2, 6]], action: 'Relax all edges. C becomes 2.',
-      },
+      title: 'Pass 1: Edge A->B (4)',
+      explanation: 'We relax edge A->B. `dist[A] + 4 = 0 + 4 = 4`. 4 < Infinity, so we update `dist[B] = 4`.',
+      state: { distances: [0, 4, Infinity], edges: [[0, 1, 4], [1, 2, -2], [0, 2, 6]], action: 'Update B to 4.' },
     },
     {
       id: 2,
-      title: 'Pass 2',
-      explanation: 'No further updates. Distances are final: [0, 4, 2].',
-      state: {
-        distances: [0, 4, 2], edges: [[0, 1, 4], [1, 2, -2], [0, 2, 6]], action: 'No updates. Final distances.', found: true,
-      },
+      title: 'Pass 1: Edge B->C (-2)',
+      explanation: 'We relax edge B->C. `dist[B] + (-2) = 4 - 2 = 2`. 2 < Infinity, so we update `dist[C] = 2`. WHY: Negative weights allow the path to decrease in cost.',
+      state: { distances: [0, 4, 2], edges: [[0, 1, 4], [1, 2, -2], [0, 2, 6]], action: 'Update C to 2.' },
+    },
+    {
+      id: 3,
+      title: 'Pass 1: Edge A->C (6)',
+      explanation: 'We relax edge A->C. `dist[A] + 6 = 0 + 6 = 6`. 6 is not less than `dist[C]` (2). We skip this update. WHY: The path through B is shorter than the direct edge.',
+      state: { distances: [0, 4, 2], edges: [[0, 1, 4], [1, 2, -2], [0, 2, 6]], action: '6 is not < 2. Skip.' },
+    },
+    {
+      id: 4,
+      title: 'Pass 2: Check All Edges',
+      explanation: 'We repeat the process for V-1 iterations (2 passes here). In Pass 2, we check A->B (0+4=4), B->C (4-2=2), A->C (0+6=6). None of these can improve the distances. WHY: After V-1 passes, the shortest paths are guaranteed to be found (assuming no negative cycles).',
+      state: { distances: [0, 4, 2], edges: [[0, 1, 4], [1, 2, -2], [0, 2, 6]], action: 'No updates in Pass 2.' },
+    },
+    {
+      id: 5,
+      title: 'Negative Cycle Check',
+      explanation: 'We do one final pass over all edges. If we can still relax an edge, it means there is a negative cycle (a cycle whose total weight is negative). Here, no updates occur, so there is no negative cycle. Final distances: [0, 4, 2].',
+      state: { distances: [0, 4, 2], edges: [[0, 1, 4], [1, 2, -2], [0, 2, 6]], action: 'No negative cycle. Done.', found: true },
     },
   ],
 
@@ -291,34 +307,32 @@ export const kruskal = {
     {
       id: 0,
       title: 'Sort Edges',
-      explanation: 'Edges sorted: (1-2, 1), (3-4, 2), (1-3, 3), (2-4, 4).',
-      state: {
-        edges: [[1, 2, 1], [3, 4, 2], [1, 3, 3], [2, 4, 4]], parent: [0, 1, 2, 3, 4], mst: [], action: 'Sort edges by weight.',
-      },
+      explanation: 'We have 4 nodes (0, 1, 2, 3). Edges: [[0,1,1], [2,3,2], [0,2,3], [1,3,4]]. We sort them by weight. They are already sorted. WHY: Kruskal\'s greedily picks the cheapest edge that does not form a cycle.',
+      state: { edges: [[0, 1, 1], [2, 3, 2], [0, 2, 3], [1, 3, 4]], parent: [0, 1, 2, 3], mst: [], action: 'Sorted edges.' },
     },
     {
       id: 1,
-      title: 'Pick 1-2',
-      explanation: 'Union 1 and 2. Cost = 1.',
-      state: {
-        edges: [[1, 2, 1], [3, 4, 2], [1, 3, 3], [2, 4, 4]], parent: [0, 1, 1, 3, 4], mst: [[1, 2, 1]], action: 'Add (1,2).',
-      },
+      title: 'Pick Edge (0-1, w=1)',
+      explanation: 'We pick edge (0,1). Nodes 0 and 1 are in different sets. We union them. Cost = 1. `parent` of 1 becomes 0. WHY: They don\'t form a cycle, so we add the edge to the MST.',
+      state: { edges: [[0, 1, 1], [2, 3, 2], [0, 2, 3], [1, 3, 4]], parent: [0, 0, 2, 3], mst: [[0, 1, 1]], action: 'Union 0 and 1. Cost=1.' },
     },
     {
       id: 2,
-      title: 'Pick 3-4',
-      explanation: 'Union 3 and 4. Cost = 1 + 2 = 3.',
-      state: {
-        edges: [[1, 2, 1], [3, 4, 2], [1, 3, 3], [2, 4, 4]], parent: [0, 1, 1, 3, 3], mst: [[1, 2, 1], [3, 4, 2]], action: 'Add (3,4).',
-      },
+      title: 'Pick Edge (2-3, w=2)',
+      explanation: 'We pick edge (2,3). Nodes 2 and 3 are in different sets. We union them. Cost = 1 + 2 = 3. `parent` of 3 becomes 2.',
+      state: { edges: [[0, 1, 1], [2, 3, 2], [0, 2, 3], [1, 3, 4]], parent: [0, 0, 2, 2], mst: [[0, 1, 1], [2, 3, 2]], action: 'Union 2 and 3. Cost=3.' },
     },
     {
       id: 3,
-      title: 'Pick 1-3',
-      explanation: 'Union 1 and 3. Cost = 3 + 3 = 6. MST complete (3 edges).',
-      state: {
-        edges: [[1, 2, 1], [3, 4, 2], [1, 3, 3], [2, 4, 4]], parent: [0, 1, 1, 1, 1], mst: [[1, 2, 1], [3, 4, 2], [1, 3, 3]], action: 'Add (1,3). MST complete.', found: true,
-      },
+      title: 'Pick Edge (0-2, w=3)',
+      explanation: 'We pick edge (0,2). Node 0 is in the set {0,1}, and node 2 is in the set {2,3}. They are different sets. We union them. Cost = 3 + 3 = 6. `parent` of 2 becomes 0.',
+      state: { edges: [[0, 1, 1], [2, 3, 2], [0, 2, 3], [1, 3, 4]], parent: [0, 0, 0, 2], mst: [[0, 1, 1], [2, 3, 2], [0, 2, 3]], action: 'Union 0 and 2. Cost=6.' },
+    },
+    {
+      id: 4,
+      title: 'Pick Edge (1-3, w=4)',
+      explanation: 'We pick edge (1,3). Node 1\'s root is 0. Node 3\'s root is 0 (via 2). They are in the SAME set! Adding this edge would create a cycle. We skip it. WHY: The MST is already complete (V-1 = 3 edges), and adding this would create a cycle.',
+      state: { edges: [[0, 1, 1], [2, 3, 2], [0, 2, 3], [1, 3, 4]], parent: [0, 0, 0, 2], mst: [[0, 1, 1], [2, 3, 2], [0, 2, 3]], action: 'Cycle detected. Skip. MST complete.', found: true },
     },
   ],
 
@@ -431,27 +445,39 @@ export const prim = {
   steps: [
     {
       id: 0,
-      title: 'Start at A',
-      explanation: 'Start at A. Push neighbors B(2) and C(5) to PQ.',
-      state: {
-        visited: [true, false, false], queue: [[2, 1], [5, 2]], current: 0, action: 'Start at A. PQ: [(2,B), (5,C)].',
-      },
+      title: 'Start at Node A',
+      explanation: 'We start at node A (0) with weight 0. We push `(0, A)` to the Min-Heap. WHY: Prim\'s algorithm grows the MST by adding the cheapest edge from the visited set to the unvisited set.',
+      state: { visited: [false, false, false], queue: [[0, 0]], current: null, cost: 0, action: 'Start. PQ: [(0, A)].' },
     },
     {
       id: 1,
-      title: 'Pop B(2)',
-      explanation: 'Pop B. Mark visited. Cost = 2. Push neighbor C(1) to PQ.',
-      state: {
-        visited: [true, true, false], queue: [[1, 2], [5, 2]], current: 1, action: 'Visit B. PQ: [(1,C), (5,C)].',
-      },
+      title: 'Pop A(0)',
+      explanation: 'We pop A(0). A is unvisited, so we mark it visited and add 0 to our cost. We look at A\'s edges: to B (weight 2) and to C (weight 5). We push both to the PQ.',
+      state: { visited: [true, false, false], queue: [[2, 1], [5, 2]], current: 0, cost: 0, action: 'Visit A. Push edges (2,B) and (5,C).' },
     },
     {
       id: 2,
+      title: 'Pop B(2)',
+      explanation: 'We pop the cheapest edge, which leads to B(2). B is unvisited. We mark it visited and add 2 to our cost. We look at B\'s edges: to C (weight 1). We push (1, C) to the PQ.',
+      state: { visited: [true, true, false], queue: [[1, 2], [5, 2]], current: 1, cost: 2, action: 'Visit B. Cost=2. Push (1,C).' },
+    },
+    {
+      id: 3,
       title: 'Pop C(1)',
-      explanation: 'Pop C. Mark visited. Cost = 3. MST complete.',
-      state: {
-        visited: [true, true, true], queue: [[5, 2]], current: 2, action: 'Visit C. Cost = 3.', found: true,
-      },
+      explanation: 'We pop the cheapest edge, which is to C(1) via B. C is unvisited. We mark it visited and add 1 to our cost (total 3). WHY: Even though A->C has weight 5, the path B->C is cheaper, so we greedily take it.',
+      state: { visited: [true, true, true], queue: [[5, 2]], current: 2, cost: 3, action: 'Visit C. Cost=3.' },
+    },
+    {
+      id: 4,
+      title: 'Pop C(5) - Skip',
+      explanation: 'We pop `(5, C)`. C is already visited. We skip this edge. WHY: Adding this edge would create a cycle (A -> B -> C -> A).',
+      state: { visited: [true, true, true], queue: [], current: 2, cost: 3, action: 'C visited. Skip edge. PQ empty.' },
+    },
+    {
+      id: 5,
+      title: 'MST Complete',
+      explanation: 'The PQ is empty. The total cost of the Minimum Spanning Tree is 3 (edges A-B and B-C).',
+      state: { visited: [true, true, true], queue: [], current: 2, cost: 3, action: 'MST complete. Cost = 3.', found: true },
     },
   ],
 
@@ -555,27 +581,33 @@ export const bipartite = {
   steps: [
     {
       id: 0,
-      title: 'Init Colors',
-      explanation: 'Triangle graph: 0-1, 1-2, 2-0. Color array: [-1, -1, -1].',
-      state: {
-        nodes: [0, 1, 2], colors: [-1, -1, -1], queue: [], action: 'Uncolored.',
-      },
+      title: 'Initialize Colors',
+      explanation: 'We have a triangle graph (A-B, B-C, C-A). We create a color array of size 3, initialized to -1 (uncolored). WHY: We need to track the color of each node. -1 means unvisited.',
+      state: { nodes: [0, 1, 2], colors: [-1, -1, -1], queue: [], action: 'Uncolored.' },
     },
     {
       id: 1,
-      title: 'Start BFS at 0',
-      explanation: 'Color 0 with 0. Queue: [0]. Pop 0. Color neighbors 1 and 2 with 1.',
-      state: {
-        nodes: [0, 1, 2], colors: [0, 1, 1], queue: [1, 2], action: 'Color 0 with 0, neighbors with 1.',
-      },
+      title: 'Color Node A',
+      explanation: 'We start BFS at node 0 (A). We color it with 0 and push it to the queue.',
+      state: { nodes: [0, 1, 2], colors: [0, -1, -1], queue: [0], action: 'Color A with 0. Queue: [A].' },
     },
     {
       id: 2,
-      title: 'Conflict Detected',
-      explanation: 'Pop 1. Neighbor 2 is already colored 1. Same color! Not Bipartite.',
-      state: {
-        nodes: [0, 1, 2], colors: [0, 1, 1], queue: [2], action: 'Conflict at node 2! Not Bipartite.', found: true,
-      },
+      title: 'Process A, Color Neighbors',
+      explanation: 'We pop A. We look at its neighbors B and C. They are uncolored (-1). We color them with the opposite color (1). We push them to the queue.',
+      state: { nodes: [0, 1, 2], colors: [0, 1, 1], queue: [1, 2], action: 'Color B and C with 1. Queue: [B, C].' },
+    },
+    {
+      id: 3,
+      title: 'Pop B, Check Neighbors',
+      explanation: 'We pop B. We look at its neighbors. Neighbor A is colored 0 (different, OK). Neighbor C is colored 1 (same, CONFLICT!). WHY: B and C are connected by an edge but have the same color, meaning they cannot be in different sets.',
+      state: { nodes: [0, 1, 2], colors: [0, 1, 1], queue: [2], action: 'Conflict at C (colored 1, same as B).' },
+    },
+    {
+      id: 4,
+      title: 'Not Bipartite',
+      explanation: 'We detected a conflict (B and C are adjacent but have the same color). The graph contains an odd cycle (triangle) and is not bipartite. We return false.',
+      state: { nodes: [0, 1, 2], colors: [0, 1, 1], queue: [2], action: 'Not Bipartite!', found: true },
     },
   ],
 

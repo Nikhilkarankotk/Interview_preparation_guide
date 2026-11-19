@@ -33,35 +33,69 @@ export const segmentTree = {
   steps: [
     {
       id: 0,
-      title: 'Build the Tree',
-      explanation: 'Array: [1, 3, 5]. Tree array initialized. Leaf nodes 3, 4, 5 represent 1, 3, 5. Internal nodes 1 and 2 represent sums. Root (node 1) = 9.',
-      state: {
-        tree: [0, 9, 4, 5, 1, 3, 0, 0, 0, 0], currentIdx: 1, action: 'Built Segment Tree array.',
-      },
+      title: 'Initialize Segment Tree Array',
+      explanation: 'Input array: [1, 3, 5]. We create a tree array of size 4*N = 12. We initialize all values to 0. WHY: A Segment Tree is a binary tree stored in a flat array. We use 4*N space to safely accommodate all nodes, including the leaves and the internal nodes, without worrying about index out of bounds.',
+      state: { array: [1, 3, 5], tree: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], currentIdx: 1, action: 'Tree array of size 12 initialized to 0s.' },
     },
     {
       id: 1,
-      title: 'Query Sum (0, 2)',
-      explanation: 'We want the sum of the whole array. We start at the root (node 1, range 0-2). The range matches exactly, so we return 9.',
-      state: {
-        tree: [0, 9, 4, 5, 1, 3, 0, 0, 0, 0], currentIdx: 1, action: 'Root covers 0-2. Return 9.',
-      },
+      title: 'Build: Recursively Split Range',
+      explanation: 'We start at the root (node 1), which covers the range [0, 2]. The midpoint is 1. We recursively build the left child (node 2, range [0, 1]) and the right child (node 3, range [2, 2]). WHY: The tree is built using a divide-and-conquer approach. Each node represents the sum of a specific segment of the input array.',
+      state: { array: [1, 3, 5], tree: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], currentIdx: 1, action: 'Root covers [0,2]. Split into [0,1] and [2,2].' },
     },
     {
       id: 2,
-      title: 'Update Element 1',
-      explanation: 'Update index 1 (value 3) to 10. We update the leaf (node 4) to 10, then update its parents up to the root. Node 2 becomes 1+10=11, Root becomes 11+5=16.',
-      state: {
-        tree: [0, 16, 11, 5, 1, 10, 0, 0, 0, 0], currentIdx: 4, action: 'Update index 1 to 10. Propagate up.',
-      },
+      title: 'Build: Leaf Nodes',
+      explanation: 'We reach the leaves. Node 4 covers [0, 0] and gets the value 1. Node 5 covers [1, 1] and gets the value 3. Node 3 covers [2, 2] and gets the value 5. WHY: Leaf nodes represent individual elements of the array. There is no further splitting possible.',
+      state: { array: [1, 3, 5], tree: [0, 0, 0, 0, 1, 3, 5, 0, 0, 0, 0, 0], currentIdx: 4, action: 'Leaf nodes populated: tree[4]=1, tree[5]=3, tree[3]=5.' },
     },
     {
       id: 3,
-      title: 'Query Sum (0, 1)',
-      explanation: 'Query sum from 0 to 1. We traverse the tree, splitting the query until we find matching nodes. Node 4 (index 1) is 10, Node 2 (left child of root) is 11. Sum is 11.',
-      state: {
-        tree: [0, 16, 11, 5, 1, 10, 0, 0, 0, 0], currentIdx: 2, action: 'Query sum(0,1) returns 11.', found: true,
-      },
+      title: 'Build: Internal Nodes (Post-Order)',
+      explanation: 'We compute the internal nodes bottom-up. Node 2 is the sum of its children (node 4 and node 5): 1 + 3 = 4. Node 1 (the root) is the sum of its children (node 2 and node 3): 4 + 5 = 9. WHY: The parent node always stores the sum of its two children. This is the core invariant of the Segment Tree.',
+      state: { array: [1, 3, 5], tree: [0, 9, 4, 5, 1, 3, 5, 0, 0, 0, 0, 0], currentIdx: 1, action: 'Root updated: tree[2]=4, tree[1]=9.' },
+    },
+    {
+      id: 4,
+      title: 'Query: Full Range (0, 2)',
+      explanation: 'We query the sum from index 0 to 2. We start at the root (node 1, range [0, 2]). The query range completely covers the node\'s range. We return the node\'s value (9) immediately. WHY: If a node\'s range is fully inside the query range, its sum is part of the answer.',
+      state: { array: [1, 3, 5], tree: [0, 9, 4, 5, 1, 3, 5, 0, 0, 0, 0, 0], currentIdx: 1, action: 'Full overlap at root. Return 9.' },
+    },
+    {
+      id: 5,
+      title: 'Query: Partial Range (0, 1) - Left',
+      explanation: 'We query the sum from 0 to 1. At the root, the range is partially covered. We recurse left (node 2, range [0, 1]). The left child is fully covered, so we return its value (4).',
+      state: { array: [1, 3, 5], tree: [0, 9, 4, 5, 1, 3, 5, 0, 0, 0, 0, 0], currentIdx: 2, action: 'Left child (node 2) fully covered. Return 4.' },
+    },
+    {
+      id: 6,
+      title: 'Query: Partial Range (0, 1) - Right',
+      explanation: 'We also recurse right from the root to node 3 (range [2, 2]). The query range [0, 1] does NOT overlap with node 3\'s range. We return 0. WHY: If there is no overlap, the node contributes nothing to the sum.',
+      state: { array: [1, 3, 5], tree: [0, 9, 4, 5, 1, 3, 5, 0, 0, 0, 0, 0], currentIdx: 3, action: 'Right child (node 3) no overlap. Return 0.' },
+    },
+    {
+      id: 7,
+      title: 'Query: Combine Results',
+      explanation: 'The total sum is the sum of the left and right recursive calls: 4 + 0 = 4. We return 4.',
+      state: { array: [1, 3, 5], tree: [0, 9, 4, 5, 1, 3, 5, 0, 0, 0, 0, 0], currentIdx: 1, action: 'Sum = 4 + 0 = 4.' },
+    },
+    {
+      id: 8,
+      title: 'Update: Set Index 1 to 10',
+      explanation: 'We want to update the value at index 1 from 3 to 10. We traverse down to the leaf node 5 (range [1, 1]). We update its value to 10. WHY: Updates must start at the leaf level to change the underlying data.',
+      state: { array: [1, 3, 5], tree: [0, 9, 4, 5, 1, 10, 5, 0, 0, 0, 0, 0], currentIdx: 5, action: 'Leaf node 5 updated to 10.' },
+    },
+    {
+      id: 9,
+      title: 'Update: Propagate Upwards',
+      explanation: 'We recalculate the parent nodes back up to the root. Node 2 becomes 1 + 10 = 11. The root (node 1) becomes 11 + 5 = 16. WHY: Since the leaf value changed, all ancestor nodes that include this leaf in their range must also be updated to reflect the new sum.',
+      state: { array: [1, 3, 5], tree: [0, 16, 11, 5, 1, 10, 5, 0, 0, 0, 0, 0], currentIdx: 1, action: 'Propagated up: tree[2]=11, tree[1]=16.' },
+    },
+    {
+      id: 10,
+      title: 'Query After Update (0, 1)',
+      explanation: 'We query the sum from 0 to 1 again. The left child (node 2) now holds the value 11. The right child (node 3) is out of range (returns 0). The sum is 11.',
+      state: { array: [1, 3, 5], tree: [0, 16, 11, 5, 1, 10, 5, 0, 0, 0, 0, 0], currentIdx: 2, action: 'Query(0,1) returns 11.', found: true },
     },
   ],
 
@@ -169,7 +203,7 @@ export const fenwickTree = {
     when: 'When you need point updates and prefix sum queries, and want code that is faster and shorter than a Segment Tree.',
     properties: [
       'Uses a 1-based indexing array.',
-      'The value at index `i` covers the range `i - (i & -i)` to `i`.',
+      'The value at index i covers the range i - (i & -i) to i.',
       'Faster and uses less memory than a Segment Tree.',
     ],
   },
@@ -186,27 +220,51 @@ export const fenwickTree = {
   steps: [
     {
       id: 0,
-      title: 'Init BIT',
-      explanation: 'Array: [3, 2, -1, 6, 5, 4, -3, 3, 7, 2, 3]. We create a BIT array of size N+1 (1-based).',
-      state: {
-        bit: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], currentIdx: 1, action: 'Init BIT array.',
-      },
+      title: 'Initialize BIT Array',
+      explanation: 'Input array (1-based for simplicity): [3, 2, -1, 6, 5]. We create a BIT array of size N+1 = 6, initialized to 0. WHY: Fenwick Tree is always 1-indexed. The index 0 is left unused to allow for clean bitwise arithmetic.',
+      state: { array: [3, 2, -1, 6, 5], bit: [0, 0, 0, 0, 0, 0], currentIdx: 1, action: 'BIT array of size 6 initialized to 0s.' },
     },
     {
       id: 1,
-      title: 'Update Index 1 (value 3)',
-      explanation: 'Add 3 to BIT[1]. Next index is 1 + (1 & -1) = 2. Add 3 to BIT[2]. Next index is 2 + (2 & -2) = 4...',
-      state: {
-        bit: [0, 3, 3, 0, 3, 0, 0, 0, 3, 0, 0, 0], currentIdx: 1, action: 'Update index 1. Propagate to 2, 4, 8.',
-      },
+      title: 'Update Index 1 (Value 3)',
+      explanation: 'We add 3 to BIT[1]. We compute the next index: 1 + (1 & -1) = 1 + 1 = 2. We add 3 to BIT[2]. WHY: (1 & -1) isolates the lowest set bit. Adding it to the current index navigates up the tree.',
+      state: { array: [3, 2, -1, 6, 5], bit: [0, 3, 3, 0, 0, 0], currentIdx: 1, action: 'Update 1: bit[1]+=3, bit[2]+=3.' },
     },
     {
       id: 2,
-      title: 'Prefix Sum Query',
-      explanation: 'Query sum of first 5 elements. Sum = BIT[5] + BIT[4]. BIT[5] is 0, BIT[4] is 3. So sum = 3.',
-      state: {
-        bit: [0, 3, 3, 0, 3, 0, 0, 0, 3, 0, 0, 0], currentIdx: 5, action: 'Query prefix(5) = BIT[5] + BIT[4].',
-      },
+      title: 'Update Index 1 (Continue)',
+      explanation: 'Next index from 2 is 2 + (2 & -2) = 2 + 2 = 4. We add 3 to BIT[4]. Next index from 4 is 4 + (4 & -4) = 4 + 4 = 8 (out of bounds). We stop. WHY: Each update propagates upwards through the tree, modifying all nodes that cover this index.',
+      state: { array: [3, 2, -1, 6, 5], bit: [0, 3, 3, 0, 3, 0], currentIdx: 1, action: 'Update 1: bit[4]+=3. Stop.' },
+    },
+    {
+      id: 3,
+      title: 'Update Index 2 (Value 2)',
+      explanation: 'We add 2 to BIT[2]. Next index: 2 + (2 & -2) = 4. We add 2 to BIT[4]. Next index from 4 is 8 (stop). WHY: Index 2 is covered by BIT[2] and BIT[4].',
+      state: { array: [3, 2, -1, 6, 5], bit: [0, 3, 5, 0, 5, 0], currentIdx: 2, action: 'Update 2: bit[2]+=2, bit[4]+=2.' },
+    },
+    {
+      id: 4,
+      title: 'Update Index 3 (Value -1)',
+      explanation: 'We add -1 to BIT[3]. Next index: 3 + (3 & -3) = 3 + 1 = 4. We add -1 to BIT[4]. Next index from 4 is 8 (stop).',
+      state: { array: [3, 2, -1, 6, 5], bit: [0, 3, 5, -1, 4, 0], currentIdx: 3, action: 'Update 3: bit[3]+=-1, bit[4]+=-1.' },
+    },
+    {
+      id: 5,
+      title: 'Query Prefix Sum (1 to 3)',
+      explanation: 'We want the sum of the first 3 elements. Start at i=3. Sum += BIT[3] (-1). Next index: 3 - (3 & -3) = 3 - 1 = 2. Sum += BIT[2] (5). Next index: 2 - (2 & -2) = 2 - 2 = 0. Stop. WHY: Querying subtracts the lowest set bit to navigate down the tree, summing the relevant nodes.',
+      state: { array: [3, 2, -1, 6, 5], bit: [0, 3, 5, -1, 4, 0], currentIdx: 3, action: 'Query(3): bit[3]=-1, bit[2]=5. Sum = 4.' },
+    },
+    {
+      id: 6,
+      title: 'Query Prefix Sum (1 to 5)',
+      explanation: 'We want the sum of the first 5 elements. Start at i=5. Sum += BIT[5] (0). Next index: 5 - (5 & -5) = 5 - 1 = 4. Sum += BIT[4] (4). Next index: 4 - 4 = 0. Stop. The total sum is 0 + 4 = 4. WHY: BIT[5] covers just index 5 (value 0). BIT[4] covers indices 1 to 4 (sum = 4).',
+      state: { array: [3, 2, -1, 6, 5], bit: [0, 3, 5, -1, 4, 0], currentIdx: 5, action: 'Query(5): bit[5]=0, bit[4]=4. Sum = 4.' },
+    },
+    {
+      id: 7,
+      title: 'Final BIT State',
+      explanation: 'The BIT array is fully populated and reflects the prefix sums of the original array. The queries have returned the correct results.',
+      state: { array: [3, 2, -1, 6, 5], bit: [0, 3, 5, -1, 4, 0], currentIdx: 5, action: 'BIT ready for queries.', found: true },
     },
   ],
 
@@ -292,7 +350,7 @@ export const lruCache = {
     why: 'A standard Hash Map gives O(1) access but no ordering. A Linked List gives ordering but O(N) access. Combining them gives O(1) access and O(1) eviction.',
     when: 'Designing caches, memory management, or any problem requiring O(1) get and put with eviction.',
     properties: [
-      'HashMap stores `key -> node`.',
+      'HashMap stores key -> node.',
       'Doubly Linked List maintains usage order (Head = Most Recent, Tail = Least Recent).',
       'On access, move the node to the Head.',
     ],
@@ -311,43 +369,63 @@ export const lruCache = {
   steps: [
     {
       id: 0,
-      title: 'Init Capacity=2',
-      explanation: 'We have an empty map and an empty list with Dummy Head and Tail.',
-      state: {
-        map: {}, list: ['Head', 'Tail'], action: 'Init Cache.',
-      },
+      title: 'Initialize Capacity and Sentinels',
+      explanation: 'Capacity = 2. We create a HashMap and a Doubly Linked List with two dummy nodes: Head and Tail. WHY: Sentinel nodes (dummy Head and Tail) eliminate edge cases. We never have to check if the list is empty or if we are inserting/removing at the boundaries.',
+      state: { map: {}, list: ['Head', 'Tail'], capacity: 2, action: 'Init with dummy Head and Tail.' },
     },
     {
       id: 1,
       title: 'Put(1, 1)',
-      explanation: 'Add node 1 to the map. Add it to the front of the list.',
-      state: {
-        map: {1: 1}, list: ['Head', '1', 'Tail'], action: 'Put key 1.',
-      },
+      explanation: 'We create a new node with key=1, value=1. We add it to the HashMap and insert it right after the Head (Most Recently Used position). List: Head <-> 1 <-> Tail.',
+      state: { map: {1: 1}, list: ['Head', '1', 'Tail'], capacity: 2, action: 'Put key 1. Node added after Head.' },
     },
     {
       id: 2,
       title: 'Put(2, 2)',
-      explanation: 'Add node 2 to the map. Add it to the front. List: Head -> 2 -> 1 -> Tail.',
-      state: {
-        map: {1: 1, 2: 2}, list: ['Head', '2', '1', 'Tail'], action: 'Put key 2.',
-      },
+      explanation: 'We create a new node with key=2, value=2. We add it to the HashMap and insert it after the Head. The current MRU is 2, and 1 is pushed down. List: Head <-> 2 <-> 1 <-> Tail.',
+      state: { map: {1: 1, 2: 2}, list: ['Head', '2', '1', 'Tail'], capacity: 2, action: 'Put key 2. Added after Head.' },
     },
     {
       id: 3,
       title: 'Get(1)',
-      explanation: 'Key 1 exists! Move it to the front. List: Head -> 1 -> 2 -> Tail.',
-      state: {
-        map: {1: 1, 2: 2}, list: ['Head', '1', '2', 'Tail'], action: 'Get key 1. Moved to front.',
-      },
+      explanation: 'We look up key 1 in the HashMap. It exists. We return its value (1). We also move node 1 to the Head to mark it as Most Recently Used. List becomes: Head <-> 1 <-> 2 <-> Tail. WHY: In an LRU cache, accessing an item makes it the most recently used.',
+      state: { map: {1: 1, 2: 2}, list: ['Head', '1', '2', 'Tail'], capacity: 2, action: 'Get key 1. Moved to front.' },
     },
     {
       id: 4,
-      title: 'Put(3, 3)',
-      explanation: 'Capacity is 2. Evict the least recently used (Tail, which is 2). Add 3 to the front. List: Head -> 3 -> 1 -> Tail.',
-      state: {
-        map: {1: 1, 3: 3}, list: ['Head', '3', '1', 'Tail'], action: 'Put key 3. Evicted 2.',
-      },
+      title: 'Put(3, 3) - Cache Full',
+      explanation: 'We want to add key 3. The cache is full (size 2). We must evict the Least Recently Used node. The LRU node is the one right before the Tail (node 2). We remove node 2 from both the HashMap and the Linked List.',
+      state: { map: {1: 1}, list: ['Head', '1', 'Tail'], capacity: 2, action: 'Evicted key 2 (LRU).' },
+    },
+    {
+      id: 5,
+      title: 'Put(3, 3) - Add New Node',
+      explanation: 'Now there is space. We create the node for key 3 and insert it after the Head. List: Head <-> 3 <-> 1 <-> Tail.',
+      state: { map: {1: 1, 3: 3}, list: ['Head', '3', '1', 'Tail'], capacity: 2, action: 'Put key 3. Added after Head.' },
+    },
+    {
+      id: 6,
+      title: 'Get(2)',
+      explanation: 'We look up key 2. It was evicted, so it is not in the HashMap. We return -1. WHY: The eviction policy removed the least recently used item when the cache exceeded its capacity.',
+      state: { map: {1: 1, 3: 3}, list: ['Head', '3', '1', 'Tail'], capacity: 2, action: 'Get key 2. Return -1 (not found).' },
+    },
+    {
+      id: 7,
+      title: 'Put(1, 10) - Update Existing',
+      explanation: 'We want to put key 1 with a new value (10). Key 1 already exists. We update its value in the HashMap and move its node to the Head. List: Head <-> 1 <-> 3 <-> Tail.',
+      state: { map: {1: 10, 3: 3}, list: ['Head', '1', '3', 'Tail'], capacity: 2, action: 'Update key 1 to 10. Moved to front.' },
+    },
+    {
+      id: 8,
+      title: 'Get(3)',
+      explanation: 'We look up key 3. It exists. We return 3. We move it to the Head. List: Head <-> 3 <-> 1 <-> Tail.',
+      state: { map: {1: 10, 3: 3}, list: ['Head', '3', '1', 'Tail'], capacity: 2, action: 'Get key 3. Moved to front.' },
+    },
+    {
+      id: 9,
+      title: 'Final State',
+      explanation: 'The cache operations are complete. The internal structures (HashMap and Linked List) are in sync and reflect the correct LRU ordering.',
+      state: { map: {1: 10, 3: 3}, list: ['Head', '3', '1', 'Tail'], capacity: 2, action: 'Final state.', found: true },
     },
   ],
 

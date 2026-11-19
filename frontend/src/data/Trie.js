@@ -33,43 +33,57 @@ export const basicTrie = {
   steps: [
     {
       id: 0,
-      title: 'Initialize Trie',
-      explanation: 'We start with an empty root node. It has no character and no children.',
-      state: {
-        word: '', path: ['Root'], isEnd: false, action: 'Empty Trie initialized.',
-      },
+      title: 'Initialize Root',
+      explanation: 'We create an empty root node. It represents the starting point before any characters are processed. WHY: A Trie always starts with an empty root. As we insert words, we build branches downwards character by character.',
+      state: { word: '', path: ['Root'], isEnd: false, action: 'Root node created.' },
     },
     {
       id: 1,
-      title: 'Insert "apple"',
-      explanation: 'We traverse the characters a -> p -> p -> l -> e. Since the root is empty, we create new nodes for each character.',
-      state: {
-        word: 'apple', path: ['Root', 'a', 'p', 'p', 'l', 'e'], isEnd: true, action: 'Inserted "apple". Node "e" is marked as End.',
-      },
+      title: 'Insert "cat": Character "c"',
+      explanation: 'We are inserting "cat". We look at the root. Does a child for "c" exist? No. We create a new node for "c" and point the root to it.',
+      state: { word: 'cat', path: ['Root', 'c'], isEnd: false, action: 'Created node for "c".' },
     },
     {
       id: 2,
-      title: 'Search "apple"',
-      explanation: 'We traverse a -> p -> p -> l -> e. All nodes exist, and the final node has `isEnd = true`. Return true.',
-      state: {
-        word: 'apple', path: ['Root', 'a', 'p', 'p', 'l', 'e'], isEnd: true, action: 'Word found!', found: true,
-      },
+      title: 'Insert "cat": Character "a"',
+      explanation: 'We move to the "c" node. Does a child for "a" exist? No. We create a new node for "a" under "c".',
+      state: { word: 'cat', path: ['Root', 'c', 'a'], isEnd: false, action: 'Created node for "a".' },
     },
     {
       id: 3,
-      title: 'StartsWith "app"',
-      explanation: 'We traverse a -> p -> p. We reach the end of the prefix successfully. We don\'t care if `isEnd` is true. Return true.',
-      state: {
-        word: 'app', path: ['Root', 'a', 'p', 'p'], isEnd: false, action: 'Prefix found!', found: true,
-      },
+      title: 'Insert "cat": Character "t"',
+      explanation: 'We move to the "a" node. Does a child for "t" exist? No. We create a new node for "t" under "a". This is the last character of the word, so we mark it as isEnd = true. WHY: The isEnd flag distinguishes a complete word from a mere prefix.',
+      state: { word: 'cat', path: ['Root', 'c', 'a', 't'], isEnd: true, action: 'Created "t". Marked as End.' },
     },
     {
       id: 4,
-      title: 'Search "app"',
-      explanation: 'We traverse a -> p -> p. The node exists, but `isEnd` is false because we only inserted "apple". Return false.',
-      state: {
-        word: 'app', path: ['Root', 'a', 'p', 'p'], isEnd: false, action: 'Word not found (Prefix only).', found: false,
-      },
+      title: 'Insert "car": Characters "c", "a"',
+      explanation: 'We insert "car". We traverse from the root. The nodes for "c" and "a" already exist, so we simply follow the path without creating new nodes.',
+      state: { word: 'car', path: ['Root', 'c', 'a'], isEnd: false, action: 'Traversed existing "c", "a".' },
+    },
+    {
+      id: 5,
+      title: 'Insert "car": Character "r"',
+      explanation: 'We are at node "a". Does a child for "r" exist? No. We create a new node for "r" under "a". We mark it isEnd = true.',
+      state: { word: 'car', path: ['Root', 'c', 'a', 'r'], isEnd: true, action: 'Created "r". Marked as End.' },
+    },
+    {
+      id: 6,
+      title: 'Search "cat"',
+      explanation: 'We traverse the path c -> a -> t. All nodes exist. We check the final node. isEnd is true. We return true. WHY: For a full word search, the path must exist AND the final node must be marked as the end of a word.',
+      state: { word: 'cat', path: ['Root', 'c', 'a', 't'], isEnd: true, action: 'Path exists. isEnd is true. Found!', found: true },
+    },
+    {
+      id: 7,
+      title: 'Search "ca"',
+      explanation: 'We traverse the path c -> a. The nodes exist. We check the final node "a". isEnd is false. We return false. WHY: "ca" is a prefix of "cat" and "car", but not a complete word on its own.',
+      state: { word: 'ca', path: ['Root', 'c', 'a'], isEnd: false, action: 'Path exists, but isEnd is false. Not Found.', found: false },
+    },
+    {
+      id: 8,
+      title: 'StartsWith "ca"',
+      explanation: 'We traverse the path c -> a. The nodes exist. For startsWith, we do not care about the isEnd flag. If we can successfully traverse the entire prefix, we return true.',
+      state: { word: 'ca', path: ['Root', 'c', 'a'], isEnd: false, action: 'Prefix path exists. Return true.', found: true },
     },
   ],
 
@@ -188,27 +202,27 @@ export const wildcardSearch = {
   steps: [
     {
       id: 0,
-      title: 'Insert "bad" and "dad"',
-      explanation: 'We insert "bad" and "dad". The root has children "b" and "d".',
-      state: {
-        word: 'bad, dad', path: ['Root', 'b', 'a', 'd'], isEnd: true, action: 'Trie built.',
-      },
+      title: 'Build Trie',
+      explanation: 'We insert "bad" and "dad". The root has children "b" and "d". The path for "bad" is Root -> b -> a -> d. The path for "dad" is Root -> d -> a -> d. Both "d" nodes are marked isEnd = true.',
+      state: { word: 'bad, dad', path: ['Root', 'b', 'd'], isEnd: false, action: 'Inserted "bad" and "dad".' },
     },
     {
       id: 1,
-      title: 'Search ".ad"',
-      explanation: 'First char is ".". We must explore BOTH "b" and "d" paths.',
-      state: {
-        word: '.ad', path: ['Root', '.'], isEnd: false, action: 'Hit wildcard. Branching to b and d.',
-      },
+      title: 'Search ".ad": Wildcard at Root',
+      explanation: 'We start the DFS at the root with idx = 0. The character is ".". This means we must try ALL non-null children. The root has children "b" and "d". We branch our search into both paths.',
+      state: { word: '.ad', path: ['Root', '.'], isEnd: false, action: 'Hit wildcard. Branching to "b" and "d".' },
     },
     {
       id: 2,
-      title: 'Explore "bad" path',
-      explanation: 'Path "b" -> "a" -> "d" exists and `isEnd` is true. Found a match!',
-      state: {
-        word: '.ad', path: ['Root', 'b', 'a', 'd'], isEnd: true, action: 'Found "bad". Returning true.', found: true,
-      },
+      title: 'DFS Branch 1: Path "b"',
+      explanation: 'We explore the "b" branch. The next character is "a". We check if "b" has a child "a". It does. We move to node "a".',
+      state: { word: '.ad', path: ['Root', 'b', 'a'], isEnd: false, action: 'Exploring "b" path. Found "a".' },
+    },
+    {
+      id: 3,
+      title: 'DFS Branch 1: Match Found',
+      explanation: 'The next character is "d". We check if "a" has a child "d". It does. We move to node "d". We are at the end of the search string (idx == word.length()). We check isEnd. It is true! We return true immediately. WHY: Because this is a valid word, we do not need to explore the "d" branch from the root.',
+      state: { word: '.ad', path: ['Root', 'b', 'a', 'd'], isEnd: true, action: 'Found "bad". Returning true.', found: true },
     },
   ],
 
@@ -318,27 +332,45 @@ export const bitwiseTrie = {
   steps: [
     {
       id: 0,
-      title: 'Insert Numbers',
-      explanation: 'Insert 3 (011), 10 (1010), 5 (0101), 25 (11001), 2 (0010) into the Trie starting from the highest bit.',
-      state: {
-        word: '3, 10, 5, 25, 2', path: ['Root', '0/1'], isEnd: false, action: 'Trie built from bit representations.',
-      },
+      title: 'Insert 3 (0011)',
+      explanation: 'We insert 3. In 4-bit representation, it is 0011. We build a path from the most significant bit (MSB) to the least: Root -> 0 -> 0 -> 1 -> 1. WHY: We start from the MSB because higher bits contribute exponentially more to the final value.',
+      state: { word: '3 (0011)', path: ['Root', '0', '0', '1', '1'], isEnd: true, action: 'Inserted 3.' },
     },
     {
       id: 1,
-      title: 'Find Max XOR for 5',
-      explanation: '5 is 0101. To maximize XOR, we want opposite bits. Start at highest bit (0). We want a 1. The Trie has a 1 path! Go right.',
-      state: {
-        word: '5 (0101)', path: ['Root', '1'], isEnd: false, action: 'Want 1, found 1.',
-      },
+      title: 'Insert 10 (1010)',
+      explanation: 'We insert 10. In 4-bit, it is 1010. We traverse from the root. The root already has a "0" child, so we create a new "1" child. Then we add 0 -> 1 -> 0. Path: Root -> 1 -> 0 -> 1 -> 0.',
+      state: { word: '10 (1010)', path: ['Root', '0/1'], isEnd: false, action: 'Inserted 10.' },
     },
     {
       id: 2,
-      title: 'Continue Traversal',
-      explanation: 'Next bit is 1. We want 0. The Trie has 0. Go left. Next bit is 0. We want 1. Go right. Next bit is 1. We want 0. We find 0. Number is 1010 (10).',
-      state: {
-        word: '5 (0101)', path: ['Root', '1', '0', '1', '0'], isEnd: true, action: 'Max XOR pair: 5 ^ 10 = 15.', found: true,
-      },
+      title: 'Max XOR for 5 (0101) - Bit 3',
+      explanation: 'We want to find the max XOR for 5 (0101). We start at the MSB (bit 3). 5 has a "0". To maximize XOR, we want the opposite bit, "1". We check the root. The root has a "1" child (from 10). We take it. XOR bit is 1.',
+      state: { word: '5 (0101)', path: ['Root', '1'], isEnd: false, action: 'Bit 3: Want 1. Found 1.' },
+    },
+    {
+      id: 3,
+      title: 'Bit 2',
+      explanation: '5 has a "1". We want "0". We are at the "1" node. It has a "0" child. We take it. XOR bit is 1.',
+      state: { word: '5 (0101)', path: ['Root', '1', '0'], isEnd: false, action: 'Bit 2: Want 0. Found 0.' },
+    },
+    {
+      id: 4,
+      title: 'Bit 1',
+      explanation: '5 has a "0". We want "1". We are at the "0" node. It has a "1" child. We take it. XOR bit is 1.',
+      state: { word: '5 (0101)', path: ['Root', '1', '0', '1'], isEnd: false, action: 'Bit 1: Want 1. Found 1.' },
+    },
+    {
+      id: 5,
+      title: 'Bit 0',
+      explanation: '5 has a "1". We want "0". We are at the "1" node. It has a "0" child. We take it. XOR bit is 1.',
+      state: { word: '5 (0101)', path: ['Root', '1', '0', '1', '0'], isEnd: true, action: 'Bit 0: Want 0. Found 0.' },
+    },
+    {
+      id: 6,
+      title: 'Calculate Max XOR',
+      explanation: 'The path we took is 1010 (which is 10). The XOR is 5 (0101) ^ 10 (1010) = 15 (1111). This is the maximum XOR pair.',
+      state: { word: '5 (0101)', path: ['Root', '1', '0', '1', '0'], isEnd: true, action: 'Max XOR is 15.', found: true },
     },
   ],
 
